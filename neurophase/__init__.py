@@ -97,7 +97,16 @@ from neurophase.metrics.entropy import (
 )
 from neurophase.metrics.hurst import hurst_dfa, hurst_rs
 from neurophase.metrics.ism import compute_ism, compute_topological_energy, ism_derivative
-from neurophase.metrics.plv import PLVResult, plv, plv_significance, rolling_plv
+from neurophase.metrics.plv import (
+    DEFAULT_PLV_N_SURROGATES,
+    HeldOutSplit,
+    HeldOutViolation,
+    PLVResult,
+    plv,
+    plv_on_held_out,
+    plv_significance,
+    rolling_plv,
+)
 from neurophase.metrics.ricci import forman_ricci, mean_ricci, ollivier_ricci
 from neurophase.oscillators.market import MarketOscillators, extract_market_phase
 from neurophase.oscillators.neural_protocol import (
@@ -134,6 +143,7 @@ from neurophase.validation.surrogates import (
 
 __all__ = [
     "DEFAULT_N_SURROGATES",
+    "DEFAULT_PLV_N_SURROGATES",
     "DEFAULT_THRESHOLD",
     "GENESIS_HASH",
     "AgentEfficiency",
@@ -156,6 +166,8 @@ __all__ = [
     "ExecutiveSample",
     "GateDecision",
     "GateState",
+    "HeldOutSplit",
+    "HeldOutViolation",
     "KuramotoNetwork",
     "KuramotoParams",
     "LedgerError",
@@ -225,6 +237,7 @@ __all__ = [
     "order_parameter",
     "phase_shuffle",
     "plv",
+    "plv_on_held_out",
     "plv_significance",
     "preprocess_signal",
     "renyi_entropy",
