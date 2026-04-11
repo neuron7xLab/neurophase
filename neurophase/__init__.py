@@ -38,6 +38,12 @@ from neurophase.audit.decision_ledger import (
     fingerprint_parameters,
     verify_ledger,
 )
+from neurophase.benchmarks.phase_coupling import (
+    PhaseCouplingConfig,
+    PhaseCouplingTrace,
+    generate_anti_coupled,
+    generate_phase_coupling,
+)
 from neurophase.core.kuramoto import KuramotoNetwork, KuramotoParams
 from neurophase.core.order_parameter import OrderParameterResult, order_parameter
 from neurophase.core.phase import (
@@ -186,6 +192,8 @@ __all__ = [
     "OverloadIndex",
     "PLVResult",
     "PacingDirective",
+    "PhaseCouplingConfig",
+    "PhaseCouplingTrace",
     "PiAgent",
     "PiRule",
     "PositionSize",
@@ -226,6 +234,8 @@ __all__ = [
     "forman_ricci",
     "free_energy_proxy",
     "freedman_diaconis_bins",
+    "generate_anti_coupled",
+    "generate_phase_coupling",
     "hurst_dfa",
     "hurst_rs",
     "ism_derivative",

@@ -233,3 +233,16 @@ honest_naming:
       - tests/test_determinism_certification.py::TestEndToEndReplay::test_full_stack_byte_identical_replay
     docs:
       - docs/EVOLUTION_BOARD.md
+
+  - id: HN10
+    statement: "H1 phase-coupling generator has closed-form PLV ground truth at the endpoints: coupling_strength=0 ⇒ ground_truth_plv=0 (independent uniforms); coupling_strength=1 ⇒ ground_truth_plv=1 (pure phase lock). Finite-sample PLV at c=1 is exactly 1.0 for any n."
+    enforced_in:
+      - path: neurophase/benchmarks/phase_coupling.py
+        symbol: generate_phase_coupling
+    tests:
+      - tests/test_benchmarks_phase_coupling.py::TestGroundTruthEndpoints::test_fully_locked_gives_plv_exactly_one
+      - tests/test_benchmarks_phase_coupling.py::TestGroundTruthEndpoints::test_fully_locked_with_offset_still_plv_one
+      - tests/test_benchmarks_phase_coupling.py::TestGroundTruthEndpoints::test_independent_pair_has_plv_near_zero
+      - tests/test_benchmarks_phase_coupling.py::TestCouplingMonotonicity::test_plv_is_monotone_in_coupling_strength
+    docs:
+      - docs/theory/scientific_basis.md
