@@ -259,3 +259,17 @@ honest_naming:
       - tests/test_calibration_threshold.py::TestCalibrationDeterminism::test_same_grid_same_report
     docs:
       - docs/EVOLUTION_BOARD.md
+
+  - id: HN12
+    statement: "TemporalStreamDetector (B2+B6) classifies the stream as HEALTHY iff fault_rate ≤ max_fault_rate AND at least one sample is VALID; OFFLINE iff no samples are VALID; DEGRADED otherwise. Warmup → non-warmup transitions are never held by hysteresis."
+    enforced_in:
+      - path: neurophase/data/stream_detector.py
+        symbol: TemporalStreamDetector
+    tests:
+      - tests/test_stream_detector.py::TestClassification::test_all_valid_is_healthy
+      - tests/test_stream_detector.py::TestClassification::test_above_fault_rate_is_degraded
+      - tests/test_stream_detector.py::TestClassification::test_all_non_valid_is_offline
+      - tests/test_stream_detector.py::TestHysteresis::test_hold_prevents_immediate_flip
+      - tests/test_stream_detector.py::TestHysteresis::test_warmup_to_steady_is_never_held
+    docs:
+      - docs/theory/time_integrity.md

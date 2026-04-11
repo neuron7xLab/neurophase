@@ -15,6 +15,15 @@ Public API:
 
 from __future__ import annotations
 
+from neurophase.data.stream_detector import (
+    DEFAULT_HOLD_STEPS,
+    DEFAULT_MAX_FAULT_RATE,
+    DEFAULT_STREAM_WINDOW,
+    StreamQualityDecision,
+    StreamQualityStats,
+    StreamRegime,
+    TemporalStreamDetector,
+)
 from neurophase.data.temporal_validator import (
     DEFAULT_MAX_GAP_SECONDS,
     DEFAULT_MAX_STALENESS_SECONDS,
@@ -26,11 +35,18 @@ from neurophase.data.temporal_validator import (
 )
 
 __all__ = [
+    "DEFAULT_HOLD_STEPS",
+    "DEFAULT_MAX_FAULT_RATE",
     "DEFAULT_MAX_GAP_SECONDS",
     "DEFAULT_MAX_STALENESS_SECONDS",
+    "DEFAULT_STREAM_WINDOW",
     "DEFAULT_WARMUP_SAMPLES",
+    "StreamQualityDecision",
+    "StreamQualityStats",
+    "StreamRegime",
     "TemporalError",
     "TemporalQualityDecision",
+    "TemporalStreamDetector",
     "TemporalValidator",
     "TimeQuality",
 ]
