@@ -1,6 +1,12 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com/?lines=neurophase;phase+synchronization+as+execution+gate;R(t)+%E2%89%A5+%CE%B8+%E2%87%92+trade;R(t)+%3C+%CE%B8+%E2%87%92+silence&font=JetBrains+Mono&size=22&pause=1400&color=8B5CF6&center=true&vCenter=true&width=720&height=60" alt="neurophase" />
+<a href="#the-hypothesis">
+  <img src="https://raw.githubusercontent.com/neuron7xLab/neurophase/main/.github/assets/neurophase-hero.svg" alt="neurophase — brain · physics · market causality animation" width="100%"/>
+</a>
+
+<br>
+
+<img src="https://readme-typing-svg.demolab.com/?lines=neuroscience+%C2%B7+physics+%C2%B7+first+cause+of+value;R(t)+%E2%89%A5+%CE%B8+%E2%87%92+trade;R(t)+%3C+%CE%B8+%E2%87%92+silence;PLV(%CF%86_neural%2C+%CF%86_market)+%3E+0&font=JetBrains+Mono&size=18&pause=1600&color=8B5CF6&center=true&vCenter=true&width=720&height=46" alt="neurophase tagline" />
 
 <br>
 
