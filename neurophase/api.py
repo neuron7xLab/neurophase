@@ -43,6 +43,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from neurophase.analysis.regime import (
+    RegimeClassifier,
+    RegimeLabel,
+    RegimeState,
+    RegimeThresholds,
+)
 from neurophase.data.temporal_validator import TimeQuality
 from neurophase.explain import (
     Contract,
@@ -102,6 +108,10 @@ __all__ = [
     "GateDecision",
     "GateState",
     "PipelineConfig",
+    "RegimeClassifier",
+    "RegimeLabel",
+    "RegimeState",
+    "RegimeThresholds",
     "StillnessDetector",
     "StillnessState",
     "StreamingPipeline",
