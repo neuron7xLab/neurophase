@@ -44,6 +44,13 @@ from neurophase.benchmarks.phase_coupling import (
     generate_anti_coupled,
     generate_phase_coupling,
 )
+from neurophase.calibration.threshold import (
+    DEFAULT_THRESHOLD_GRID,
+    ThresholdCalibrationReport,
+    ThresholdEvaluation,
+    ThresholdGrid,
+    calibrate_gate_threshold,
+)
 from neurophase.core.kuramoto import KuramotoNetwork, KuramotoParams
 from neurophase.core.order_parameter import OrderParameterResult, order_parameter
 from neurophase.core.phase import (
@@ -151,6 +158,7 @@ __all__ = [
     "DEFAULT_N_SURROGATES",
     "DEFAULT_PLV_N_SURROGATES",
     "DEFAULT_THRESHOLD",
+    "DEFAULT_THRESHOLD_GRID",
     "GENESIS_HASH",
     "AgentEfficiency",
     "BTCFieldOrderRequest",
@@ -210,6 +218,9 @@ __all__ = [
     "TemporalError",
     "TemporalQualityDecision",
     "TemporalValidator",
+    "ThresholdCalibrationReport",
+    "ThresholdEvaluation",
+    "ThresholdGrid",
     "TimeQuality",
     "VerificationStep",
     "WhaleEvent",
@@ -217,6 +228,7 @@ __all__ = [
     "adaptive_threshold",
     "block_bootstrap",
     "build_signal_scan_payload",
+    "calibrate_gate_threshold",
     "compute_cvar",
     "compute_fmn",
     "compute_ism",
