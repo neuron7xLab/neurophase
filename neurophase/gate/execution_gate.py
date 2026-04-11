@@ -40,6 +40,10 @@ from typing import Final
 
 import numpy as np
 
+from neurophase.data.temporal_validator import (
+    TemporalQualityDecision,
+    TimeQuality,
+)
 from neurophase.gate.stillness_detector import (
     StillnessDecision,
     StillnessDetector,
@@ -114,11 +118,16 @@ class ExecutionGate:
         R: float | None,
         sensor_present: bool = True,
         delta: float | None = None,
+        time_quality: TemporalQualityDecision | None = None,
     ) -> GateDecision:
-        """Evaluate the gate state from ``R(t)``, sensor presence, and optional ``δ(t)``.
+        """Evaluate the gate state from ``R(t)``, sensor presence, optional ``δ(t)``, and optional temporal quality.
 
         Evaluation order (strict — each check short-circuits):
 
+        0. ``time_quality`` supplied and **not** ``VALID`` → ``DEGRADED``
+           (`B1` temporal precondition for `I₃`). Missing / ``None``
+           ``time_quality`` is treated as "temporal check opted out";
+           the gate behaves exactly as before.
         1. ``sensor_present=False`` → ``SENSOR_ABSENT`` (``I₂``).
         2. ``R`` invalid / None / out-of-range → ``DEGRADED`` (``I₃``).
         3. ``R < threshold`` → ``BLOCKED`` (``I₁``).
@@ -144,6 +153,12 @@ class ExecutionGate:
             Optional circular distance between brain and market mean
             phases. Required only when a ``StillnessDetector`` is
             attached and the caller wants the ``I₄`` layer to run.
+        time_quality
+            Optional :class:`TemporalQualityDecision` from a
+            :class:`TemporalValidator`. When supplied and not
+            ``VALID`` the gate immediately returns ``DEGRADED`` with a
+            ``temporal:…`` reason tag — the precondition for every
+            downstream phase claim.
 
         Returns
         -------
@@ -151,6 +166,18 @@ class ExecutionGate:
             Immutable decision carrying the ``execution_allowed`` flag
             and (optionally) the stillness provenance.
         """
+        if time_quality is not None and time_quality.quality is not TimeQuality.VALID:
+            return GateDecision(
+                state=GateState.DEGRADED,
+                execution_allowed=False,
+                R=R,
+                threshold=self.threshold,
+                reason=(
+                    f"temporal: input stream failed B1 temporal integrity gate — "
+                    f"{time_quality.reason}"
+                ),
+            )
+
         if not sensor_present:
             return GateDecision(
                 state=GateState.SENSOR_ABSENT,
