@@ -3,17 +3,17 @@
 This is the operational core of the system. It is not a risk rule.
 It is a physical measurement translated into a binary permission.
 
-INVARIANT (cannot be overridden):
+INVARIANT I1 (cannot be overridden):
     R(t) < threshold → execution_allowed = False
 
 The gate operates on the composite order parameter R(t) computed from
 the joint Kuramoto network of market + neural oscillators.
 
 States:
-    READY         R(t) ≥ threshold. Execution permitted.
-    BLOCKED       R(t) < threshold. Execution blocked.
-    SENSOR_ABSENT Bio-sensor unavailable. Execution blocked.
-    DEGRADED      R(t) is NaN or out of range. Execution blocked.
+    READY          R(t) ≥ threshold. Execution permitted.
+    BLOCKED        R(t) < threshold. Execution blocked.
+    SENSOR_ABSENT  Bio-sensor unavailable. Execution blocked.
+    DEGRADED       R(t) is NaN or out of range. Execution blocked.
 """
 
 from __future__ import annotations
@@ -28,6 +28,8 @@ DEFAULT_THRESHOLD: Final[float] = 0.65
 
 
 class GateState(Enum):
+    """Gate state as a closed enumeration."""
+
     READY = auto()
     BLOCKED = auto()
     SENSOR_ABSENT = auto()
@@ -36,6 +38,13 @@ class GateState(Enum):
 
 @dataclass(frozen=True)
 class GateDecision:
+    """Immutable gate decision enforcing invariant I1.
+
+    Constructing a decision with ``execution_allowed=True`` while the state
+    is not ``READY`` raises ``ValueError`` — the invariant holds at the type
+    boundary, not only at runtime.
+    """
+
     state: GateState
     execution_allowed: bool
     R: float | None
@@ -43,11 +52,8 @@ class GateDecision:
     reason: str
 
     def __post_init__(self) -> None:
-        # Enforce the invariant at construction time.
-        if self.execution_allowed and self.state != GateState.READY:
-            raise ValueError(
-                "Invariant violated: execution_allowed=True requires state=READY"
-            )
+        if self.execution_allowed and self.state is not GateState.READY:
+            raise ValueError("Invariant violated: execution_allowed=True requires state=READY")
 
 
 class ExecutionGate:
@@ -56,29 +62,29 @@ class ExecutionGate:
     Parameters
     ----------
     threshold : float
-        Minimum R(t) for execution. Default 0.65.
+        Minimum R(t) for execution. Must be in (0, 1).
         Lower values mean the system tolerates more desynchronization.
     """
 
     def __init__(self, threshold: float = DEFAULT_THRESHOLD) -> None:
         if not 0.0 < threshold < 1.0:
             raise ValueError(f"threshold must be in (0, 1), got {threshold}")
-        self.threshold = threshold
+        self.threshold: float = threshold
 
     def evaluate(self, R: float | None, sensor_present: bool = True) -> GateDecision:
-        """Evaluate current gate state.
+        """Evaluate the current gate state from R(t) and sensor presence.
 
         Parameters
         ----------
         R : float | None
-            Current order parameter value. None if computation failed.
+            Current order parameter value. None signals a failed computation.
         sensor_present : bool
             Whether bio-sensor data is available.
 
         Returns
         -------
         GateDecision
-            Immutable decision with execution_allowed flag.
+            Immutable decision carrying the ``execution_allowed`` flag.
         """
         if not sensor_present:
             return GateDecision(
@@ -98,7 +104,7 @@ class ExecutionGate:
                 reason=f"R(t) = {R!r} is invalid. Cannot assess synchronization.",
             )
 
-        if R < self.threshold:
+        if R < self.threshold:  # noqa: SIM300 — physical semantics: R compared to threshold
             return GateDecision(
                 state=GateState.BLOCKED,
                 execution_allowed=False,
