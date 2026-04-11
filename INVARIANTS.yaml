@@ -554,6 +554,40 @@ honest_naming:
       - docs/EVOLUTION_BOARD.md
       - docs/TASK_MAP.md
 
+  - id: HN26
+    statement: "E3 RuntimeOrchestrator is the single-call composition of B1+B2+B6+I₁..I₄ → G1 → I1 → F1 → K1. tick() drives every layer in canonical order exactly once and returns one frozen OrchestratedFrame envelope. Two orchestrators with identical OrchestratorConfig fed identical input sequences emit byte-identical OrchestratedFrame sequences and produce SessionManifests sharing parameter_fingerprint, n_ticks, and ledger_tip_hash. Gate-honoring is preserved end-to-end: vetoed frames yield ActionIntent.HOLD; missing R/delta skips the regime + policy layers entirely. close() materialises a SessionManifest, verifies the bound ledger, and seals the orchestrator — subsequent tick() calls raise RuntimeError. Double-close raises."
+    enforced_in:
+      - path: neurophase/runtime/orchestrator.py
+        symbol: RuntimeOrchestrator
+      - path: neurophase/runtime/orchestrator.py
+        symbol: OrchestratedFrame
+    tests:
+      - tests/test_runtime_orchestrator.py::TestSingleCallComposition::test_tick_returns_orchestrated_frame
+      - tests/test_runtime_orchestrator.py::TestSingleCallComposition::test_tick_drives_every_layer
+      - tests/test_runtime_orchestrator.py::TestSingleCallComposition::test_tick_index_is_monotonic
+      - tests/test_runtime_orchestrator.py::TestDeterminism::test_two_orchestrators_same_input_same_output
+      - tests/test_runtime_orchestrator.py::TestDeterminism::test_parameter_fingerprint_is_stable
+      - tests/test_runtime_orchestrator.py::TestGateHonoring::test_vetoed_frame_yields_hold
+      - tests/test_runtime_orchestrator.py::TestGateHonoring::test_degraded_R_none_skips_regime_and_action
+      - tests/test_runtime_orchestrator.py::TestLayerSkip::test_missing_delta_skips_regime
+      - tests/test_runtime_orchestrator.py::TestSessionSealing::test_close_returns_session_manifest
+      - tests/test_runtime_orchestrator.py::TestSessionSealing::test_close_verifies_bound_ledger
+      - tests/test_runtime_orchestrator.py::TestSessionSealing::test_close_without_ledger_succeeds
+      - tests/test_runtime_orchestrator.py::TestSessionSealing::test_tick_after_close_raises
+      - tests/test_runtime_orchestrator.py::TestSessionSealing::test_double_close_raises
+      - tests/test_runtime_orchestrator.py::TestSessionSealing::test_close_with_explicit_dataset_fingerprint
+      - tests/test_runtime_orchestrator.py::TestManifestDeterminism::test_two_sessions_same_inputs_same_manifest_hash
+      - tests/test_runtime_orchestrator.py::TestManifestDeterminism::test_different_config_changes_parameter_fingerprint
+      - tests/test_runtime_orchestrator.py::TestFrozenEnvelope::test_orchestrated_frame_is_frozen
+      - tests/test_runtime_orchestrator.py::TestJsonProjection::test_to_json_dict_serialisable
+      - tests/test_runtime_orchestrator.py::TestJsonProjection::test_to_json_dict_with_skipped_layers
+      - tests/test_runtime_orchestrator.py::TestRepr::test_repr_contains_layer_summary
+      - tests/test_runtime_orchestrator.py::TestRepr::test_repr_with_skipped_layers_uses_dash
+      - tests/test_runtime_orchestrator.py::TestEndToEnd::test_full_session_round_trip
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:
