@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 11  
 **Advisory invariants:** 2  
-**Honest-naming contracts:** 37  
+**Honest-naming contracts:** 38  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -65,6 +65,7 @@
   - [HN35](#hn35)
   - [HN36](#hn36)
   - [HN37](#hn37)
+  - [HN38](#hn38)
 
 ## Gate state machine
 
@@ -1443,6 +1444,33 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_tenth_axis_reproducibility.py::test_check_result_repr_format`
 - `tests/test_tenth_axis_reproducibility.py::test_check_result_repr_failure_flag`
 - `tests/test_tenth_axis_reproducibility.py::test_report_repr_shows_summary`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
+
+### HN38
+
+**Statement.** Property-based fuzz on the execution gate: the gate invariants I1, I2, I3, B1 hold under hypothesis-driven fuzz with 200+ max_examples per property. Every property is a universally-quantified claim that the gate output satisfies its contract for any input the strategy can generate. Specific claims verified under fuzz: (1) R < threshold on VALID frame ⇒ BLOCKED; (2) R at or above threshold on VALID frame without stillness ⇒ READY; (3) non-finite or out-of-range R ⇒ DEGRADED; (4) sensor_present=False ⇒ SENSOR_ABSENT; (5) non-VALID TimeQuality ⇒ DEGRADED; (6) gate output is always one of the 5 canonical GateState values; (7) execution_allowed iff state is READY; (8) raising the threshold never widens permission; (9) constructor rejects threshold outside (0, 1) or non-finite. Hypothesis shrinks any counter-example to the minimal failing input.
+
+**Enforcement sites:**
+
+- `neurophase/gate/execution_gate.py::ExecutionGate.evaluate`
+- `neurophase/gate/execution_gate.py::GateDecision.__post_init__`
+
+**Bound tests** (10):
+
+- `tests/test_gate_property_fuzz.py::test_i1_holds_for_any_r_below_threshold`
+- `tests/test_gate_property_fuzz.py::test_r_at_or_above_threshold_is_never_blocked`
+- `tests/test_gate_property_fuzz.py::test_i3_holds_for_non_finite_or_out_of_range_R`
+- `tests/test_gate_property_fuzz.py::test_i3_holds_for_R_none`
+- `tests/test_gate_property_fuzz.py::test_i2_sensor_absent_always_wins_over_r`
+- `tests/test_gate_property_fuzz.py::test_b1_non_valid_time_quality_forces_degraded`
+- `tests/test_gate_property_fuzz.py::test_gate_output_is_always_canonical`
+- `tests/test_gate_property_fuzz.py::test_execution_allowed_iff_ready`
+- `tests/test_gate_property_fuzz.py::test_raising_threshold_never_widens_permission`
+- `tests/test_gate_property_fuzz.py::test_threshold_out_of_range_rejected`
 
 **Documentation:**
 
