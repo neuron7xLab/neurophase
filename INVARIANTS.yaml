@@ -273,3 +273,26 @@ honest_naming:
       - tests/test_stream_detector.py::TestHysteresis::test_warmup_to_steady_is_never_held
     docs:
       - docs/theory/time_integrity.md
+
+  - id: HN13
+    statement: "StreamingPipeline composes B1 → B2+B6 → ExecutionGate → optional F1 ledger into one stateful deterministic unit. When a DEGRADED/OFFLINE stream regime is detected, the gate is forced to DEGRADED regardless of the per-sample B1 outcome. Two pipelines with identical config and identical input sequences produce byte-identical ledger files."
+    enforced_in:
+      - path: neurophase/runtime/pipeline.py
+        symbol: StreamingPipeline
+    tests:
+      - tests/test_runtime_pipeline.py::TestStreamDegradation::test_bad_stream_forces_degraded_gate
+      - tests/test_runtime_pipeline.py::TestLedgerIntegration::test_pipeline_ledger_is_byte_identical_across_replays
+      - tests/test_runtime_pipeline.py::TestPipelineDeterminism::test_same_input_same_frames
+    docs:
+      - docs/EVOLUTION_BOARD.md
+
+  - id: HN14
+    statement: "DecisionFrame.to_json_dict() is a flat projection — no nested dataclasses, every field is a primitive, enum name, or None. This is load-bearing for downstream log processors that do not pull in neurophase types."
+    enforced_in:
+      - path: neurophase/runtime/pipeline.py
+        symbol: DecisionFrame
+    tests:
+      - tests/test_runtime_pipeline.py::TestFrameSerialization::test_to_json_dict_is_serializable
+      - tests/test_runtime_pipeline.py::TestFrameSerialization::test_to_json_dict_flat_contract
+    docs:
+      - docs/EVOLUTION_BOARD.md
