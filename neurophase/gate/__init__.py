@@ -21,11 +21,27 @@ from neurophase.gate.execution_gate import (
     GateDecision,
     GateState,
 )
+from neurophase.gate.stillness_detector import (
+    DEFAULT_DELTA_MIN,
+    DEFAULT_DT,
+    DEFAULT_EPS_F,
+    DEFAULT_EPS_R,
+    DEFAULT_WINDOW,
+    StillnessDecision,
+    StillnessDetector,
+    StillnessState,
+    free_energy_proxy,
+)
 
 __all__ = [
     "DEFAULT_CRITERIA",
+    "DEFAULT_DELTA_MIN",
+    "DEFAULT_DT",
+    "DEFAULT_EPS_F",
+    "DEFAULT_EPS_R",
     "DEFAULT_THRESHOLD",
     "DEFAULT_WEIGHTS",
+    "DEFAULT_WINDOW",
     "Direction",
     "DirectionDecision",
     "DirectionIndexWeights",
@@ -34,6 +50,10 @@ __all__ = [
     "ExecutionGate",
     "GateDecision",
     "GateState",
+    "StillnessDecision",
+    "StillnessDetector",
+    "StillnessState",
     "detect_emergent_phase",
     "direction_index",
+    "free_energy_proxy",
 ]

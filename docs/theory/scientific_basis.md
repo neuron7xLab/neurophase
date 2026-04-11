@@ -166,30 +166,75 @@ Secondary predictions:
 
 ---
 
-## 5. Gate Invariant
+## 5. Four Invariants
 
-The central operational statement of `neurophase` is invariant **I₁**:
+The central operational statement of `neurophase` is a four-invariant
+contract enforced at the `GateDecision.__post_init__` type boundary —
+**`execution_allowed = True` is only constructible when `state = READY`**,
+and every other state (including the new `UNNECESSARY`) raises
+`ValueError` when a caller tries to mark it permissive.
+
+### I₁ — Desynchronization (the core physical law)
 
 ```
 R(t) < threshold  ⇒  execution_allowed = False
 ```
 
-This is **not** a rule. It is a physical law: the joint brain–market
-order parameter is a measurement, and below the threshold the coupled
-system is in the desynchronized regime where any directional bet is
-statistically lossy (Fioriti & Chinnici, 2012). The invariant is
-enforced at the type boundary by
-`neurophase.gate.execution_gate.GateDecision.__post_init__`:
-constructing a permissive decision while the state is not `READY`
-raises `ValueError` at runtime.
+The joint brain–market order parameter is a direct measurement, and
+below the threshold the coupled system is in the desynchronized regime
+where any directional bet is statistically lossy
+(Fioriti & Chinnici, 2012).
 
-Two additional invariants complete the contract:
+### I₂ — Sensor absence
 
-* **I₂** — PLV is computed only on **held-out** data. No in-sample
-  claims are ever emitted by the pipeline.
-* **I₃** — When a bio-sensor is unavailable, the gate returns
-  `SENSOR_ABSENT`. There is no synthetic fallback and no graceful
-  degradation to random. Silence is the only honest default.
+```
+bio-sensor unavailable  ⇒  execution_allowed = False
+```
+
+No synthetic fallback, no graceful degradation to random. Silence is
+the only honest default. The gate returns `SENSOR_ABSENT` and the
+downstream pipeline must treat the state as terminal for the current
+tick.
+
+### I₃ — `R(t)` degraded
+
+```
+R(t) is NaN / None / out-of-range  ⇒  execution_allowed = False
+```
+
+A failed `R(t)` computation is never silently coerced to zero. The
+gate returns `DEGRADED` and consumers must surface the upstream fault.
+
+### I₄ — Stillness (no new information)
+
+```
+stillness(R, δ) over rolling window τ_s  ⇒  execution_allowed = False
+```
+
+Even when `R(t) ≥ threshold`, the `StillnessDetector` rejects
+execution when all three stillness clauses hold simultaneously across
+the rolling window:
+
+```
+max |dR/dt|       < ε_R
+max |dF_proxy/dt| < ε_F          F_proxy(t) = ½ · δ(t)²
+max δ             < δ_min
+```
+
+The gate state is `UNNECESSARY` and execution is forbidden because
+the next action carries no new information: the joint brain–market
+system is in the quiet limit of Friston free-energy stationarity.
+`F_proxy` is a **geometric surrogate** that vanishes iff `δ` vanishes
+— not the full variational free-energy functional. The honest naming
+is part of the contract; see
+[`docs/theory/stillness_invariant.md`](stillness_invariant.md) for the
+derivation, the three-clause justification, the window-wide vs
+last-sample proof, and the worked counter-examples that forced the
+current formulation.
+
+`I₄` is enforced alongside `I₁`–`I₃`: attempting to construct
+`GateDecision(state=UNNECESSARY, execution_allowed=True)` raises
+`ValueError`.
 
 ---
 

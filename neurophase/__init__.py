@@ -2,10 +2,15 @@
 
 Kuramoto model of market × trader nervous system.
 
-Three invariants that cannot be overridden:
-    I1: R(t) < θ  ⇒  execution_allowed = False
-    I2: PLV computed on held-out data only
-    I3: Bio-sensor absent  ⇒  SENSOR_ABSENT (no synthetic fallback)
+Four invariants that cannot be overridden:
+
+    I₁: R(t) < θ              ⇒ execution_allowed = False
+    I₂: bio-sensor absent     ⇒ execution_allowed = False
+    I₃: R(t) invalid / OOR    ⇒ execution_allowed = False
+    I₄: stillness             ⇒ execution_allowed = False  (action_unnecessary)
+
+See ``docs/theory/scientific_basis.md`` and
+``docs/theory/stillness_invariant.md`` for the full derivation.
 """
 
 from __future__ import annotations
@@ -47,6 +52,12 @@ from neurophase.gate.execution_gate import (
     ExecutionGate,
     GateDecision,
     GateState,
+)
+from neurophase.gate.stillness_detector import (
+    StillnessDecision,
+    StillnessDetector,
+    StillnessState,
+    free_energy_proxy,
 )
 from neurophase.indicators.fmn import compute_fmn
 from neurophase.indicators.qilm import compute_qilm
@@ -140,6 +151,9 @@ __all__ = [
     "SemanticMemory",
     "SensorStatus",
     "SpotBlock",
+    "StillnessDecision",
+    "StillnessDetector",
+    "StillnessState",
     "VerificationStep",
     "WhaleEvent",
     "__version__",
@@ -158,6 +172,7 @@ __all__ = [
     "extract_market_phase",
     "fit_gpd_pot",
     "forman_ricci",
+    "free_energy_proxy",
     "freedman_diaconis_bins",
     "hurst_dfa",
     "hurst_rs",

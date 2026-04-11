@@ -80,6 +80,10 @@ class CoupledStep:
         Mean phase of the brain sub-population, wrapped to ``(-π, π]``.
     psi_market
         Mean phase of the market sub-population, wrapped to ``(-π, π]``.
+    delta
+        Circular distance ``arccos(cos(ψ_brain − ψ_market)) ∈ [0, π]``.
+        Exposed alongside ``R`` so downstream ``StillnessDetector`` /
+        ``PredictionErrorMonitor`` consumers do not need to recompute it.
     execution_allowed
         Gate decision based on ``R >= threshold``. This mirrors
         ``ExecutionGate`` invariant I₁ for downstream consumers that
@@ -90,6 +94,7 @@ class CoupledStep:
     R: float
     psi_brain: float
     psi_market: float
+    delta: float
     execution_allowed: bool
 
 
@@ -248,19 +253,24 @@ class CoupledBrainMarketSystem:
         -------
         pandas.DataFrame
             Columns: ``t``, ``R``, ``psi_brain``, ``psi_market``,
-            ``execution_allowed``.
+            ``delta``, ``execution_allowed``. ``delta`` is the circular
+            distance between ``psi_brain`` and ``psi_market`` — exposed
+            here so ``StillnessDetector`` consumers can feed the full
+            ``(R, δ)`` stream directly from this DataFrame.
         """
         if n_steps < 0:
             raise ValueError(f"n_steps must be ≥ 0, got {n_steps}")
         rows: list[CoupledStep] = []
         for _ in range(n_steps):
             R_now, psi_b, psi_m = self.step()
+            delta_now = float(np.arccos(np.clip(np.cos(psi_b - psi_m), -1.0, 1.0)))
             rows.append(
                 CoupledStep(
                     t=self._t,
                     R=R_now,
                     psi_brain=psi_b,
                     psi_market=psi_m,
+                    delta=delta_now,
                     execution_allowed=bool(R_now >= self.threshold),
                 )
             )
@@ -271,6 +281,7 @@ class CoupledBrainMarketSystem:
                     "R": r.R,
                     "psi_brain": r.psi_brain,
                     "psi_market": r.psi_market,
+                    "delta": r.delta,
                     "execution_allowed": r.execution_allowed,
                 }
                 for r in rows
