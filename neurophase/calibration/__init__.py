@@ -17,6 +17,16 @@ Public API:
 
 from __future__ import annotations
 
+from neurophase.calibration.stillness import (
+    DEFAULT_DELTA_MIN_GRID,
+    DEFAULT_EPS_F_GRID,
+    DEFAULT_EPS_R_GRID,
+    DEFAULT_WINDOW_GRID,
+    StillnessCalibrationReport,
+    StillnessCellEvaluation,
+    StillnessGrid,
+    calibrate_stillness_parameters,
+)
 from neurophase.calibration.threshold import (
     DEFAULT_THRESHOLD_GRID,
     ThresholdCalibrationReport,
@@ -26,9 +36,17 @@ from neurophase.calibration.threshold import (
 )
 
 __all__ = [
+    "DEFAULT_DELTA_MIN_GRID",
+    "DEFAULT_EPS_F_GRID",
+    "DEFAULT_EPS_R_GRID",
     "DEFAULT_THRESHOLD_GRID",
+    "DEFAULT_WINDOW_GRID",
+    "StillnessCalibrationReport",
+    "StillnessCellEvaluation",
+    "StillnessGrid",
     "ThresholdCalibrationReport",
     "ThresholdEvaluation",
     "ThresholdGrid",
     "calibrate_gate_threshold",
+    "calibrate_stillness_parameters",
 ]
