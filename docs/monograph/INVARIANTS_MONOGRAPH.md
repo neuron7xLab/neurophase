@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 9  
 **Advisory invariants:** 2  
-**Honest-naming contracts:** 34  
+**Honest-naming contracts:** 35  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -59,6 +59,7 @@
   - [HN31](#hn31)
   - [HN32](#hn32)
   - [HN33](#hn33)
+  - [HN34](#hn34)
   - [HN35](#hn35)
 
 ## Gate state machine
@@ -1266,6 +1267,49 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
 - `docs/theory/neurophase_elite_bibliography.md`
+
+### HN34
+
+**Statement.** Sensor adapter layer: every concrete sensor adapter in neurophase.sensors implements NeuralPhaseExtractor at runtime; SyntheticOscillatorSource is deterministic (two sources with the same config produce byte-identical frame sequences); RecordingFileSource replays committed JSONL recordings deterministically and transitions to SensorStatus.ABSENT on exhaustion; AdapterRegistry rejects empty names, duplicate registrations, unknown lookups, and factories that return non-NeuralPhaseExtractor objects at build time; DEFAULT_ADAPTER_REGISTRY ships with 'synthetic' and 'null' pre-registered; a synthetic source → JSONL → RecordingFileSource round trip produces byte-identical phase arrays.
+
+**Enforcement sites:**
+
+- `neurophase/sensors/synthetic.py::SyntheticOscillatorSource`
+- `neurophase/sensors/recording.py::RecordingFileSource`
+- `neurophase/sensors/registry.py::AdapterRegistry`
+- `data/sensors/sample_recording.jsonl::committed_sample_recording`
+
+**Bound tests** (24):
+
+- `tests/test_sensor_adapter_layer.py::test_synthetic_source_implements_protocol`
+- `tests/test_sensor_adapter_layer.py::test_recording_source_implements_protocol`
+- `tests/test_sensor_adapter_layer.py::test_null_extractor_implements_protocol`
+- `tests/test_sensor_adapter_layer.py::test_synthetic_source_is_deterministic`
+- `tests/test_sensor_adapter_layer.py::test_synthetic_source_reset_restores_initial_state`
+- `tests/test_sensor_adapter_layer.py::test_synthetic_frame_shape_matches_config`
+- `tests/test_sensor_adapter_layer.py::test_synthetic_source_invalid_config_rejected`
+- `tests/test_sensor_adapter_layer.py::test_recording_source_replays_committed_sample`
+- `tests/test_sensor_adapter_layer.py::test_recording_source_reset_rewinds`
+- `tests/test_sensor_adapter_layer.py::test_recording_source_rejects_missing_file`
+- `tests/test_sensor_adapter_layer.py::test_recording_source_rejects_malformed_json`
+- `tests/test_sensor_adapter_layer.py::test_recording_source_rejects_schema_mismatch`
+- `tests/test_sensor_adapter_layer.py::test_registry_rejects_empty_name`
+- `tests/test_sensor_adapter_layer.py::test_registry_rejects_duplicate_registration`
+- `tests/test_sensor_adapter_layer.py::test_registry_unknown_build_raises`
+- `tests/test_sensor_adapter_layer.py::test_registry_unknown_unregister_raises`
+- `tests/test_sensor_adapter_layer.py::test_registry_unregister_happy_path`
+- `tests/test_sensor_adapter_layer.py::test_registry_build_checks_protocol_conformance`
+- `tests/test_sensor_adapter_layer.py::test_registry_repr_and_len`
+- `tests/test_sensor_adapter_layer.py::test_default_registry_ships_synthetic_and_null`
+- `tests/test_sensor_adapter_layer.py::test_default_synthetic_builds_clean`
+- `tests/test_sensor_adapter_layer.py::test_default_null_builds_clean`
+- `tests/test_sensor_adapter_layer.py::test_synthetic_to_recording_round_trip`
+- `tests/test_sensor_adapter_layer.py::test_committed_sample_recording_file_loads`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
 
 ### HN35
 
