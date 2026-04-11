@@ -154,7 +154,7 @@ class StillnessCellEvaluation:
     youden_j: float
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class StillnessCalibrationReport:
     """Frozen D2 calibration report.
 
@@ -184,6 +184,17 @@ class StillnessCalibrationReport:
     test_score_at_best: float
     generalization_gap: float
     parameter_fingerprint: str
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        cell = self.best_cell
+        return (
+            f"StillnessCalibrationReport[eps_R={cell.eps_R:g} · "
+            f"eps_F={cell.eps_F:g} · "
+            f"δ_min={cell.delta_min:.3f} · "
+            f"window={cell.window} · "
+            f"train_J={self.train_score_at_best:.3f} · "
+            f"test_J={self.test_score_at_best:.3f}]"
+        )
 
     def to_json_dict(self) -> dict[str, object]:
         def _row(e: StillnessCellEvaluation) -> dict[str, object]:

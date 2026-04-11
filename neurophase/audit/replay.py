@@ -101,7 +101,7 @@ class ReplayInput:
     reference_now: float | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class ReplayResult:
     """Immutable outcome of a replay run."""
 
@@ -112,6 +112,15 @@ class ReplayResult:
     first_divergent_index: int | None
     scratch_path: Path
     reason: str
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        flag = "✓ ok" if self.ok else "✗ diverged"
+        parts = [flag, f"n={self.n_records}"]
+        if self.original_tip_hash is not None:
+            parts.append(f"tip={self.original_tip_hash[:8]}…")
+        if not self.ok and self.first_divergent_index is not None:
+            parts.append(f"diverge@{self.first_divergent_index}")
+        return "ReplayResult[" + " · ".join(parts) + "]"
 
 
 def replay_ledger(

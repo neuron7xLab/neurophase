@@ -118,7 +118,7 @@ class TemporalError(ValueError):
     """
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class TemporalQualityDecision:
     """Immutable outcome of a single :meth:`TemporalValidator.validate` call.
 
@@ -149,6 +149,14 @@ class TemporalQualityDecision:
     staleness_seconds: float | None
     warmup_remaining: int
     reason: str
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        parts = [self.quality.name, f"ts={self.ts:.4f}"]
+        if self.gap_seconds is not None:
+            parts.append(f"Δ={self.gap_seconds:+.4f}")
+        if self.warmup_remaining > 0:
+            parts.append(f"warmup={self.warmup_remaining}")
+        return "TemporalQualityDecision[" + " · ".join(parts) + "]"
 
     @property
     def is_valid(self) -> bool:
