@@ -77,6 +77,10 @@ _DOCUMENTATION_ALLOWLIST: frozenset[str] = frozenset(
     {
         "docs/theory/neurophase_elite_bibliography.md",
         "docs/theory/scientific_basis.md",
+        # The auto-generated invariants monograph (M1) renders the
+        # HN15 statement verbatim, which legitimately contains the
+        # forbidden patterns as part of the contract definition.
+        "docs/monograph/INVARIANTS_MONOGRAPH.md",
     }
 )
 
