@@ -78,6 +78,14 @@ from neurophase.oscillators.neural_protocol import (
 from neurophase.risk.evt import EVTFit, compute_cvar, compute_var, fit_gpd_pot
 from neurophase.risk.mfdfa import MFDFAResult, mfdfa, multifractal_instability
 from neurophase.risk.sizer import PositionSize, RiskProfile, size_position
+from neurophase.state.executive_monitor import (
+    ExecutiveMonitor,
+    ExecutiveMonitorConfig,
+    ExecutiveSample,
+    OverloadIndex,
+    PacingDirective,
+    VerificationStep,
+)
 
 __all__ = [
     "DEFAULT_THRESHOLD",
@@ -91,6 +99,9 @@ __all__ = [
     "EmergentPhaseCriteria",
     "EmergentPhaseDecision",
     "ExecutionGate",
+    "ExecutiveMonitor",
+    "ExecutiveMonitorConfig",
+    "ExecutiveSample",
     "GateDecision",
     "GateState",
     "KuramotoNetwork",
@@ -104,7 +115,9 @@ __all__ = [
     "OnchainBlock",
     "OrderBookBlock",
     "OrderParameterResult",
+    "OverloadIndex",
     "PLVResult",
+    "PacingDirective",
     "PiAgent",
     "PiRule",
     "PositionSize",
@@ -113,6 +126,7 @@ __all__ = [
     "SemanticMemory",
     "SensorStatus",
     "SpotBlock",
+    "VerificationStep",
     "WhaleEvent",
     "__version__",
     "adaptive_threshold",

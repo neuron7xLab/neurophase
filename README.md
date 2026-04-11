@@ -20,7 +20,7 @@
 [![status](https://img.shields.io/badge/status-experimental-blueviolet?style=for-the-badge)](#status)
 [![invariants](https://img.shields.io/badge/invariants-3_hard-critical?style=for-the-badge)](#three-invariants)
 [![falsifiable](https://img.shields.io/badge/falsifiable-PLV_%3E_0-gold?style=for-the-badge)](#the-falsifiable-predicate)
-[![tests](https://img.shields.io/badge/tests-176-brightgreen?style=for-the-badge)](tests/)
+[![tests](https://img.shields.io/badge/tests-208-brightgreen?style=for-the-badge)](tests/)
 [![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=for-the-badge)](pyproject.toml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -70,9 +70,11 @@
 </td>
 <td width="50%" valign="top">
 
-Market oscillators (price, volume, realized volatility) and the trader's nervous system (EEG α/β bands, HRV, pupil dilation) can be modelled as **a single Kuramoto network**.
+**neurophase** models the brain and the market as coupled Kuramoto oscillators. The brain (EEG, HRV, pupil) generates predictions; the market generates reality. `R(t)` measures the accumulated prediction error as phase desynchronization.
 
-The **order parameter** `R(t) ∈ [0, 1]` measures their mutual phase synchronization in real time:
+When `R(t)` drops below threshold, the gate **physically blocks execution** — preserving the trader's executive function. Instead of cognitive surrender, the system strengthens human cognition through early divergence detection.
+
+A neuro-symbolic trading agent grounded in **predictive processing** brain theory.
 
 ```
               1   N
@@ -80,9 +82,7 @@ R(t)·e^{iΨ} = ─  Σ  e^{iθ_k(t)}
               N  k=1
 ```
 
-**Claim:** when `R(t) < θ_critical`, the trader is desynchronized from the market. Execution in this state is statistically lossy.
-
-The system blocks it — not by rule, but by **physics**.
+**Claim:** when `R(t) < θ_critical`, the trader is desynchronized from the market. Execution in this state is statistically lossy. The system blocks it — not by rule, but by **physics**.
 
 </td>
 </tr>
