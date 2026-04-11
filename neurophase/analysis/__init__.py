@@ -13,10 +13,22 @@ from neurophase.analysis.prediction_error import (
     PredictionErrorResult,
     PredictionErrorSample,
 )
+from neurophase.analysis.regime import (
+    DEFAULT_REGIME_THRESHOLDS,
+    RegimeClassifier,
+    RegimeLabel,
+    RegimeState,
+    RegimeThresholds,
+)
 
 __all__ = [
+    "DEFAULT_REGIME_THRESHOLDS",
     "CognitiveState",
     "PredictionErrorMonitor",
     "PredictionErrorResult",
     "PredictionErrorSample",
+    "RegimeClassifier",
+    "RegimeLabel",
+    "RegimeState",
+    "RegimeThresholds",
 ]

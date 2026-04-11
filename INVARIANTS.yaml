@@ -434,6 +434,49 @@ honest_naming:
     docs:
       - docs/EVOLUTION_BOARD.md
 
+  - id: HN23
+    statement: "G1 regime taxonomy is a deterministic four-state threshold tree: RegimeClassifier labels every DecisionFrame with exactly one RegimeLabel ∈ {TRENDING, COMPRESSING, REVERTING, CHAOTIC}. Priority order is COMPRESSING > REVERTING > CHAOTIC > TRENDING. All four states are reachable and all 12 non-self transitions are reachable by a concrete frame sequence. Same thresholds + same frame sequence → bit-identical RegimeState sequence. Confidence ∈ [0, 1] is a pure function of the 4-D vector (R, ΔR, δ, Δδ) and typed saturation scales — no ML, no learned weights."
+    enforced_in:
+      - path: neurophase/analysis/regime.py
+        symbol: RegimeClassifier
+      - path: neurophase/analysis/regime.py
+        symbol: RegimeState
+    tests:
+      - tests/test_regime_taxonomy.py::TestConstruction::test_default_thresholds_are_usable
+      - tests/test_regime_taxonomy.py::TestConstruction::test_thresholds_reject_inverted_R_bounds
+      - tests/test_regime_taxonomy.py::TestConstruction::test_thresholds_reject_non_positive_motion
+      - tests/test_regime_taxonomy.py::TestConstruction::test_regime_state_is_frozen
+      - tests/test_regime_taxonomy.py::TestInputValidation::test_R_none_raises
+      - tests/test_regime_taxonomy.py::TestInputValidation::test_delta_none_raises
+      - tests/test_regime_taxonomy.py::TestFirstTickReachability::test_first_tick_trending_reachable
+      - tests/test_regime_taxonomy.py::TestFirstTickReachability::test_first_tick_chaotic_reachable_via_low_R
+      - tests/test_regime_taxonomy.py::TestSecondTickReachability::test_compressing_reachable
+      - tests/test_regime_taxonomy.py::TestSecondTickReachability::test_reverting_reachable
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.TRENDING-RegimeLabel.COMPRESSING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.TRENDING-RegimeLabel.REVERTING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.TRENDING-RegimeLabel.CHAOTIC]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.COMPRESSING-RegimeLabel.TRENDING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.COMPRESSING-RegimeLabel.REVERTING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.COMPRESSING-RegimeLabel.CHAOTIC]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.REVERTING-RegimeLabel.TRENDING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.REVERTING-RegimeLabel.COMPRESSING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.REVERTING-RegimeLabel.CHAOTIC]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.CHAOTIC-RegimeLabel.TRENDING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.CHAOTIC-RegimeLabel.COMPRESSING]"
+      - "tests/test_regime_taxonomy.py::test_all_transitions_reachable[RegimeLabel.CHAOTIC-RegimeLabel.REVERTING]"
+      - tests/test_regime_taxonomy.py::TestDeterminism::test_same_sequence_same_labels
+      - tests/test_regime_taxonomy.py::TestDeterminism::test_reset_produces_fresh_warmup
+      - tests/test_regime_taxonomy.py::TestConfidence::test_confidence_is_in_unit_interval
+      - tests/test_regime_taxonomy.py::TestConfidence::test_deeper_chaos_has_higher_confidence
+      - tests/test_regime_taxonomy.py::TestRepr::test_regime_state_repr_format
+      - tests/test_regime_taxonomy.py::TestRepr::test_regime_state_repr_warm_after_second_tick
+      - tests/test_regime_taxonomy.py::TestRegimeStateValidation::test_out_of_range_confidence_rejected
+      - tests/test_regime_taxonomy.py::TestPipelineIntegration::test_regime_classifier_consumes_pipeline_frames
+      - tests/test_regime_taxonomy.py::TestTotalClassification::test_every_output_is_a_regime_label
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:
