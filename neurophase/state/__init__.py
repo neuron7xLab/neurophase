@@ -14,12 +14,30 @@ from neurophase.state.executive_monitor import (
     PacingDirective,
     VerificationStep,
 )
+from neurophase.state.klr_reset import (
+    Curriculum,
+    KetamineLikeResetController,
+    KLRConfig,
+    KLRPipeline,
+    ResetReport,
+    ResetState,
+    SystemMetrics,
+    SystemState,
+)
 
 __all__ = [
+    "Curriculum",
     "ExecutiveMonitor",
     "ExecutiveMonitorConfig",
     "ExecutiveSample",
+    "KLRConfig",
+    "KLRPipeline",
+    "KetamineLikeResetController",
     "OverloadIndex",
     "PacingDirective",
+    "ResetReport",
+    "ResetState",
+    "SystemMetrics",
+    "SystemState",
     "VerificationStep",
 ]

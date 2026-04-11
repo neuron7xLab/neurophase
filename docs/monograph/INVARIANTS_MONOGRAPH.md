@@ -3,8 +3,8 @@
 # neurophase — System Invariants Monograph
 
 **Schema version:** 1  
-**Hard invariants:** 4  
-**Advisory invariants:** 1  
+**Hard invariants:** 9  
+**Advisory invariants:** 2  
 **Honest-naming contracts:** 31  
 **Gate states:** 5  
 **Gate transitions:** 8
@@ -17,8 +17,14 @@
   - [I2 — I₂](#i2)
   - [I3 — I₃](#i3)
   - [B1 — B₁](#b1)
+  - [KLR-I1 — KLR-I₁](#klr-i1)
+  - [KLR-I2 — KLR-I₂](#klr-i2)
+  - [KLR-I3 — KLR-I₃](#klr-i3)
+  - [KLR-C1 — KLR-C₁](#klr-c1)
+  - [RT-KLR-I1 — RT-KLR-I₁](#rt-klr-i1)
 - [Advisory invariants](#advisory-invariants)
   - [I4 — I₄](#i4)
+  - [KLR-I4 — KLR-I₄](#klr-i4)
 - [Honest-naming contracts](#honest-naming-contracts)
   - [HN1](#hn1)
   - [HN2](#hn2)
@@ -177,6 +183,114 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 
 - `docs/theory/time_integrity.md`
 
+### KLR-I1 — KLR-I₁
+
+**Statement.** KLRPipeline.tick() never mutates active state during refractory period
+
+**Severity.** `hard`
+
+**Introduced in.** PR #KLR-2
+
+**Enforcement sites:**
+
+- `neurophase/reset/refractory.py::RefractoryGate.can_intervene`
+
+**Bound tests** (1):
+
+- `tests/test_klr_pipeline.py::test_no_mutation_during_refractory`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
+
+### KLR-I2 — KLR-I₂
+
+**Statement.** frozen nodes are never modified by KLR mutation components
+
+**Severity.** `hard`
+
+**Introduced in.** PR #KLR-2
+
+**Enforcement sites:**
+
+- `neurophase/reset/controller.py::KetamineLikeResetController`
+- `neurophase/reset/plasticity_injector.py::PlasticityInjector`
+- `neurophase/reset/passive_learner.py::PassiveLearner`
+
+**Bound tests** (2):
+
+- `tests/test_plasticity_injector.py::test_frozen_untouched`
+- `tests/test_twin_state.py::test_swap_occurs_on_higher_passive_rank`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
+
+### KLR-I3 — KLR-I₃
+
+**Statement.** row sums of weights remain 1.0 after every KLR mutation
+
+**Severity.** `hard`
+
+**Introduced in.** PR #KLR-2
+
+**Enforcement sites:**
+
+- `neurophase/reset/controller.py::KetamineLikeResetController._consolidate`
+- `neurophase/reset/passive_learner.py::PassiveLearner.replay`
+- `neurophase/reset/plasticity_injector.py::PlasticityInjector.maybe_inject`
+
+**Bound tests** (1):
+
+- `tests/test_klr_pipeline.py::test_pipeline_runs_and_rows_invariant`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
+
+### KLR-C1 — KLR-C₁
+
+**Statement.** PlasticityInjector reinitializes nodes iff ntk_rank_normalized < plasticity_floor
+
+**Severity.** `hard`
+
+**Introduced in.** PR #KLR-C1
+
+**Enforcement sites:**
+
+- `neurophase/reset/plasticity_injector.py::PlasticityInjector.maybe_inject`
+
+**Bound tests** (2):
+
+- `tests/test_plasticity_injector.py::test_no_inject_above_floor`
+- `tests/test_plasticity_injector.py::test_inject_below_floor`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
+
+### RT-KLR-I1 — RT-KLR-I₁
+
+**Statement.** KLR advisory output attached to StreamingPipeline never modifies GateState or execution_allowed. KLR exceptions are caught, logged via klr_warning, and never propagate out of StreamingPipeline.tick().
+
+**Severity.** `hard`
+
+**Introduced in.** PR #KLR-runtime
+
+**Enforcement sites:**
+
+- `neurophase/runtime/pipeline.py::StreamingPipeline._advise_klr`
+
+**Bound tests** (3):
+
+- `tests/test_klr_runtime_integration.py::test_klr_integration_advisory_only`
+- `tests/test_klr_runtime_integration.py::test_klr_none_backward_compat`
+- `tests/test_klr_runtime_integration.py::test_klr_exception_does_not_propagate`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
+
 ## Advisory invariants
 
 Advisory invariants route execution to a non-permissive but semantically distinct state (e.g. UNNECESSARY) rather than blocking outright.
@@ -208,6 +322,27 @@ Advisory invariants route execution to a non-permissive but semantically distinc
 
 - `docs/theory/stillness_invariant.md`
 - `docs/theory/scientific_basis.md`
+
+### KLR-I4 — KLR-I₄
+
+**Statement.** ntk_rank_post >= ntk_rank_pre on SUCCESS
+
+**Severity.** `advisory`
+
+**Introduced in.** PR #KLR-2
+
+**Enforcement sites:**
+
+- `neurophase/reset/controller.py::KetamineLikeResetController._validate_and_commit`
+- `neurophase/reset/ntk_monitor.py::NTKMonitor`
+
+**Bound tests** (1):
+
+- `tests/test_ntk_monitor.py::test_rank_non_decreasing_on_success`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
 
 ## Honest-naming contracts
 

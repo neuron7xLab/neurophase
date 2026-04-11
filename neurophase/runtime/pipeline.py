@@ -50,6 +50,8 @@ from typing import TYPE_CHECKING, Any, Final
 if TYPE_CHECKING:
     import pandas as pd
 
+    from neurophase.reset.pipeline import KLRPipeline
+
 from neurophase.audit.decision_ledger import (
     DecisionTraceLedger,
     DecisionTraceRecord,
@@ -172,6 +174,16 @@ class DecisionFrame:
     stream: StreamQualityDecision
     gate: GateDecision
     ledger_record: DecisionTraceRecord | None = field(default=None)
+    #: Optional KLR advisory output. ``None`` when no KLR pipeline is
+    #: attached. Never modifies ``gate`` or ``execution_allowed`` —
+    #: advisory-only by contract (RT-KLR-I1).
+    klr_decision: str | None = field(default=None)
+    #: Change in the normalised NTK rank proxy across the KLR tick.
+    #: ``None`` when KLR is not attached or the KLR call raised.
+    klr_ntk_rank_delta: float | None = field(default=None)
+    #: Optional one-line KLR warning surface. ``"ERROR"`` when the
+    #: KLR call raised (logged but never propagated).
+    klr_warning: str | None = field(default=None)
 
     def __repr__(self) -> str:  # aesthetic rich repr (HN22)
         r_str = f"{self.R:.4f}" if self.R is not None else "None"
@@ -222,6 +234,9 @@ class DecisionFrame:
             "ledger_record_hash": (
                 self.ledger_record.record_hash if self.ledger_record is not None else None
             ),
+            "klr_decision": self.klr_decision,
+            "klr_ntk_rank_delta": self.klr_ntk_rank_delta,
+            "klr_warning": self.klr_warning,
         }
 
 
@@ -248,6 +263,7 @@ class StreamingPipeline:
 
     __slots__ = (
         "_gate",
+        "_klr_pipeline",
         "_ledger",
         "_n_ticks",
         "_stream_detector",
@@ -256,8 +272,9 @@ class StreamingPipeline:
         "parameter_fingerprint",
     )
 
-    def __init__(self, config: PipelineConfig) -> None:
+    def __init__(self, config: PipelineConfig, klr_pipeline: KLRPipeline | None = None) -> None:
         self.config: PipelineConfig = config
+        self._klr_pipeline: KLRPipeline | None = klr_pipeline
         self._validator = TemporalValidator(
             max_gap_seconds=config.max_gap_seconds,
             warmup_samples=max(2, config.warmup_samples),
@@ -379,6 +396,8 @@ class StreamingPipeline:
                 },
             )
 
+        klr_decision, klr_rank_delta, klr_warning = self._advise_klr(R=R, delta=delta)
+
         return DecisionFrame(
             tick_index=tick_idx,
             timestamp=timestamp,
@@ -388,7 +407,49 @@ class StreamingPipeline:
             stream=stream,
             gate=gated_decision,
             ledger_record=ledger_record,
+            klr_decision=klr_decision,
+            klr_ntk_rank_delta=klr_rank_delta,
+            klr_warning=klr_warning,
         )
+
+    def _advise_klr(
+        self, *, R: float | None, delta: float | None
+    ) -> tuple[str | None, float | None, str | None]:
+        """Run one KLR advisory tick and return (decision, rank_delta, warning).
+
+        RT-KLR-I1: KLR is **advisory-only**. This method NEVER
+        touches the gate decision or the ``execution_allowed`` flag.
+        Any exception is caught, logged via the warning field, and
+        never propagated.
+        """
+        if self._klr_pipeline is None:
+            return (None, None, None)
+        try:
+            from neurophase.reset.metrics import SystemMetrics
+
+            # Synthesise KLR input metrics from the runtime inputs.
+            # These are intentionally coarse proxies — the runtime
+            # does not have cognitive-error sensors, so we map
+            # (R, delta) into the [0, 1] input space the KLR
+            # controller expects:
+            #   error        = 1 - R        (low R = high error)
+            #   persistence  = 1 - R        (low R = persistent fault)
+            #   diversity    = 1 - |δ|/π    (low δ = low diversity)
+            #   improvement  = 0.5          (unknown without history)
+            r_val = 0.5 if R is None else max(0.0, min(1.0, float(R)))
+            d_val = 0.5 if delta is None else max(0.0, min(1.0, abs(float(delta)) / 3.14159265))
+            metrics = SystemMetrics(
+                error=1.0 - r_val,
+                persistence=1.0 - r_val,
+                diversity=1.0 - d_val,
+                improvement=0.5,
+                noise=0.0,
+                reward=0.0,
+            )
+            frame = self._klr_pipeline.tick(metrics)
+            return (frame.decision, float(frame.ntk_rank_delta), None)
+        except Exception as exc:  # advisory surface — never propagate
+            return (None, None, f"ERROR: {type(exc).__name__}: {exc}")
 
     def tick_batch(self, frame: pd.DataFrame) -> pd.DataFrame:
         """Advance the pipeline over every row of a DataFrame in one call.
