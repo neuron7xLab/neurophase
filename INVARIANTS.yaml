@@ -296,3 +296,23 @@ honest_naming:
       - tests/test_runtime_pipeline.py::TestFrameSerialization::test_to_json_dict_flat_contract
     docs:
       - docs/EVOLUTION_BOARD.md
+
+  - id: HN15
+    statement: "Bibliography is research-grade and honest: every peer-reviewed source has a real DOI, every theoretical claim maps to ≥1 real source via the traceability matrix, and NO docs/ markdown file may re-introduce the fabricated 'Friston/Clark 2026', 'Ming/Wharton 2026', 'NIH 2026', or 'Capital-Weighted Kuramoto WG 2026' citations."
+    enforced_in:
+      - path: docs/theory/neurophase_elite_bibliography.md
+        symbol: elite_bibliography
+      - path: docs/validation/evidence_labeling_style_guide.md
+        symbol: evidence_taxonomy
+    tests:
+      - tests/test_bibliography_contract.py::TestEliteBibliography::test_has_enough_real_dois
+      - tests/test_bibliography_contract.py::TestEliteBibliography::test_has_traceability_matrix
+      - tests/test_bibliography_contract.py::TestEliteBibliography::test_has_all_four_evidence_labels
+      - tests/test_bibliography_contract.py::TestCrossReferences::test_anchors_elite_bibliography[docs/theory/scientific_basis.md]
+      - tests/test_bibliography_contract.py::TestCrossReferences::test_anchors_elite_bibliography[docs/theory/neurophase_scientific_basis.md]
+      - tests/test_bibliography_contract.py::TestCrossReferences::test_anchors_elite_bibliography[docs/science_basis.md]
+      - tests/test_bibliography_contract.py::TestCrossReferences::test_anchors_elite_bibliography[README.md]
+    docs:
+      - docs/theory/neurophase_elite_bibliography.md
+      - docs/theory/hierarchical_status_bibliography.md
+      - docs/validation/evidence_labeling_style_guide.md

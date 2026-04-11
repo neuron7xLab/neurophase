@@ -20,7 +20,7 @@
 [![status](https://img.shields.io/badge/status-experimental-blueviolet?style=for-the-badge)](#status)
 [![invariants](https://img.shields.io/badge/invariants-3_hard-critical?style=for-the-badge)](#three-invariants)
 [![falsifiable](https://img.shields.io/badge/falsifiable-PLV_%3E_0-gold?style=for-the-badge)](#the-falsifiable-predicate)
-[![tests](https://img.shields.io/badge/tests-573-brightgreen?style=for-the-badge)](tests/)
+[![tests](https://img.shields.io/badge/tests-598-brightgreen?style=for-the-badge)](tests/)
 [![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=for-the-badge)](pyproject.toml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -72,9 +72,9 @@
 
 **NeuroPhase** models brain and market as **coupled Kuramoto oscillators sharing a single order parameter** `R(t)`.
 
-The brain (EEG α/β, HRV, pupil) generates predictions; the market generates reality. `R(t)` physically measures **accumulated prediction error** as phase desynchronization (Friston/Clark, 2026; Fioriti & Chinnici, 2012).
+The brain (EEG α/β, HRV, pupil) generates predictions; the market generates reality. `R(t)` physically measures **accumulated prediction error** as phase desynchronization (Friston 2010; Clark 2013, 2016; Fioriti & Chinnici 2012).
 
-When `R(t) < threshold`, the gate **blocks execution** — preserving the trader's executive function instead of enabling **cognitive surrender** (Ming/Wharton, 2026).
+When `R(t) < threshold`, the gate **blocks execution** — preserving the trader's executive function via structured anti-offloading friction (mechanism grounded in Miyake 2000 + Arnsten 2009; the specific LLM-mediated "cognitive surrender" claim is currently *Strongly Plausible*, not *Established* — see [`docs/validation/evidence_labeling_style_guide.md`](docs/validation/evidence_labeling_style_guide.md)).
 
 When `R(t)` is sufficient but the joint dynamics are still — `|dR/dt| < ε`, `|dF_proxy/dt| < ε`, `δ < δ_min` over a rolling window — execution is marked **`UNNECESSARY`**: no new information justifies action (invariant **I₄**, see [`docs/theory/stillness_invariant.md`](docs/theory/stillness_invariant.md)).
 
@@ -90,17 +90,26 @@ R(t)·e^{iΨ} = ─  Σ  e^{iθ_k(t)}
 </tr>
 </table>
 
-### Citations
+### Citations (real, DOI-anchored)
 
-| Claim | Source |
-|-------|--------|
-| `R(t)` forecasts market critical points | Fioriti & Chinnici (2012) |
-| Brain as predictive engine | Friston / Clark (2026) |
-| Cognitive surrender under AI | Ming / Wharton (2026) |
-| EEG Kuramoto synchronization | Nguyen et al. (2020) |
-| Capital-weighted Kuramoto | Capital-Weighted Kuramoto WG (2026) |
+| Claim | Status | Source |
+|-------|--------|--------|
+| `R(t)` forecasts market critical points | Strongly Plausible | Fioriti & Chinnici (2012) |
+| Brain as predictive engine (free-energy principle) | Established | Friston (2010) [`10.1038/nrn2787`]; Clark (2013) [`10.1017/S0140525X12000477`]; Clark (2016) *Surfing Uncertainty* |
+| Executive function decomposition | Established | Miyake et al. (2000) [`10.1006/cogp.1999.0734`] |
+| Stress impairs prefrontal control | Established | Arnsten (2009) [`10.1038/nrn2648`] |
+| Expected value of cognitive control | Strongly Plausible | Shenhav, Botvinick & Cohen (2013) [`10.1016/j.neuron.2013.07.007`] |
+| Frontal-theta as conflict/control signal | Established | Cavanagh & Frank (2014) [`10.1016/j.tics.2014.04.012`] |
+| Phase-locking value (PLV) methodology | Established | Lachaux et al. (1999) |
+| Phipson–Smyth smoothed p-values | Established | Phipson & Smyth (2010) [`10.2202/1544-6115.1585`] |
+| HRV normative ranges (RMSSD / HF / SDNN) | Established | Shaffer & Ginsberg (2017) [`10.3389/fpubh.2017.00258`] |
+| Anti-offloading architecture as product intervention | Strongly Plausible (context-bound) | Mechanism from Miyake + Arnsten; product claim requires A/B validation |
+| Capital-weighted Kuramoto as crowding signal | Tentative | Working hypothesis; no peer-reviewed validation yet |
 
-Full reference list and evidence chain: [`docs/theory/scientific_basis.md`](docs/theory/scientific_basis.md).
+Full DOI-anchored reference list + traceability matrix: [`docs/theory/neurophase_elite_bibliography.md`](docs/theory/neurophase_elite_bibliography.md).
+Compact companion: [`docs/theory/hierarchical_status_bibliography.md`](docs/theory/hierarchical_status_bibliography.md).
+Evidence-labeling policy: [`docs/validation/evidence_labeling_style_guide.md`](docs/validation/evidence_labeling_style_guide.md).
+System-scale evidence chain: [`docs/theory/scientific_basis.md`](docs/theory/scientific_basis.md).
 
 ---
 

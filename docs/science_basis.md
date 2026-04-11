@@ -1,6 +1,6 @@
 # Science Basis of neurophase — cognitive safety and adaptive performance loop
 
-*Теоретичне обґрунтування архітектури `neurophase` через три нейрокогнітивні механізми 2026 року: cognitive surrender, executive function under stress, та cognitive processing speed.*
+*Теоретичне обґрунтування архітектури `neurophase` через механізми емерджентної динаміки, предиктивної обробки, виконавчого контролю під стресом та адаптивного когнітивного тренування.*
 
 ---
 
@@ -8,9 +8,9 @@
 
 `neurophase` виходить з тези, що в системах людина+AI головний ризик — не лише помилка моделі, а **деградація когнітивного контуру користувача**. Це проявляється у трьох механізмах:
 
-1. **Cognitive surrender** (Wharton, 2026): користувачі схильні приймати AI-відповіді без достатньої критичної перевірки, особливо коли відповідь виглядає впевненою.
-2. **Executive function under stress** (Ming, 2026): під стресом просідають робоча памʼять, інгібіторний контроль і метакогнітивний моніторинг; це знижує якість рішень у високотемпових середовищах.
-3. **Cognitive processing speed** (NIH, 2026): цілеспрямоване тренування швидкості обробки інформації може покращувати довгострокову когнітивну стійкість і зберігати продуктивність.
+1. **Predictive processing + cognitive offloading risk:** користувачі можуть приймати AI-відповіді без критичної перевірки, якщо не вбудовано structured verification loop.
+2. **Executive function under stress:** під стресом просідають робоча памʼять, інгібіторний контроль і метакогнітивний моніторинг; це знижує якість рішень у високотемпових середовищах.
+3. **Adaptive processing speed/resilience training:** цілеспрямоване тренування швидкості обробки інформації може покращувати довгострокову когнітивну стійкість і зберігати продуктивність.
 
 Отже, neurophase має діяти не як «автопілот», а як **оркестратор самоорганізації**: система налаштовує умови (таймінг, пороги, фідбек), за яких людина зберігає виконавчий контроль, а AI підсилює мислення замість його заміщення.
 
@@ -111,3 +111,20 @@
 2. Винести beta-монітор у модуль стану (`state/executive_monitor`) з API для threshold/pacing control.
 3. Розширити `session archive` до формату, придатного для longitudinal analytics (timestamped interventions + outcomes).
 4. Зафіксувати preregistered evaluation protocol для трьох прогнозів, щоб уникнути post-hoc інтерпретацій.
+
+
+---
+
+## 6) Джерельна база
+
+Повна research-grade джерельна база: `docs/theory/neurophase_elite_bibliography.md` (primary) та `docs/theory/hierarchical_status_bibliography.md` (compact companion).
+
+
+## 7) Evidence labeling policy
+
+Для кожного ключового твердження в теоретичних docs використовувати мітки `Established / Strongly Plausible / Tentative / Unsupported-Weak` за стандартом `docs/validation/evidence_labeling_style_guide.md`. Це зменшує ризик змішування фактів і гіпотез у продуктових рішеннях.
+
+
+## 8) Integration readiness (global validation + calibration)
+
+Операційний протокол total validation, calibration loop, adaptation layer і 100% integration gate: `docs/validation/integration_readiness_protocol.md` (gate-driven execution standard).
