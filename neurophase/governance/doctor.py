@@ -513,6 +513,42 @@ def _check_completeness_suite_green() -> DoctorCheckResult:
     )
 
 
+def _check_ci_workflow_has_doctor_step() -> DoctorCheckResult:
+    """Check 10: the CI workflow contains the doctor enforcement step.
+
+    This is the **self-enforcing loop**: the doctor itself
+    verifies that CI runs the doctor. If anyone disables the
+    doctor step in ``.github/workflows/ci.yml``, the next
+    local ``python -m neurophase doctor`` catches it and the
+    next PR cannot merge.
+
+    The check is intentionally a simple substring match on
+    the committed workflow file. It does not parse YAML —
+    any edit that removes ``python -m neurophase doctor``
+    from the file fails the check.
+    """
+    workflow = _REPO_ROOT / ".github" / "workflows" / "ci.yml"
+    if not workflow.is_file():
+        return DoctorCheckResult(
+            "CI_WORKFLOW_DOCTOR_STEP_PRESENT",
+            False,
+            f"CI workflow not found at {workflow}",
+        )
+    text = workflow.read_text(encoding="utf-8")
+    if "python -m neurophase doctor" not in text:
+        return DoctorCheckResult(
+            "CI_WORKFLOW_DOCTOR_STEP_PRESENT",
+            False,
+            "CI workflow does not run `python -m neurophase doctor`; "
+            "self-enforcing loop is broken",
+        )
+    return DoctorCheckResult(
+        "CI_WORKFLOW_DOCTOR_STEP_PRESENT",
+        True,
+        "CI workflow contains the doctor enforcement step",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Registry + runner
 # ---------------------------------------------------------------------------
@@ -529,6 +565,7 @@ DOCTOR_CHECKS: tuple[tuple[str, Callable[[], DoctorCheckResult]], ...] = (
     ("RESISTANCE_SUITE_GREEN", _check_resistance_suite_green),
     ("RUNTIME_MEMORY_BOUNDED", _check_runtime_memory_bounded),
     ("COMPLETENESS_SUITE_GREEN", _check_completeness_suite_green),
+    ("CI_WORKFLOW_DOCTOR_STEP_PRESENT", _check_ci_workflow_has_doctor_step),
 )
 
 

@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 9  
 **Advisory invariants:** 2  
-**Honest-naming contracts:** 35  
+**Honest-naming contracts:** 36  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -61,6 +61,7 @@
   - [HN33](#hn33)
   - [HN34](#hn34)
   - [HN35](#hn35)
+  - [HN36](#hn36)
 
 ## Gate state machine
 
@@ -1237,9 +1238,9 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `neurophase/governance/doctor.py::DOCTOR_CHECKS`
 - `neurophase/__main__.py::_cmd_doctor`
 
-**Bound tests** (22):
+**Bound tests** (23):
 
-- `tests/test_eighth_axis_doctor.py::test_registry_enumerates_nine_checks`
+- `tests/test_eighth_axis_doctor.py::test_registry_enumerates_ten_checks`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[INVARIANT_REGISTRY_SCHEMA]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[STATE_MACHINE_SCHEMA]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[CLAIM_REGISTRY_SCHEMA]`
@@ -1249,6 +1250,7 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RESISTANCE_SUITE_GREEN]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RUNTIME_MEMORY_BOUNDED]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[COMPLETENESS_SUITE_GREEN]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[CI_WORKFLOW_DOCTOR_STEP_PRESENT]`
 - `tests/test_eighth_axis_doctor.py::test_run_one_unknown_raises_key_error`
 - `tests/test_eighth_axis_doctor.py::test_report_all_healthy_disagreement_rejected`
 - `tests/test_eighth_axis_doctor.py::test_report_total_warnings_disagreement_rejected`
@@ -1341,6 +1343,26 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_ninth_axis_completeness.py::test_check_result_repr_format`
 - `tests/test_ninth_axis_completeness.py::test_check_result_repr_shows_gap_count`
 - `tests/test_ninth_axis_completeness.py::test_report_repr_shows_summary`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
+
+### HN36
+
+**Statement.** Self-enforcing doctor gate: the CI workflow at .github/workflows/ci.yml contains a step that runs `python -m neurophase doctor`, AND the doctor itself registers a CI_WORKFLOW_DOCTOR_STEP_PRESENT check that verifies the CI workflow contains that step. This is the recursive loop that makes axis 7/8/9 enforcement rather than opt-in: if anyone removes the doctor step from CI, the next local doctor run catches it and the next PR cannot merge. The check is substring-sensitive to the marker 'python -m neurophase doctor' in the committed workflow file.
+
+**Enforcement sites:**
+
+- `.github/workflows/ci.yml::doctor_step`
+- `neurophase/governance/doctor.py::_check_ci_workflow_has_doctor_step`
+
+**Bound tests** (3):
+
+- `tests/test_eighth_axis_doctor.py::test_ci_workflow_contains_doctor_step`
+- `tests/test_eighth_axis_doctor.py::test_doctor_self_enforcement_check_passes`
+- `tests/test_eighth_axis_doctor.py::test_doctor_self_enforcement_check_reads_real_workflow`
 
 **Documentation:**
 
