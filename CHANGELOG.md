@@ -4,6 +4,36 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased]
+
+### Added
+
+**Cognitive-safety science basis and executive monitor**
+
+- `docs/science_basis.md` — теоретичне обґрунтування архітектури через три
+  нейрокогнітивні механізми 2026 року (cognitive surrender, executive
+  function under stress, cognitive processing speed). Додано мапінг кожного
+  механізму на компонент системи й falsifiable predictions.
+- `docs/theory/neurophase_scientific_basis.md` — короткий науковий каркас
+  (Predictive Brain / Cognitive Surrender / Individual Resilience) з одним
+  спростовним прогнозом `PLV(EEG_beta, market_phase)` vs HRV/load.
+- `neurophase/state/executive_monitor.py` — новий модуль `ExecutiveMonitor`:
+  online-оцінка `OverloadIndex` з беспроводних каналів beta-power / HRV /
+  error-burst, clip±4σ, scale-aware std floor, warmup-sentinel, strictly
+  monotonic timestamps, `PacingDirective` (NORMAL / SLOW_DOWN / HARD_BLOCK /
+  SENSOR_ABSENT), `VerificationStep` як structured friction.
+- `tests/test_executive_monitor.py` — 32 тести: config validation, warmup,
+  sensor-absent (None / NaN / ±inf), monotonic timestamps, classification
+  bands, per-channel monotonicity, reset semantics, verification-step
+  mapping, і falsifiable baseline property (monitor детектує injected
+  stress-burst ДО появи поведінкових помилок).
+
+### Changed
+
+- `README.md` — секція *The Hypothesis* переписана під predictive-processing
+  формулювання (brain = predictions, market = reality, `R(t)` = accumulated
+  prediction error). Badge з кількістю тестів оновлено до 208.
+
 ## [0.3.0] — 2026-04-11
 
 Full integration of the π-system / Neuron7X / BTC Field Order research
