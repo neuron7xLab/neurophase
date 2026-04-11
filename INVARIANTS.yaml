@@ -657,6 +657,36 @@ honest_naming:
       - docs/EVOLUTION_BOARD.md
       - docs/TASK_MAP.md
 
+  - id: HN29
+    statement: "M1 system invariants monograph: generate_monograph() is a deterministic pure function of (InvariantRegistry, StateMachineSpec). Two calls with the same inputs produce byte-identical Markdown output. The committed docs/monograph/INVARIANTS_MONOGRAPH.md must equal the live generator output byte-for-byte; a CI guard test fails if any new HN added to INVARIANTS.yaml has not been reflected in the committed monograph. The first line of every generated monograph carries the stable GENERATED_HEADER_MARKER so a hand-edited file cannot impersonate the generator. Every invariant id, every honest-naming id, every gate state, every transition target, and every bound pytest node id appears verbatim in the rendered output — surfacing the full contract surface in one navigable document."
+    enforced_in:
+      - path: neurophase/governance/monograph.py
+        symbol: generate_monograph
+      - path: docs/monograph/INVARIANTS_MONOGRAPH.md
+        symbol: monograph_committed_artifact
+    tests:
+      - tests/test_monograph_generator.py::TestDeterminism::test_two_calls_byte_identical
+      - tests/test_monograph_generator.py::TestDeterminism::test_default_load_matches_explicit_load
+      - tests/test_monograph_generator.py::TestCommittedFileMatches::test_committed_monograph_exists
+      - tests/test_monograph_generator.py::TestCommittedFileMatches::test_committed_monograph_matches_generator
+      - tests/test_monograph_generator.py::TestHeaderMarker::test_first_line_is_marker
+      - tests/test_monograph_generator.py::TestHeaderMarker::test_marker_appears_in_committed_file
+      - tests/test_monograph_generator.py::TestCoverage::test_every_invariant_id_in_output
+      - tests/test_monograph_generator.py::TestCoverage::test_every_invariant_statement_in_output
+      - tests/test_monograph_generator.py::TestCoverage::test_every_honest_naming_id_in_output
+      - tests/test_monograph_generator.py::TestStateMachineCoverage::test_every_gate_state_in_output
+      - tests/test_monograph_generator.py::TestStateMachineCoverage::test_every_transition_in_output
+      - tests/test_monograph_generator.py::TestBindingsSurfaced::test_invariant_test_ids_appear_in_output
+      - tests/test_monograph_generator.py::TestBindingsSurfaced::test_honest_naming_test_ids_appear_in_output
+      - tests/test_monograph_generator.py::TestWriteRoundTrip::test_write_monograph_to_tmp
+      - tests/test_monograph_generator.py::TestWriteRoundTrip::test_write_creates_parent_dirs
+      - tests/test_monograph_generator.py::TestNonTrivial::test_output_has_section_headings
+      - tests/test_monograph_generator.py::TestNonTrivial::test_output_ends_with_single_newline
+    docs:
+      - docs/monograph/INVARIANTS_MONOGRAPH.md
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:
