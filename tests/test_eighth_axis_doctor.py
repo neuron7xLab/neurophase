@@ -258,9 +258,7 @@ def test_ci_workflow_contains_doctor_step() -> None:
     """
     from pathlib import Path
 
-    workflow_path = (
-        Path(__file__).resolve().parent.parent / ".github" / "workflows" / "ci.yml"
-    )
+    workflow_path = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "ci.yml"
     assert workflow_path.is_file(), f"CI workflow missing at {workflow_path}"
     text = workflow_path.read_text(encoding="utf-8")
     assert "python -m neurophase doctor" in text, (
@@ -291,9 +289,7 @@ def test_doctor_self_enforcement_check_reads_real_workflow() -> None:
 
     from neurophase.governance.doctor import _check_ci_workflow_has_doctor_step
 
-    workflow = (
-        Path(__file__).resolve().parent.parent / ".github" / "workflows" / "ci.yml"
-    )
+    workflow = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "ci.yml"
     text = workflow.read_text(encoding="utf-8")
     marker = "python -m neurophase doctor"
     assert marker in text

@@ -539,8 +539,7 @@ def _check_ci_workflow_has_doctor_step() -> DoctorCheckResult:
         return DoctorCheckResult(
             "CI_WORKFLOW_DOCTOR_STEP_PRESENT",
             False,
-            "CI workflow does not run `python -m neurophase doctor`; "
-            "self-enforcing loop is broken",
+            "CI workflow does not run `python -m neurophase doctor`; self-enforcing loop is broken",
         )
     return DoctorCheckResult(
         "CI_WORKFLOW_DOCTOR_STEP_PRESENT",
