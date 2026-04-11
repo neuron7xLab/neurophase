@@ -477,6 +477,47 @@ honest_naming:
       - docs/EVOLUTION_BOARD.md
       - docs/TASK_MAP.md
 
+  - id: HN24
+    statement: "I1 ActionPolicy is gate-honoring and deterministic: execution_allowed=False on the input frame ALWAYS yields ActionIntent.HOLD regardless of regime, confidence, or cooldown state. ActionDecision.__post_init__ refuses to materialise an action-bearing intent on a vetoed frame. The classifier is total over (gate × regime × confidence) and emits exactly one of {HOLD, OBSERVE, ENGAGE, SUSTAIN, UNWIND}. Same config + same input sequence → bit-identical ActionDecision sequence. Cooldown rules: ENGAGE/UNWIND start fresh cooldown, SUSTAIN preserves it, HOLD/OBSERVE decrement it."
+    enforced_in:
+      - path: neurophase/policy/action.py
+        symbol: ActionPolicy
+      - path: neurophase/policy/action.py
+        symbol: ActionDecision
+    tests:
+      - tests/test_action_policy.py::TestGateHonoringContract::test_action_decision_rejects_intent_on_vetoed_frame
+      - tests/test_action_policy.py::TestPermissiveGateTruthTable::test_chaotic_yields_hold
+      - tests/test_action_policy.py::TestPermissiveGateTruthTable::test_low_confidence_yields_observe
+      - tests/test_action_policy.py::TestPermissiveGateTruthTable::test_compressing_yields_observe
+      - tests/test_action_policy.py::TestPermissiveGateTruthTable::test_first_trending_emits_engage
+      - tests/test_action_policy.py::TestPermissiveGateTruthTable::test_subsequent_trending_emits_sustain
+      - tests/test_action_policy.py::TestPermissiveGateTruthTable::test_reverting_emits_unwind
+      - tests/test_action_policy.py::TestWarmRegimeRequirement::test_cold_trending_yields_observe
+      - tests/test_action_policy.py::TestWarmRegimeRequirement::test_cold_regime_can_be_disabled
+      - tests/test_action_policy.py::TestCooldown::test_engage_starts_cooldown
+      - tests/test_action_policy.py::TestCooldown::test_sustain_preserves_cooldown
+      - tests/test_action_policy.py::TestCooldown::test_observe_decrements_cooldown
+      - tests/test_action_policy.py::TestCooldown::test_unwind_during_unwind_cooldown_yields_hold
+      - tests/test_action_policy.py::TestCooldown::test_zero_cooldown_does_not_lock_anything
+      - tests/test_action_policy.py::TestDeterminism::test_same_sequence_same_decisions
+      - tests/test_action_policy.py::TestDeterminism::test_reset_clears_state
+      - tests/test_action_policy.py::TestJsonProjection::test_to_json_dict_is_serialisable
+      - tests/test_action_policy.py::TestJsonProjection::test_to_json_dict_is_flat
+      - tests/test_action_policy.py::TestConfigValidation::test_negative_cooldown_rejected
+      - tests/test_action_policy.py::TestConfigValidation::test_out_of_range_min_confidence_rejected
+      - tests/test_action_policy.py::TestConfigValidation::test_action_decision_rejects_negative_cooldown
+      - tests/test_action_policy.py::TestConfigValidation::test_action_decision_rejects_out_of_range_confidence
+      - tests/test_action_policy.py::TestFrozen::test_action_decision_is_frozen
+      - tests/test_action_policy.py::TestRepr::test_engage_repr_format
+      - tests/test_action_policy.py::TestRepr::test_hold_repr_carries_x_marker
+      - tests/test_action_policy.py::TestTotalClassification::test_every_input_yields_some_intent
+      - tests/test_action_policy.py::TestTotalClassification::test_sustain_is_reachable_via_two_tick_sequence
+      - "tests/test_action_policy.py::TestGateHonoringContract::test_gate_veto_always_holds[RegimeLabel.TRENDING-GateState.BLOCKED]"
+      - "tests/test_action_policy.py::TestGateHonoringContract::test_gate_veto_always_holds[RegimeLabel.CHAOTIC-GateState.DEGRADED]"
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:

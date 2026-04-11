@@ -289,6 +289,9 @@ class TestCanonicalOrdering:
         """
         expected = [
             "DEFAULT_THRESHOLD",
+            "ActionDecision",
+            "ActionIntent",
+            "ActionPolicy",
             "Contract",
             "DecisionExplanation",
             "DecisionFrame",
@@ -297,6 +300,7 @@ class TestCanonicalOrdering:
             "GateDecision",
             "GateState",
             "PipelineConfig",
+            "PolicyConfig",
             "RegimeClassifier",
             "RegimeLabel",
             "RegimeState",
