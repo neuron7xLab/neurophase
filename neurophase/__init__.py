@@ -112,8 +112,19 @@ from neurophase.sync.coupled_brain_market import (
     CoupledBrainMarketSystem,
     CoupledStep,
 )
+from neurophase.validation.null_model import (
+    DEFAULT_N_SURROGATES,
+    NullModelHarness,
+    NullModelResult,
+)
+from neurophase.validation.surrogates import (
+    block_bootstrap,
+    cyclic_shift,
+    phase_shuffle,
+)
 
 __all__ = [
+    "DEFAULT_N_SURROGATES",
     "DEFAULT_THRESHOLD",
     "AgentEfficiency",
     "BTCFieldOrderRequest",
@@ -140,6 +151,8 @@ __all__ = [
     "MarketOscillators",
     "NeuralFrame",
     "NeuralPhaseExtractor",
+    "NullModelHarness",
+    "NullModelResult",
     "NullNeuralExtractor",
     "OnchainBlock",
     "OrderBookBlock",
@@ -168,6 +181,7 @@ __all__ = [
     "WhaleEvent",
     "__version__",
     "adaptive_threshold",
+    "block_bootstrap",
     "build_signal_scan_payload",
     "compute_cvar",
     "compute_fmn",
@@ -176,6 +190,7 @@ __all__ = [
     "compute_qilm",
     "compute_topological_energy",
     "compute_var",
+    "cyclic_shift",
     "delta_entropy",
     "detect_emergent_phase",
     "direction_index",
@@ -193,6 +208,7 @@ __all__ = [
     "multifractal_instability",
     "ollivier_ricci",
     "order_parameter",
+    "phase_shuffle",
     "plv",
     "plv_significance",
     "preprocess_signal",
