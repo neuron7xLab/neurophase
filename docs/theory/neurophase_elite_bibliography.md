@@ -218,6 +218,7 @@ Formal definitions and in-docs usage rules live in
 | Full pipeline replay is bit-deterministic | Established | `neurophase/runtime/pipeline.py`, `neurophase/audit/decision_ledger.py` | `tests/test_determinism_certification.py::TestEndToEndReplay` | Two runs with identical config produce divergent ledger bytes. |
 | `R(t)` reduces impulse errors in human-in-the-loop traders | Strongly Plausible → Tentative (context-bound) | `neurophase/state/executive_monitor.py` | *Preregistration required* | FAR(gate on) ≥ FAR(gate off) on held-out sessions. |
 | Personal resilience signature via longitudinal training | Tentative | *Session-archive contract (proposed)* | *Longitudinal study required* | No power-law decline in `decision_latency` under bounded accuracy. |
+| Lock-in detection via weighted metrics combination | Tentative | *NeuroPhase KLR calibration protocol (2026-04-12)* | *Synthetic-archive calibration; external replication required* | AUC thresholding on weighted lock-in score with chronological validation. Contract: `docs/theory/klr_reset_contract.md`. Preregistration: OSF DOI pending publication. |
 | Capital-weighted Kuramoto flags crowding | Tentative | Related: `neurophase/intel/btc_field_order.py` | *Preregistered validation required* | AUC vs. realised-drawdown < 0.60 OOS. |
 
 The last three rows are deliberately labelled **Tentative** — they

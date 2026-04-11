@@ -1,0 +1,1069 @@
+{
+  "meta": {
+    "total_sessions": 80,
+    "split": "70/30 chronological"
+  },
+  "train": [
+    {
+      "session_id": "S0001",
+      "metrics": {
+        "error": 0.723175830858834,
+        "persistence": 0.2187580664170002,
+        "diversity": 0.2700234546952954,
+        "improvement": 0.20088966433394048
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0002",
+      "metrics": {
+        "error": 0.7949886984813692,
+        "persistence": 0.7075246155671835,
+        "diversity": 0.7637436541638764,
+        "improvement": 0.07824494936647454
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-01T01:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0003",
+      "metrics": {
+        "error": 0.5622221465671001,
+        "persistence": 0.22234791457855277,
+        "diversity": 0.2249103798428827,
+        "improvement": 0.45481975929302615
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-01T02:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0004",
+      "metrics": {
+        "error": 0.26963661756605906,
+        "persistence": 0.3491282380149864,
+        "diversity": 0.5699075502236186,
+        "improvement": 0.490447332542895
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-02T03:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0005",
+      "metrics": {
+        "error": 0.41312606031011556,
+        "persistence": 0.6419492629069316,
+        "diversity": 0.6975443653422613,
+        "improvement": 0.005848883710254916
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-02T04:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0006",
+      "metrics": {
+        "error": 0.8463062463562778,
+        "persistence": 0.7236045462411702,
+        "diversity": 0.32220041321439347,
+        "improvement": 0.1399315498306034
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-02T05:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0007",
+      "metrics": {
+        "error": 0.9583376734330181,
+        "persistence": 0.45244590883447006,
+        "diversity": 0.12419667470411833,
+        "improvement": 0.08704473915011761
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-03T06:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0008",
+      "metrics": {
+        "error": 0.8771458310971202,
+        "persistence": 0.6527945235251683,
+        "diversity": 0.6957026186195041,
+        "improvement": 0.6567586080244361
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-03T07:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0009",
+      "metrics": {
+        "error": 0.6468087876764785,
+        "persistence": 0.929836822984528,
+        "diversity": 0.35282750176668276,
+        "improvement": 0.4968365681459043
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-03T08:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0010",
+      "metrics": {
+        "error": 0.8637594515472162,
+        "persistence": 0.6638898142731846,
+        "diversity": 0.7393655202486218,
+        "improvement": 0.5196169307310858
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-04T09:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0011",
+      "metrics": {
+        "error": 0.9,
+        "persistence": 0.85,
+        "diversity": 0.15,
+        "improvement": 0.1
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-04T10:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0012",
+      "metrics": {
+        "error": 0.30904606292348435,
+        "persistence": 0.37459316477077265,
+        "diversity": 0.13080114352778327,
+        "improvement": 0.2501762427990829
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-04T11:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0013",
+      "metrics": {
+        "error": 0.720406488755656,
+        "persistence": 0.47362413422756316,
+        "diversity": 0.3461447736935061,
+        "improvement": 0.18855632769433892
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-05T12:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0014",
+      "metrics": {
+        "error": 0.4475635883163439,
+        "persistence": 0.9024909407843704,
+        "diversity": 0.5684283081972749,
+        "improvement": 0.5482179051002893
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-05T13:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0015",
+      "metrics": {
+        "error": 0.37664259966659175,
+        "persistence": 0.7468450984627619,
+        "diversity": 0.18072199500954272,
+        "improvement": 0.341509897581883
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-05T14:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0016",
+      "metrics": {
+        "error": 0.9822472794710805,
+        "persistence": 0.6799998198905697,
+        "diversity": 0.4955597950197169,
+        "improvement": 0.6161528258908872
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-06T15:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0017",
+      "metrics": {
+        "error": 0.8737104209404591,
+        "persistence": 0.7819999336596837,
+        "diversity": 0.23323845757128348,
+        "improvement": 0.028890219513633988
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-06T16:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0018",
+      "metrics": {
+        "error": 0.4834352555637206,
+        "persistence": 0.40080565698177706,
+        "diversity": 0.21878627486906116,
+        "improvement": 0.848618742901549
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-06T17:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0019",
+      "metrics": {
+        "error": 0.898512043589775,
+        "persistence": 0.4360084105988584,
+        "diversity": 0.574350932235904,
+        "improvement": 0.35606871095459786
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-07T18:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0020",
+      "metrics": {
+        "error": 0.9267652164080021,
+        "persistence": 0.5441388894405491,
+        "diversity": 0.26190413319844197,
+        "improvement": 0.22196475692458512
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-07T19:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0021",
+      "metrics": {
+        "error": 0.9,
+        "persistence": 0.85,
+        "diversity": 0.15,
+        "improvement": 0.1
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-07T20:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0022",
+      "metrics": {
+        "error": 0.545556373803894,
+        "persistence": 0.36449056936796254,
+        "diversity": 0.8480300851960881,
+        "improvement": 0.4585736643088181
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-08T21:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0023",
+      "metrics": {
+        "error": 0.31727296500860747,
+        "persistence": 0.23533728156855094,
+        "diversity": 0.1377193042805273,
+        "improvement": 0.564701437532781
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-08T22:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0024",
+      "metrics": {
+        "error": 0.8361387296285935,
+        "persistence": 0.5166199750997631,
+        "diversity": 0.1008221649215657,
+        "improvement": 0.3434573578558831
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-08T23:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0025",
+      "metrics": {
+        "error": 0.9871298213776716,
+        "persistence": 0.5968357588243527,
+        "diversity": 0.8268627020908945,
+        "improvement": 0.7747017320110483
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-09T00:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0026",
+      "metrics": {
+        "error": 0.2584959562376865,
+        "persistence": 0.740541364520146,
+        "diversity": 0.5953682952212598,
+        "improvement": 0.48327329736791563
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-09T01:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0027",
+      "metrics": {
+        "error": 0.44745064056488165,
+        "persistence": 0.680721348934856,
+        "diversity": 0.13924173887670116,
+        "improvement": 0.3912887256021945
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-09T02:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0028",
+      "metrics": {
+        "error": 0.5857555426836127,
+        "persistence": 0.9153619456408102,
+        "diversity": 0.7506823523025552,
+        "improvement": 0.23705014567598168
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-10T03:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0029",
+      "metrics": {
+        "error": 0.6204337236572208,
+        "persistence": 0.33398891039759854,
+        "diversity": 0.7801022714758564,
+        "improvement": 0.7834667128530902
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-10T04:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0030",
+      "metrics": {
+        "error": 0.4708491456719883,
+        "persistence": 0.6792121211495039,
+        "diversity": 0.5371761691505378,
+        "improvement": 0.13755534169467135
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-10T05:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0031",
+      "metrics": {
+        "error": 0.9,
+        "persistence": 0.85,
+        "diversity": 0.15,
+        "improvement": 0.1
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-11T06:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0032",
+      "metrics": {
+        "error": 0.2504232031346782,
+        "persistence": 0.44311704275350483,
+        "diversity": 0.06558139390866584,
+        "improvement": 0.8361887546381555
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-11T07:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0033",
+      "metrics": {
+        "error": 0.9002541895891564,
+        "persistence": 0.8237491470208846,
+        "diversity": 0.29601130032212913,
+        "improvement": 0.0521326498447688
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-11T08:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0034",
+      "metrics": {
+        "error": 0.8997271034109899,
+        "persistence": 0.9102120839734955,
+        "diversity": 0.11852276165430302,
+        "improvement": 0.43739141698495243
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-12T09:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0035",
+      "metrics": {
+        "error": 0.30121726366660384,
+        "persistence": 0.7704516239429238,
+        "diversity": 0.6626675434455902,
+        "improvement": 0.11555231804978652
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-12T10:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0036",
+      "metrics": {
+        "error": 0.6017089597930612,
+        "persistence": 0.6123526951212079,
+        "diversity": 0.26204530315204727,
+        "improvement": 0.7851897369767317
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-12T11:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0037",
+      "metrics": {
+        "error": 0.5631220757486564,
+        "persistence": 0.3588486540815615,
+        "diversity": 0.48143687102356664,
+        "improvement": 0.6569379621809786
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-13T12:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0038",
+      "metrics": {
+        "error": 0.398851786908375,
+        "persistence": 0.43378721847567125,
+        "diversity": 0.8461194853287157,
+        "improvement": 0.5848902518755081
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-13T13:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0039",
+      "metrics": {
+        "error": 0.574194062096733,
+        "persistence": 0.588181880776693,
+        "diversity": 0.14680335669461259,
+        "improvement": 0.20222760332840164
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-13T14:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0040",
+      "metrics": {
+        "error": 0.5001833159891169,
+        "persistence": 0.641231538842925,
+        "diversity": 0.2340917860772616,
+        "improvement": 0.19819564600640352
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-14T15:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0041",
+      "metrics": {
+        "error": 0.9,
+        "persistence": 0.85,
+        "diversity": 0.15,
+        "improvement": 0.1
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-14T16:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0042",
+      "metrics": {
+        "error": 0.8861301961877724,
+        "persistence": 0.25314301241649007,
+        "diversity": 0.24040370749519618,
+        "improvement": 0.6020800004666526
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-14T17:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0043",
+      "metrics": {
+        "error": 0.40853523745412457,
+        "persistence": 0.29923388654376876,
+        "diversity": 0.7984113924645367,
+        "improvement": 0.513938783992756
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-15T18:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0044",
+      "metrics": {
+        "error": 0.5997765594707276,
+        "persistence": 0.7884645682180651,
+        "diversity": 0.6959975982133147,
+        "improvement": 0.17136892292568995
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-15T19:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0045",
+      "metrics": {
+        "error": 0.3217288025293292,
+        "persistence": 0.5232883868047831,
+        "diversity": 0.3888628984159366,
+        "improvement": 0.4203222012330075
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-15T20:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0046",
+      "metrics": {
+        "error": 0.7895161286002894,
+        "persistence": 0.7050234104699762,
+        "diversity": 0.8373321690927729,
+        "improvement": 0.088576084036763
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-16T21:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0047",
+      "metrics": {
+        "error": 0.547939748755679,
+        "persistence": 0.4544769540462224,
+        "diversity": 0.7393380290822328,
+        "improvement": 0.22379070052825709
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-16T22:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0048",
+      "metrics": {
+        "error": 0.3907545922462005,
+        "persistence": 0.5364601608748489,
+        "diversity": 0.3875053118675233,
+        "improvement": 0.25069063020024646
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-16T23:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0049",
+      "metrics": {
+        "error": 0.43485677143275436,
+        "persistence": 0.8924491994570096,
+        "diversity": 0.4045045960427655,
+        "improvement": 0.7752141942856475
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-17T00:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0050",
+      "metrics": {
+        "error": 0.6572407312128876,
+        "persistence": 0.23794124714366094,
+        "diversity": 0.8494259747301812,
+        "improvement": 0.7524248265719568
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-17T01:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0051",
+      "metrics": {
+        "error": 0.9670572303907159,
+        "persistence": 0.8947752372560958,
+        "diversity": 0.7289565875314443,
+        "improvement": 0.14967999954352262
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-17T02:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0052",
+      "metrics": {
+        "error": 0.6093744328335317,
+        "persistence": 0.36031047439938624,
+        "diversity": 0.37083223403956206,
+        "improvement": 0.05277185997496103
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-18T03:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0053",
+      "metrics": {
+        "error": 0.530440108042918,
+        "persistence": 0.9389816328347944,
+        "diversity": 0.2621624465377215,
+        "improvement": 0.7056635417537125
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-18T04:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0054",
+      "metrics": {
+        "error": 0.586706191830966,
+        "persistence": 0.5172556144926221,
+        "diversity": 0.8158541126877386,
+        "improvement": 0.8958804205434425
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-18T05:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0055",
+      "metrics": {
+        "error": 0.6612685593201575,
+        "persistence": 0.7388062064722445,
+        "diversity": 0.17383746021925128,
+        "improvement": 0.26703704294510777
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-19T06:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0056",
+      "metrics": {
+        "error": 0.9668449300771775,
+        "persistence": 0.6343852181121922,
+        "diversity": 0.4837561610994193,
+        "improvement": 0.6731780043411577
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-19T07:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    }
+  ],
+  "test": [
+    {
+      "session_id": "S0057",
+      "metrics": {
+        "error": 0.2923023019515375,
+        "persistence": 0.6381331958442285,
+        "diversity": 0.4522803063356108,
+        "improvement": 0.7674479028434569
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-19T08:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0058",
+      "metrics": {
+        "error": 0.3665002186752176,
+        "persistence": 0.9205841774558379,
+        "diversity": 0.1140891721924695,
+        "improvement": 0.1672424648826509
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-20T09:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0059",
+      "metrics": {
+        "error": 0.6903259787730205,
+        "persistence": 0.7064094152030675,
+        "diversity": 0.23816311600074497,
+        "improvement": 0.10789795255241177
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-20T10:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0060",
+      "metrics": {
+        "error": 0.9,
+        "persistence": 0.85,
+        "diversity": 0.15,
+        "improvement": 0.1
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-20T11:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0061",
+      "metrics": {
+        "error": 0.5602264373485456,
+        "persistence": 0.6377542169684185,
+        "diversity": 0.4682261724255671,
+        "improvement": 0.8412356319627845
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-21T12:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0062",
+      "metrics": {
+        "error": 0.40115180757341695,
+        "persistence": 0.7371438505920611,
+        "diversity": 0.2409487620926768,
+        "improvement": 0.35620726211212905
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-21T13:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0063",
+      "metrics": {
+        "error": 0.7470507649903788,
+        "persistence": 0.42499780984907165,
+        "diversity": 0.3029417570174832,
+        "improvement": 0.6766780431729619
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-21T14:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0064",
+      "metrics": {
+        "error": 0.3036819047249364,
+        "persistence": 0.5437141419639395,
+        "diversity": 0.8487635526835539,
+        "improvement": 0.8964868030695851
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-22T15:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0065",
+      "metrics": {
+        "error": 0.3042129336137284,
+        "persistence": 0.35986573420028034,
+        "diversity": 0.26216033180032106,
+        "improvement": 0.8399334401943381
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-22T16:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0066",
+      "metrics": {
+        "error": 0.9018394885279652,
+        "persistence": 0.8594526818634072,
+        "diversity": 0.34562167099110713,
+        "improvement": 0.14197214912150877
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-22T17:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0067",
+      "metrics": {
+        "error": 0.9,
+        "persistence": 0.85,
+        "diversity": 0.15,
+        "improvement": 0.1
+      },
+      "ground_truth": true,
+      "timestamp": "2026-01-23T18:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": true
+    },
+    {
+      "session_id": "S0068",
+      "metrics": {
+        "error": 0.7339424751059421,
+        "persistence": 0.20586733036411847,
+        "diversity": 0.7036833080923693,
+        "improvement": 0.2694408769799801
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-23T19:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0069",
+      "metrics": {
+        "error": 0.7409076490748971,
+        "persistence": 0.904197502945328,
+        "diversity": 0.15743289151469417,
+        "improvement": 0.10388580337719198
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-23T20:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0070",
+      "metrics": {
+        "error": 0.32920662350496904,
+        "persistence": 0.614917730663612,
+        "diversity": 0.26787856985185304,
+        "improvement": 0.5443468443272016
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-24T21:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0071",
+      "metrics": {
+        "error": 0.7810330184827105,
+        "persistence": 0.35269798424558974,
+        "diversity": 0.5573903671080638,
+        "improvement": 0.23758551146736848
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-24T22:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0072",
+      "metrics": {
+        "error": 0.6115135705905386,
+        "persistence": 0.8790023683094925,
+        "diversity": 0.7268829706358844,
+        "improvement": 0.08306862094146009
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-24T23:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0073",
+      "metrics": {
+        "error": 0.5634460716971574,
+        "persistence": 0.40751016797918876,
+        "diversity": 0.052836551270225844,
+        "improvement": 0.6940073007176644
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-25T00:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0074",
+      "metrics": {
+        "error": 0.7214638992030209,
+        "persistence": 0.39646644682576115,
+        "diversity": 0.6429847266783446,
+        "improvement": 0.49651237901375217
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-25T01:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0075",
+      "metrics": {
+        "error": 0.5664883200457027,
+        "persistence": 0.20725227470625499,
+        "diversity": 0.11019508805901362,
+        "improvement": 0.7947957539701287
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-25T02:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0076",
+      "metrics": {
+        "error": 0.918907142954321,
+        "persistence": 0.6091927169041418,
+        "diversity": 0.7176760159088134,
+        "improvement": 0.5242586098408146
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-26T03:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0077",
+      "metrics": {
+        "error": 0.35958940131993716,
+        "persistence": 0.2955841394616041,
+        "diversity": 0.29660667994410694,
+        "improvement": 0.809083339868331
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-26T04:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0078",
+      "metrics": {
+        "error": 0.8391305056171509,
+        "persistence": 0.845526936500677,
+        "diversity": 0.7691397092211797,
+        "improvement": 0.18906888450577863
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-26T05:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0079",
+      "metrics": {
+        "error": 0.4346520070249641,
+        "persistence": 0.27709521625383926,
+        "diversity": 0.6740929934971541,
+        "improvement": 0.795721231305908
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-27T06:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    },
+    {
+      "session_id": "S0080",
+      "metrics": {
+        "error": 0.5507192684757665,
+        "persistence": 0.6654961326130346,
+        "diversity": 0.17364267066576372,
+        "improvement": 0.836892914124307
+      },
+      "ground_truth": false,
+      "timestamp": "2026-01-27T07:00:00Z",
+      "expert_label": null,
+      "heuristic_ground_truth": false
+    }
+  ],
+  "metadata": {
+    "label_source": "heuristic_rule_with_legacy_ground_truth_compat",
+    "calibration_scope": "synthetic_archive",
+    "evidence_status": "Tentative",
+    "train_prevalence": 0.125,
+    "train_confusion": {
+      "tp": 7,
+      "tn": 49,
+      "fp": 0,
+      "fn": 0
+    },
+    "test_prevalence": 0.08333333333333333,
+    "test_confusion": {
+      "tp": 2,
+      "tn": 21,
+      "fp": 1,
+      "fn": 0
+    }
+  }
+}

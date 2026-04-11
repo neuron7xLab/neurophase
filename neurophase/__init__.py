@@ -153,6 +153,16 @@ from neurophase.oscillators.neural_protocol import (
     NullNeuralExtractor,
     SensorStatus,
 )
+from neurophase.reset import (
+    Curriculum,
+    KetamineLikeResetController,
+    KLRConfig,
+    KLRPipeline,
+    ResetReport,
+    ResetState,
+    SystemMetrics,
+    SystemState,
+)
 from neurophase.risk.evt import EVTFit, compute_cvar, compute_var, fit_gpd_pot
 from neurophase.risk.mfdfa import MFDFAResult, mfdfa, multifractal_instability
 from neurophase.risk.sizer import PositionSize, RiskProfile, size_position
@@ -200,6 +210,7 @@ __all__ = [
     "Contract",
     "CoupledBrainMarketSystem",
     "CoupledStep",
+    "Curriculum",
     "DecisionExplanation",
     "DecisionFrame",
     "DecisionTraceLedger",
@@ -220,6 +231,9 @@ __all__ = [
     "GateState",
     "HeldOutSplit",
     "HeldOutViolation",
+    "KLRConfig",
+    "KLRPipeline",
+    "KetamineLikeResetController",
     "KuramotoNetwork",
     "KuramotoParams",
     "LedgerError",
@@ -248,6 +262,8 @@ __all__ = [
     "PredictionErrorSample",
     "ReplayInput",
     "ReplayResult",
+    "ResetReport",
+    "ResetState",
     "RiskProfile",
     "Scenario",
     "SemanticMemory",
@@ -263,6 +279,8 @@ __all__ = [
     "StreamQualityStats",
     "StreamRegime",
     "StreamingPipeline",
+    "SystemMetrics",
+    "SystemState",
     "TemporalError",
     "TemporalQualityDecision",
     "TemporalStreamDetector",
