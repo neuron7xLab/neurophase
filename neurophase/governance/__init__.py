@@ -35,6 +35,12 @@ from neurophase.governance.invariants import (
     InvariantSeverity,
     load_registry,
 )
+from neurophase.governance.reproducibility import (
+    ReproducibilityAuditor,
+    ReproducibilityCheckResult,
+    ReproducibilityReport,
+    run_reproducibility,
+)
 from neurophase.governance.state_machine import (
     DEFAULT_STATE_MACHINE_PATH,
     GlobalInvariant,
@@ -58,6 +64,9 @@ __all__ = [
     "InvariantRegistry",
     "InvariantRegistryError",
     "InvariantSeverity",
+    "ReproducibilityAuditor",
+    "ReproducibilityCheckResult",
+    "ReproducibilityReport",
     "StateMachineRegistryError",
     "StateMachineSpec",
     "StateSpec",
@@ -65,4 +74,5 @@ __all__ = [
     "load_registry",
     "load_state_machine",
     "run_completeness",
+    "run_reproducibility",
 ]

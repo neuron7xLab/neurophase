@@ -513,6 +513,35 @@ def _check_completeness_suite_green() -> DoctorCheckResult:
     )
 
 
+def _check_reproducibility_suite_green() -> DoctorCheckResult:
+    """Check 11: the tenth-axis reproducibility auditor passes.
+
+    Every deterministic layer (monograph, resistance sweep,
+    completeness audit, parameter sweep, synthetic oscillator,
+    invariant registry, pipeline gate sequence) is run twice
+    and compared byte-for-byte. A single mismatch is a
+    reproducibility fault that implies some module is silently
+    non-deterministic under repeated invocation.
+    """
+    from neurophase.governance.reproducibility import run_reproducibility
+
+    report = run_reproducibility()
+    if not report.reproducible:
+        offenders = [r.scenario_id for r in report.results if not r.passed]
+        warns = tuple(f"{r.scenario_id}: {r.detail}" for r in report.results if not r.passed)
+        return DoctorCheckResult(
+            "REPRODUCIBILITY_SUITE_GREEN",
+            False,
+            f"{len(offenders)} axis-10 reproducibility scenario(s) failing",
+            warnings=warns,
+        )
+    return DoctorCheckResult(
+        "REPRODUCIBILITY_SUITE_GREEN",
+        True,
+        f"all {len(report.results)} axis-10 reproducibility scenarios passed",
+    )
+
+
 def _check_ci_workflow_has_doctor_step() -> DoctorCheckResult:
     """Check 10: the CI workflow contains the doctor enforcement step.
 
@@ -564,6 +593,7 @@ DOCTOR_CHECKS: tuple[tuple[str, Callable[[], DoctorCheckResult]], ...] = (
     ("RESISTANCE_SUITE_GREEN", _check_resistance_suite_green),
     ("RUNTIME_MEMORY_BOUNDED", _check_runtime_memory_bounded),
     ("COMPLETENESS_SUITE_GREEN", _check_completeness_suite_green),
+    ("REPRODUCIBILITY_SUITE_GREEN", _check_reproducibility_suite_green),
     ("CI_WORKFLOW_DOCTOR_STEP_PRESENT", _check_ci_workflow_has_doctor_step),
 )
 
