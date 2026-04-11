@@ -588,6 +588,38 @@ honest_naming:
       - docs/EVOLUTION_BOARD.md
       - docs/TASK_MAP.md
 
+  - id: HN27
+    statement: "L1 memory-bounded rolling audit: every internal rolling collection on every layer of the runtime stack (TemporalValidator, TemporalStreamDetector, StillnessDetector, DecisionTraceLedger in-memory state, RegimeClassifier, ActionPolicy) satisfies measured_size <= declared_cap after any number of ticks. The total declared cap is a pure function of the configuration; it does not grow with the input length. A 10000-tick property test verifies that the total measured size at tick 100 equals the total measured size at tick 10000 — the runtime stack is constant-memory in tick count. audit_runtime_memory enumerates exactly six components in canonical order; adding a new layer with a rolling buffer requires registering it here."
+    enforced_in:
+      - path: neurophase/runtime/memory_audit.py
+        symbol: audit_runtime_memory
+      - path: neurophase/runtime/memory_audit.py
+        symbol: MemoryAuditReport
+    tests:
+      - tests/test_memory_bounded_audit.py::TestConstantMemory::test_10k_ticks_does_not_grow_buffers
+      - tests/test_memory_bounded_audit.py::TestConstantMemory::test_total_declared_cap_is_constant
+      - tests/test_memory_bounded_audit.py::TestBoundedness::test_every_component_bounded_at_every_audit_point
+      - tests/test_memory_bounded_audit.py::TestBoundedness::test_audit_before_first_tick_is_bounded
+      - tests/test_memory_bounded_audit.py::TestBoundedness::test_audit_after_close_is_bounded
+      - tests/test_memory_bounded_audit.py::TestEnumeration::test_six_components_enumerated
+      - tests/test_memory_bounded_audit.py::TestEnumeration::test_disabled_stillness_still_enumerated
+      - tests/test_memory_bounded_audit.py::TestConfigSensitivity::test_doubling_window_doubles_stream_cap
+      - tests/test_memory_bounded_audit.py::TestConfigSensitivity::test_doubling_stillness_window_doubles_cap
+      - tests/test_memory_bounded_audit.py::TestRaiseOnViolation::test_clean_report_does_not_raise
+      - tests/test_memory_bounded_audit.py::TestRaiseOnViolation::test_synthetic_violation_raises
+      - tests/test_memory_bounded_audit.py::TestJsonProjection::test_to_json_dict_round_trip
+      - tests/test_memory_bounded_audit.py::TestJsonProjection::test_components_are_flat_dicts
+      - tests/test_memory_bounded_audit.py::TestFrozen::test_report_is_frozen
+      - tests/test_memory_bounded_audit.py::TestFrozen::test_component_is_frozen
+      - tests/test_memory_bounded_audit.py::TestRepr::test_report_repr
+      - tests/test_memory_bounded_audit.py::TestRepr::test_component_repr
+      - tests/test_memory_bounded_audit.py::TestReportInternalConsistency::test_inconsistent_total_cap_rejected
+      - tests/test_memory_bounded_audit.py::TestReportInternalConsistency::test_negative_n_ticks_rejected
+      - tests/test_memory_bounded_audit.py::TestMemoryAuditError::test_error_is_assertion_subclass
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:
