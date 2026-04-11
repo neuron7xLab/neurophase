@@ -4,6 +4,99 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [0.4.0] — 2026-04-11
+
+Systems Evolution Board release. Installs the complete governance
++ falsification + reproducibility stack on top of v0.3.0. Four
+invariants now enforced uniformly, 14 honest-naming contracts
+CI-bound, the 5-state gate formally specified, and a single-path
+streaming pipeline deployable end-to-end.
+
+### Added — Governance (Program A)
+
+- `docs/EVOLUTION_BOARD.md` — six-role identity contract + 10-question
+  task-maturity gate + priority equation + anti-weakness enforcement.
+- `docs/TASK_MAP.md` — 25 ranked tasks in Tier 1–5 structure with
+  dependency gates.
+- `INVARIANTS.yaml` — machine-readable invariant registry (5 hard
+  invariants + 14 honest-naming contracts) with a CI meta-test that
+  validates every binding.
+- `STATE_MACHINE.yaml` — formal 5-state + 8-transition specification
+  with strict priority ordering and per-transition test bindings.
+- `neurophase/governance/` — typed loaders for both registries.
+- `ARCHITECTURE.md` — single-page system map.
+
+### Added — Temporal integrity (Program B)
+
+- `neurophase/data/temporal_validator.py` (B1) — per-sample temporal
+  contract check with 7-way `TimeQuality` enum: `VALID`, `GAPPED`,
+  `STALE`, `REVERSED`, `DUPLICATE`, `WARMUP`, `INVALID`. Integrated
+  into `ExecutionGate` as a pre-check that routes through `DEGRADED`.
+- `neurophase/data/stream_detector.py` (B2 + B6) — stream-level
+  `TemporalStreamDetector` with rolling fault-rate classification and
+  hysteresis. `StreamRegime` enum: `WARMUP`, `HEALTHY`, `DEGRADED`,
+  `OFFLINE`.
+- `docs/theory/time_integrity.md` — formal derivation of the four
+  temporal contracts with state-machine diagram.
+
+### Added — Scientific validation (Program C)
+
+- `neurophase/validation/null_model.py` (C1) — seeded deterministic
+  `NullModelHarness` with Phipson–Smyth `(1+k)/(1+n)` smoothed
+  p-values (never exactly zero for finite n).
+- `neurophase/validation/surrogates.py` (C2) — three surrogate
+  generators (`phase_shuffle`, `cyclic_shift`, `block_bootstrap`)
+  with explicit null-hypothesis contracts.
+- `neurophase/metrics/plv.py` (C3) — retrofit: `plv_significance`
+  now delegates to `NullModelHarness`; new `HeldOutSplit` +
+  `plv_on_held_out` make in-sample PLV architecturally impossible.
+
+### Added — Calibration (Program D)
+
+- `neurophase/benchmarks/phase_coupling.py` (H1) — synthetic
+  phase-coupling generator with closed-form PLV ground truth at
+  `coupling_strength ∈ {0, 1}`.
+- `neurophase/calibration/threshold.py` (D1) — `calibrate_gate_threshold`
+  with Youden-J grid search, train/test split, generalization-gap
+  reporting, and parameter-fingerprinted reports.
+
+### Added — Auditability (Program F)
+
+- `neurophase/audit/decision_ledger.py` (F1) — append-only
+  SHA256-chained `DecisionTraceLedger`; `verify_ledger` detects six
+  orthogonal tamper mutation classes.
+- `tests/test_determinism_certification.py` (F3) — 13-test end-to-end
+  certification that same-input produces byte-identical ledgers
+  across independent runs.
+
+### Added — Runtime (Program E)
+
+- `neurophase/runtime/pipeline.py` (E1 + E2) — `StreamingPipeline` +
+  `DecisionFrame` + `PipelineConfig`. Composes `B1 → B2+B6 →
+  ExecutionGate(+stillness) → optional F1 ledger` into a single
+  stateful `tick()` entry point with parameter fingerprinting and
+  byte-identical replay.
+
+### Changed
+
+- `ExecutionGate.evaluate` gains an optional `time_quality` parameter.
+  Non-`VALID` time quality routes through `DEGRADED` (step 0 — strict
+  priority above every downstream check).
+- `CoupledBrainMarketSystem.run()` DataFrame now includes a `delta`
+  column so downstream stillness / prediction-error consumers can
+  drive the full `(R, δ)` stream without recomputing it.
+- `plv_significance` now uses `NullModelHarness`. The naive unsmoothed
+  p-value estimator is gone. `n_surrogates` floor lifted to 10.
+- Invariant count in every public surface (docstrings, README, docs)
+  updated from "Three" to **"Four"** (I₁–I₄).
+
+### Stats
+
+- **573 tests** green (up from 321 at v0.3.0).
+- **94 source files** pass `mypy --strict`.
+- **14 honest-naming contracts** (HN1–HN14) CI-bound.
+- **13 PRs** shipped (#10 → #22) on top of the v0.3.0 baseline.
+
 ## [Unreleased]
 
 ### Added

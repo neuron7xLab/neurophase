@@ -15,7 +15,7 @@ See ``docs/theory/scientific_basis.md`` and
 
 from __future__ import annotations
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 from neurophase.agents.pi_agent import (
     AgentEfficiency,
