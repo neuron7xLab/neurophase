@@ -122,7 +122,7 @@ class StreamQualityStats:
     fault_rate: float
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class StreamQualityDecision:
     """One update output of :meth:`TemporalStreamDetector.update`.
 
@@ -147,6 +147,16 @@ class StreamQualityDecision:
     last_quality: TimeQuality
     held: bool
     reason: str
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        parts = [
+            self.regime.name,
+            f"valid={self.stats.valid}/{self.stats.total}",
+            f"fault={self.stats.fault_rate:.2f}",
+        ]
+        if self.held:
+            parts.append("held")
+        return "StreamQualityDecision[" + " · ".join(parts) + "]"
 
 
 class TemporalStreamDetector:

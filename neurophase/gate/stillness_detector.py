@@ -156,7 +156,7 @@ class StillnessState(Enum):
     ACTIVE = auto()
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class StillnessDecision:
     """Immutable outcome of a single ``StillnessDetector.update`` call.
 
@@ -193,6 +193,18 @@ class StillnessDecision:
     delta_max: float | None
     window_filled: bool
     reason: str
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        parts = [
+            self.state.name,
+            f"R={self.R:.4f}",
+            f"δ={self.delta:.4f}",
+        ]
+        if self.window_filled:
+            parts.append("warm")
+        else:
+            parts.append("warmup")
+        return "StillnessDecision[" + " · ".join(parts) + "]"
 
 
 class StillnessDetector:

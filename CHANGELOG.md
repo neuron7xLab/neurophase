@@ -4,6 +4,81 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased] — Architectural aesthetics (HN22)
+
+Polish layer on top of the solid v0.4.0 + Tier-2 foundation.
+Doctrine-compliant: every addition closes a real engineering gap
+(debug UX, architectural legibility, reviewer onboarding) and has
+a binding test. No cosmetic noise.
+
+### Added — Rich `__repr__` on 10 public frozen dataclasses
+
+`GateDecision`, `StillnessDecision`, `TemporalQualityDecision`,
+`StreamQualityDecision`, `DecisionFrame`, `DecisionExplanation`,
+`NullModelResult`, `ThresholdCalibrationReport`,
+`StillnessCalibrationReport`, `ReplayResult` now render in one
+line using the canonical design language::
+
+    ClassName[state · key=value · key=value · ✓|✗]
+
+Examples::
+
+    GateDecision[READY · R=0.9500 · θ=0.65 · ✓]
+    GateDecision[BLOCKED · R=0.3000 · θ=0.65 · ✗]
+    GateDecision[DEGRADED · R=None · θ=0.65 · ✗]
+    DecisionFrame[tick=6 · t=0.7000 · READY · R=0.9900 · ✓]
+    DecisionExplanation[tick=6 · READY · causal=READY · 5 steps · ✓]
+    StillnessDecision[STILL · R=0.9500 · δ=0.0100 · warm]
+    NullModelResult[observed=0.9234 · p=0.0010 · n=1000 · α=0.050 · rejected]
+    ThresholdCalibrationReport[best=0.70 · train=1.000 · test=1.000 · gap=+0.000 · youden_j]
+    ReplayResult[✓ ok · n=6 · tip=a1b2c3d4…]
+
+Huge debug UX improvement: test failure messages, `print(obj)`,
+debugger views all become one-line and informative. Zero semantic
+cost — `__eq__`, `__hash__`, `to_dict()` unchanged.
+
+### Added — Visual architecture docs
+
+- `docs/diagrams/gate_state_machine.md` — three mermaid blocks
+  (state diagram, priority flowchart, pipeline composition)
+  rendering natively in GitHub. Colour-coded state legend
+  (permissive / blocking / fault). Every `GateState` labelled.
+- `docs/ARCHITECTURE_ONE_PAGE.md` — 60-second reviewer tour
+  cross-referencing every major doc: `EVOLUTION_BOARD.md`,
+  `TASK_MAP.md`, `scientific_basis.md`,
+  `neurophase_elite_bibliography.md`, `invariant_matrix.md`,
+  `stillness_invariant.md`, `time_integrity.md`,
+  `gate_state_machine.md`.
+
+### Added — Aesthetics contract (HN22)
+
+`tests/test_aesthetics_contract.py` — 17 new tests:
+
+- **Rich `__repr__` stability**: every polished dataclass has its
+  compact format pinned so a future refactor cannot silently
+  degrade debug UX.
+- **Public façade docstring coverage**: every symbol in
+  `neurophase.api.__all__` must have a non-empty docstring
+  (excluding constants).
+- **Canonical `__all__` ordering**: `neurophase.api.__all__`
+  matches ruff's `RUF022` natural sort exactly (SCREAMING_SNAKE
+  first, then CamelCase, then dunders, then lowercase).
+- **Visual docs present**: mermaid diagram file exists with ≥ 3
+  mermaid blocks and mentions every `GateState`; one-page
+  architecture tour exists and cross-references all the major docs.
+
+### INVARIANTS.yaml — HN22
+
+New honest-naming contract "Architectural aesthetics" registered
+and bound to 15 strongest aesthetics tests. Enforced by the A1
+CI meta-test; a future PR that removes a binding fails CI.
+
+### Stats
+
+- **721 tests** green (up from 703).
+- **107 source files** pass `mypy --strict`.
+- **22 honest-naming contracts** (HN1–HN22) CI-bound.
+
 ## [Unreleased] — Interpretability + batch API + public façade + CLI
 
 ### Added — Interpretability layer (HN19)

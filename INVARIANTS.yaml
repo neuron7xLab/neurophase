@@ -382,6 +382,39 @@ honest_naming:
     docs:
       - docs/EVOLUTION_BOARD.md
 
+  - id: HN22
+    statement: "Architectural aesthetics contract: every frozen dataclass on the public surface (GateDecision, StillnessDecision, TemporalQualityDecision, StreamQualityDecision, DecisionFrame, DecisionExplanation, NullModelResult, ThresholdCalibrationReport, StillnessCalibrationReport, ReplayResult) carries a compact one-line __repr__ in the canonical 'ClassName[field · field · ✓|✗]' design language. neurophase.api.__all__ is canonically sorted and every public symbol has a docstring. docs/diagrams/gate_state_machine.md contains ≥ 3 mermaid blocks and mentions every GateState. docs/ARCHITECTURE_ONE_PAGE.md cross-references every major doc."
+    enforced_in:
+      - path: neurophase/gate/execution_gate.py
+        symbol: GateDecision.__repr__
+      - path: neurophase/explain.py
+        symbol: DecisionExplanation.__repr__
+      - path: neurophase/api.py
+        symbol: neurophase_api_facade
+      - path: docs/diagrams/gate_state_machine.md
+        symbol: gate_state_diagrams
+      - path: docs/ARCHITECTURE_ONE_PAGE.md
+        symbol: architecture_tour
+    tests:
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_gate_decision_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_gate_decision_repr_on_blocked
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_stillness_decision_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_temporal_quality_decision_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_stream_quality_decision_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_decision_frame_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_decision_explanation_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_null_model_result_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_threshold_calibration_report_repr
+      - tests/test_aesthetics_contract.py::TestRichRepr::test_replay_result_repr
+      - tests/test_aesthetics_contract.py::TestFacadeDocstrings::test_every_public_symbol_has_docstring
+      - tests/test_aesthetics_contract.py::TestCanonicalOrdering::test_facade_all_is_sorted
+      - tests/test_aesthetics_contract.py::TestArchitectureDocs::test_mermaid_state_diagram_exists
+      - tests/test_aesthetics_contract.py::TestArchitectureDocs::test_one_page_architecture_exists
+      - tests/test_aesthetics_contract.py::TestArchitectureDocs::test_mermaid_priority_flowchart_is_present
+    docs:
+      - docs/ARCHITECTURE_ONE_PAGE.md
+      - docs/diagrams/gate_state_machine.md
+
   - id: HN21
     statement: "neurophase.api is the single blessed public import path: it re-exports a frozen minimal symbol set identity-equal to the canonical internal modules. The CLI (python -m neurophase) exposes version / demo / verify-ledger / explain-ledger subcommands and is the runnable onboarding surface."
     enforced_in:

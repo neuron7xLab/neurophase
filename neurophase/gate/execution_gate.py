@@ -63,7 +63,7 @@ class GateState(Enum):
     UNNECESSARY = auto()
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class GateDecision:
     """Immutable gate decision enforcing ``execution_allowed`` invariants.
 
@@ -86,6 +86,19 @@ class GateDecision:
     def __post_init__(self) -> None:
         if self.execution_allowed and self.state is not GateState.READY:
             raise ValueError("Invariant violated: execution_allowed=True requires state=READY")
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        r_str = f"{self.R:.4f}" if self.R is not None else "None"
+        flag = "✓" if self.execution_allowed else "✗"
+        parts = [
+            self.state.name,
+            f"R={r_str}",
+            f"θ={self.threshold:.2f}",
+        ]
+        if self.stillness_state is not None:
+            parts.append(f"stillness={self.stillness_state.name}")
+        parts.append(flag)
+        return "GateDecision[" + " · ".join(parts) + "]"
 
 
 class ExecutionGate:

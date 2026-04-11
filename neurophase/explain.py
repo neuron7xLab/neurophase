@@ -137,7 +137,7 @@ class ExplanationStep:
         }
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class DecisionExplanation:
     """The structured causal chain of a single :class:`DecisionFrame`.
 
@@ -179,6 +179,15 @@ class DecisionExplanation:
     causal_contract: Contract
     chain: tuple[ExplanationStep, ...] = field(default_factory=tuple)
     summary: str = ""
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        flag = "✓" if self.execution_allowed else "✗"
+        return (
+            f"DecisionExplanation[tick={self.tick_index} · "
+            f"{self.final_state.name} · "
+            f"causal={self.causal_contract.value} · "
+            f"{len(self.chain)} steps · {flag}]"
+        )
 
     def to_dict(self) -> dict[str, Any]:
         """JSON-safe flat projection.

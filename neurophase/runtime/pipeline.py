@@ -133,7 +133,7 @@ class PipelineConfig:
     ledger_path: Path | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class DecisionFrame:
     """Runtime envelope — single immutable record per tick.
 
@@ -172,6 +172,16 @@ class DecisionFrame:
     stream: StreamQualityDecision
     gate: GateDecision
     ledger_record: DecisionTraceRecord | None = field(default=None)
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        r_str = f"{self.R:.4f}" if self.R is not None else "None"
+        flag = "✓" if self.gate.execution_allowed else "✗"
+        return (
+            f"DecisionFrame[tick={self.tick_index} · "
+            f"t={self.timestamp:.4f} · "
+            f"{self.gate.state.name} · "
+            f"R={r_str} · {flag}]"
+        )
 
     @property
     def execution_allowed(self) -> bool:

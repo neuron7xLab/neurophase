@@ -46,7 +46,7 @@ SurrogateFn = Callable[
 ]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class NullModelResult:
     """Immutable outcome of a null-model confrontation.
 
@@ -84,6 +84,15 @@ class NullModelResult:
     seed: int
     rejected: bool
     alpha: float
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        flag = "rejected" if self.rejected else "not rejected"
+        return (
+            f"NullModelResult[observed={self.observed:.4f} · "
+            f"p={self.p_value:.4f} · "
+            f"n={self.n_surrogates} · "
+            f"α={self.alpha:.3f} · {flag}]"  # noqa: RUF001
+        )
 
 
 class NullModelHarness:

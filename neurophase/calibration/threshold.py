@@ -134,7 +134,7 @@ class ThresholdEvaluation:
     youden_j: float
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class ThresholdCalibrationReport:
     """Frozen, JSON-serializable output of :func:`calibrate_gate_threshold`.
 
@@ -174,6 +174,15 @@ class ThresholdCalibrationReport:
     generalization_gap: float
     parameter_fingerprint: str
     objective_name: str
+
+    def __repr__(self) -> str:  # aesthetic rich repr (HN22)
+        return (
+            f"ThresholdCalibrationReport[best={self.best_threshold:.2f} · "
+            f"train={self.train_score_at_best:.3f} · "
+            f"test={self.test_score_at_best:.3f} · "
+            f"gap={self.generalization_gap:+.3f} · "
+            f"{self.objective_name}]"
+        )
 
     def to_json_dict(self) -> dict[str, object]:
         """Return a plain dict suitable for ``json.dumps``."""
