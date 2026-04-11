@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 9  
 **Advisory invariants:** 2  
-**Honest-naming contracts:** 36  
+**Honest-naming contracts:** 37  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -62,6 +62,7 @@
   - [HN34](#hn34)
   - [HN35](#hn35)
   - [HN36](#hn36)
+  - [HN37](#hn37)
 
 ## Gate state machine
 
@@ -1238,9 +1239,9 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `neurophase/governance/doctor.py::DOCTOR_CHECKS`
 - `neurophase/__main__.py::_cmd_doctor`
 
-**Bound tests** (23):
+**Bound tests** (24):
 
-- `tests/test_eighth_axis_doctor.py::test_registry_enumerates_ten_checks`
+- `tests/test_eighth_axis_doctor.py::test_registry_enumerates_eleven_checks`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[INVARIANT_REGISTRY_SCHEMA]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[STATE_MACHINE_SCHEMA]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[CLAIM_REGISTRY_SCHEMA]`
@@ -1250,6 +1251,7 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RESISTANCE_SUITE_GREEN]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RUNTIME_MEMORY_BOUNDED]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[COMPLETENESS_SUITE_GREEN]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[REPRODUCIBILITY_SUITE_GREEN]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[CI_WORKFLOW_DOCTOR_STEP_PRESENT]`
 - `tests/test_eighth_axis_doctor.py::test_run_one_unknown_raises_key_error`
 - `tests/test_eighth_axis_doctor.py::test_report_all_healthy_disagreement_rejected`
@@ -1363,6 +1365,35 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_eighth_axis_doctor.py::test_ci_workflow_contains_doctor_step`
 - `tests/test_eighth_axis_doctor.py::test_doctor_self_enforcement_check_passes`
 - `tests/test_eighth_axis_doctor.py::test_doctor_self_enforcement_check_reads_real_workflow`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
+
+### HN37
+
+**Statement.** Tenth axis — Reproducibility (Відтворюваність): every deterministic layer produces byte-identical output on repeated invocation with the same inputs. The ReproducibilityAuditor registers exactly EIGHT scenarios and every one must pass: (1) monograph byte-equal across two generate_monograph calls; (2) DOCTOR_CHECKS tuple + cheap sub-checks byte-equal (heavy sub-checks covered independently); (3) resistance suite scenario outcomes byte-equal; (4) completeness suite report byte-equal; (5) parameter sweep report byte-equal on fixed grid + seed; (6) synthetic oscillator phase arrays byte-equal across two sources with the same config over 128 steps; (7) InvariantRegistry structural equality across two load_registry calls; (8) two StreamingPipelines with identical config produce identical gate sequences over 32 ticks. A reproducibility fault implies some module is silently non-deterministic. Surfaced inside the doctor as REPRODUCIBILITY_SUITE_GREEN.
+
+**Enforcement sites:**
+
+- `neurophase/governance/reproducibility.py::ReproducibilityAuditor`
+- `neurophase/governance/reproducibility.py::REPRODUCIBILITY_SCENARIOS`
+- `neurophase/governance/doctor.py::_check_reproducibility_suite_green`
+
+**Bound tests** (11):
+
+- `tests/test_tenth_axis_reproducibility.py::test_registry_enumerates_eight_scenarios`
+- `tests/test_tenth_axis_reproducibility.py::test_full_suite_runs_all_scenarios_and_they_all_pass`
+- `tests/test_tenth_axis_reproducibility.py::test_run_one_unknown_raises_key_error`
+- `tests/test_tenth_axis_reproducibility.py::test_run_one_cheap_synthetic_scenario`
+- `tests/test_tenth_axis_reproducibility.py::test_report_reproducible_disagreement_rejected`
+- `tests/test_tenth_axis_reproducibility.py::test_full_reproducibility_suite_passes_on_main`
+- `tests/test_tenth_axis_reproducibility.py::test_report_json_round_trip`
+- `tests/test_tenth_axis_reproducibility.py::test_json_projection_is_flat`
+- `tests/test_tenth_axis_reproducibility.py::test_check_result_repr_format`
+- `tests/test_tenth_axis_reproducibility.py::test_check_result_repr_failure_flag`
+- `tests/test_tenth_axis_reproducibility.py::test_report_repr_shows_summary`
 
 **Documentation:**
 

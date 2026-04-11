@@ -44,14 +44,14 @@ from neurophase.governance.doctor import (
 # ---------------------------------------------------------------------------
 
 
-def test_registry_enumerates_ten_checks() -> None:
+def test_registry_enumerates_eleven_checks() -> None:
     """The doctor registry is stable at exactly ten checks.
 
     Check #10 is the self-enforcing loop: the doctor verifies
     that CI runs the doctor. If the CI step is removed, the
     doctor flags it on the next local run.
     """
-    assert len(DOCTOR_CHECKS) == 10
+    assert len(DOCTOR_CHECKS) == 11
     ids = {entry[0] for entry in DOCTOR_CHECKS}
     assert ids == {
         "INVARIANT_REGISTRY_SCHEMA",
@@ -63,6 +63,7 @@ def test_registry_enumerates_ten_checks() -> None:
         "RESISTANCE_SUITE_GREEN",
         "RUNTIME_MEMORY_BOUNDED",
         "COMPLETENESS_SUITE_GREEN",
+        "REPRODUCIBILITY_SUITE_GREEN",
         "CI_WORKFLOW_DOCTOR_STEP_PRESENT",
     }
 
@@ -175,7 +176,7 @@ def test_markdown_rendering_is_deterministic() -> None:
     b = report.as_markdown()
     assert a == b
     assert "neurophase doctor" in a
-    assert "10 / 10" in a  # pinned to the current ten checks
+    assert "11 / 11" in a  # pinned to the current ten checks
 
 
 def test_markdown_shows_drift_banner_on_failure() -> None:
@@ -217,7 +218,7 @@ def test_cli_doctor_json_mode(capsys: pytest.CaptureFixture[str]) -> None:
     assert exit_code == 0
     payload = json.loads(captured.out)
     assert payload["all_healthy"] is True
-    assert len(payload["results"]) == 10
+    assert len(payload["results"]) == 11
 
 
 # ---------------------------------------------------------------------------
