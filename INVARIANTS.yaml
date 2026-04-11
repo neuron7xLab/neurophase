@@ -316,3 +316,34 @@ honest_naming:
       - docs/theory/neurophase_elite_bibliography.md
       - docs/theory/hierarchical_status_bibliography.md
       - docs/validation/evidence_labeling_style_guide.md
+
+  - id: HN16
+    statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
+    enforced_in:
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate.evaluate
+      - path: neurophase/runtime/pipeline.py
+        symbol: StreamingPipeline.tick
+      - path: STATE_MACHINE.yaml
+        symbol: gate_state_machine
+    tests:
+      - tests/test_invariant_matrix.py::TestCrossProduct::test_matrix_is_nontrivial
+      - tests/test_invariant_matrix.py::TestCrossProduct::test_every_cell_matches_predictor
+      - tests/test_invariant_matrix.py::TestCrossProduct::test_execution_allowed_iff_ready
+      - tests/test_invariant_matrix.py::TestReachability::test_every_state_is_reachable
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_temporal_dominates_sensor_absent
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_temporal_dominates_r_invalid
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_temporal_dominates_r_below_threshold
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_sensor_dominates_r_invalid
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_sensor_dominates_r_below_threshold
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_r_invalid_dominates_r_below_threshold
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_r_below_threshold_dominates_stillness
+      - tests/test_invariant_matrix.py::TestPriorityOrdering::test_stillness_only_applies_above_threshold
+      - tests/test_invariant_matrix.py::TestStateMachineConsistency::test_every_transition_target_is_reachable_by_matrix
+      - tests/test_invariant_matrix.py::TestPipelineReachability::test_degraded_reachable_via_bad_R
+      - tests/test_invariant_matrix.py::TestPipelineReachability::test_blocked_reachable_via_low_R
+      - tests/test_invariant_matrix.py::TestPipelineReachability::test_ready_reachable_via_healthy_high_R
+      - tests/test_invariant_matrix.py::TestPipelineReachability::test_unnecessary_reachable_via_still_high_R
+      - tests/test_invariant_matrix.py::TestPipelineReachability::test_sensor_absent_reachable_via_direct_gate_call
+    docs:
+      - docs/theory/invariant_matrix.md
