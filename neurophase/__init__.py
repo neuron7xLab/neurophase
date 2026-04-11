@@ -58,6 +58,12 @@ from neurophase.core.phase import (
     compute_phase,
     preprocess_signal,
 )
+from neurophase.data.stream_detector import (
+    StreamQualityDecision,
+    StreamQualityStats,
+    StreamRegime,
+    TemporalStreamDetector,
+)
 from neurophase.data.temporal_validator import (
     TemporalError,
     TemporalQualityDecision,
@@ -215,8 +221,12 @@ __all__ = [
     "StillnessDecision",
     "StillnessDetector",
     "StillnessState",
+    "StreamQualityDecision",
+    "StreamQualityStats",
+    "StreamRegime",
     "TemporalError",
     "TemporalQualityDecision",
+    "TemporalStreamDetector",
     "TemporalValidator",
     "ThresholdCalibrationReport",
     "ThresholdEvaluation",
