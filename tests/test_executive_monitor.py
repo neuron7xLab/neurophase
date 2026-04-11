@@ -44,9 +44,7 @@ def _stress_sample(t: float) -> ExecutiveSample:
     return ExecutiveSample(beta_power=10.0, hrv=15.0, error_burst=5.0, timestamp=t)
 
 
-def _prime(
-    monitor: ExecutiveMonitor, n: int, sampler: Callable[[float], ExecutiveSample]
-) -> None:
+def _prime(monitor: ExecutiveMonitor, n: int, sampler: Callable[[float], ExecutiveSample]) -> None:
     for i in range(n):
         monitor.update(sampler(float(i)))
 
