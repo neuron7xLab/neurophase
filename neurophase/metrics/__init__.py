@@ -1,7 +1,8 @@
-"""Nonlinear metrics — entropy, curvature, fractal memory, PLV, ISM."""
+"""Nonlinear metrics — entropy, curvature, fractal memory, PLV, ISM, asymmetry."""
 
 from __future__ import annotations
 
+from neurophase.metrics.asymmetry import kurtosis, skewness, topological_asymmetry
 from neurophase.metrics.entropy import (
     delta_entropy,
     freedman_diaconis_bins,
@@ -24,6 +25,7 @@ __all__ = [
     "hurst_dfa",
     "hurst_rs",
     "ism_derivative",
+    "kurtosis",
     "mean_ricci",
     "ollivier_ricci",
     "plv",
@@ -31,5 +33,7 @@ __all__ = [
     "renyi_entropy",
     "rolling_plv",
     "shannon_entropy",
+    "skewness",
+    "topological_asymmetry",
     "tsallis_entropy",
 ]

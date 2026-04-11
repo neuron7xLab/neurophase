@@ -19,12 +19,26 @@ from neurophase.core.phase import (
     compute_phase,
     preprocess_signal,
 )
+from neurophase.gate.direction_index import (
+    Direction,
+    DirectionDecision,
+    DirectionIndexWeights,
+    direction_index,
+)
+from neurophase.gate.emergent_phase import (
+    EmergentPhaseCriteria,
+    EmergentPhaseDecision,
+    detect_emergent_phase,
+)
 from neurophase.gate.execution_gate import (
     DEFAULT_THRESHOLD,
     ExecutionGate,
     GateDecision,
     GateState,
 )
+from neurophase.indicators.fmn import compute_fmn
+from neurophase.indicators.qilm import compute_qilm
+from neurophase.metrics.asymmetry import kurtosis, skewness, topological_asymmetry
 from neurophase.metrics.entropy import (
     delta_entropy,
     freedman_diaconis_bins,
@@ -39,6 +53,11 @@ from neurophase.metrics.ricci import forman_ricci, mean_ricci, ollivier_ricci
 
 __all__ = [
     "DEFAULT_THRESHOLD",
+    "Direction",
+    "DirectionDecision",
+    "DirectionIndexWeights",
+    "EmergentPhaseCriteria",
+    "EmergentPhaseDecision",
     "ExecutionGate",
     "GateDecision",
     "GateState",
@@ -48,15 +67,20 @@ __all__ = [
     "PLVResult",
     "__version__",
     "adaptive_threshold",
+    "compute_fmn",
     "compute_ism",
     "compute_phase",
+    "compute_qilm",
     "compute_topological_energy",
     "delta_entropy",
+    "detect_emergent_phase",
+    "direction_index",
     "forman_ricci",
     "freedman_diaconis_bins",
     "hurst_dfa",
     "hurst_rs",
     "ism_derivative",
+    "kurtosis",
     "mean_ricci",
     "ollivier_ricci",
     "order_parameter",
@@ -66,5 +90,7 @@ __all__ = [
     "renyi_entropy",
     "rolling_plv",
     "shannon_entropy",
+    "skewness",
+    "topological_asymmetry",
     "tsallis_entropy",
 ]
