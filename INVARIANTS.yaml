@@ -518,6 +518,42 @@ honest_naming:
       - docs/EVOLUTION_BOARD.md
       - docs/TASK_MAP.md
 
+  - id: HN25
+    statement: "K1 SessionManifest is deterministic, self-validating, and ledger-aware: build_session_manifest() with the same inputs returns byte-identical SessionManifest including identical manifest_hash and run_id. SessionManifest.write/load round-trip is exact. Single-bit corruption of the manifest file is detected at load time via the recomputed manifest hash. SessionManifest.verify_against_ledger re-walks the bound DecisionTraceLedger and rejects a tampered ledger or a ledger whose tip has drifted. Schema-version pinning rejects manifests under any version other than SESSION_MANIFEST_SCHEMA_VERSION."
+    enforced_in:
+      - path: neurophase/audit/session_manifest.py
+        symbol: SessionManifest
+      - path: neurophase/audit/session_manifest.py
+        symbol: build_session_manifest
+    tests:
+      - tests/test_session_manifest.py::TestDeterminism::test_same_inputs_yield_identical_manifest
+      - tests/test_session_manifest.py::TestDeterminism::test_run_id_is_16_hex_chars
+      - tests/test_session_manifest.py::TestSelfValidatingHash::test_unmodified_file_loads_cleanly
+      - tests/test_session_manifest.py::TestSelfValidatingHash::test_single_bit_flip_detected
+      - tests/test_session_manifest.py::TestSelfValidatingHash::test_missing_file_raises
+      - tests/test_session_manifest.py::TestSelfValidatingHash::test_malformed_json_raises
+      - tests/test_session_manifest.py::TestSchemaVersion::test_wrong_schema_version_rejected_at_construction
+      - tests/test_session_manifest.py::TestSchemaVersion::test_current_schema_version_constant
+      - tests/test_session_manifest.py::TestLedgerIntegrity::test_clean_ledger_verifies
+      - tests/test_session_manifest.py::TestLedgerIntegrity::test_tampered_ledger_detected
+      - tests/test_session_manifest.py::TestLedgerIntegrity::test_drifted_tip_detected
+      - tests/test_session_manifest.py::TestLedgerIntegrity::test_missing_ledger_path_detected
+      - tests/test_session_manifest.py::TestRoundTrip::test_write_then_load_is_identity
+      - tests/test_session_manifest.py::TestRoundTrip::test_to_json_dict_is_flat
+      - tests/test_session_manifest.py::TestConstructionValidation::test_negative_n_ticks_rejected
+      - tests/test_session_manifest.py::TestConstructionValidation::test_end_before_start_rejected
+      - tests/test_session_manifest.py::TestConstructionValidation::test_malformed_parameter_fingerprint_rejected
+      - tests/test_session_manifest.py::TestConstructionValidation::test_empty_run_id_rejected
+      - tests/test_session_manifest.py::TestFrozen::test_manifest_is_frozen
+      - tests/test_session_manifest.py::TestEmptySession::test_zero_records_uses_empty_ledger_tip
+      - tests/test_session_manifest.py::TestRepr::test_repr_format
+      - tests/test_session_manifest.py::TestRepr::test_repr_with_no_commit
+      - tests/test_session_manifest.py::TestDatasetFingerprint::test_same_bytes_same_fingerprint
+      - tests/test_session_manifest.py::TestDatasetFingerprint::test_different_bytes_different_fingerprint
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:

@@ -33,15 +33,29 @@ from neurophase.audit.decision_ledger import (
     verify_ledger,
 )
 from neurophase.audit.replay import ReplayInput, ReplayResult, replay_ledger
+from neurophase.audit.session_manifest import (
+    EMPTY_LEDGER_TIP,
+    SESSION_MANIFEST_SCHEMA_VERSION,
+    ManifestError,
+    SessionManifest,
+    build_session_manifest,
+    compute_dataset_fingerprint,
+)
 
 __all__ = [
+    "EMPTY_LEDGER_TIP",
     "GENESIS_HASH",
+    "SESSION_MANIFEST_SCHEMA_VERSION",
     "DecisionTraceLedger",
     "DecisionTraceRecord",
     "LedgerError",
     "LedgerVerification",
+    "ManifestError",
     "ReplayInput",
     "ReplayResult",
+    "SessionManifest",
+    "build_session_manifest",
+    "compute_dataset_fingerprint",
     "fingerprint_parameters",
     "replay_ledger",
     "verify_ledger",
