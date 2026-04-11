@@ -38,9 +38,9 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF"]
-# N802/N803/N806: allow uppercase mathematical variable names (N, R, G, T, ω, θ, K, φ).
+# N802/N803/N806/N815: allow mixedCase scientific names (R_min, dH_max, kappa_ok).
 # RUF002/RUF003: physics Unicode in docstrings/comments is intentional (θ, ψ, Σ, π).
-ignore = ["E501", "N802", "N803", "N806", "RUF002", "RUF003"]
+ignore = ["E501", "N802", "N803", "N806", "N815", "RUF002", "RUF003"]
 
 [tool.ruff.format]
 quote-style = "double"
