@@ -137,6 +137,11 @@ from neurophase.oscillators.neural_protocol import (
 from neurophase.risk.evt import EVTFit, compute_cvar, compute_var, fit_gpd_pot
 from neurophase.risk.mfdfa import MFDFAResult, mfdfa, multifractal_instability
 from neurophase.risk.sizer import PositionSize, RiskProfile, size_position
+from neurophase.runtime.pipeline import (
+    DecisionFrame,
+    PipelineConfig,
+    StreamingPipeline,
+)
 from neurophase.state.executive_monitor import (
     ExecutiveMonitor,
     ExecutiveMonitorConfig,
@@ -171,6 +176,7 @@ __all__ = [
     "CognitiveState",
     "CoupledBrainMarketSystem",
     "CoupledStep",
+    "DecisionFrame",
     "DecisionTraceLedger",
     "DecisionTraceRecord",
     "DerivativesBlock",
@@ -210,6 +216,7 @@ __all__ = [
     "PhaseCouplingTrace",
     "PiAgent",
     "PiRule",
+    "PipelineConfig",
     "PositionSize",
     "PredictionErrorMonitor",
     "PredictionErrorSample",
@@ -224,6 +231,7 @@ __all__ = [
     "StreamQualityDecision",
     "StreamQualityStats",
     "StreamRegime",
+    "StreamingPipeline",
     "TemporalError",
     "TemporalQualityDecision",
     "TemporalStreamDetector",
