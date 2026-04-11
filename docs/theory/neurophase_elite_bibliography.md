@@ -203,6 +203,26 @@ Formal definitions and in-docs usage rules live in
 - **Role.** Canonical FDR control for multiple-comparison settings.
 - **`neurophase` mapping.** Required whenever the validation harness reports ≥ 2 simultaneous tests.
 
+**25. Bruña, R., Maestú, F., & Pereda, E. (2018).** "Phase locking value revisited: teaching new tricks to an old dog." *Journal of Neural Engineering*, **15**(5), 056011. DOI: `10.1088/1741-2552/aacfe4`
+- **Status.** Established.
+- **Role.** Modern review distinguishing PLV from PLI / wPLI and pinning the conditions under which PLV is an unbiased estimator on real neural data.
+- **`neurophase` mapping.** Supporting citation for claim C1 in [`CLAIMS.yaml`](../../CLAIMS.yaml): *"PLV is a well-defined estimator of inter-channel phase synchrony"*.
+
+**26. Vinck, M., Oostenveld, R., van Wingerden, M., Battaglia, F., & Pennartz, C. M. A. (2011).** "An improved index of phase-synchronization for electrophysiological data in the presence of volume-conduction, noise and sample-size bias." *NeuroImage*, **55**(4), 1548–1565. DOI: `10.1016/j.neuroimage.2011.01.055`
+- **Status.** Established.
+- **Role.** Comparison of phase-synchronization estimators across realistic SNR regimes — confirms PLV's range and identifies its failure modes.
+- **`neurophase` mapping.** Supporting citation for claim C1 in [`CLAIMS.yaml`](../../CLAIMS.yaml).
+
+**27. Ernst, M. D. (2004).** "Permutation methods: a basis for exact inference." *Statistical Science*, **19**(4), 676–685. DOI: `10.1214/088342304000000396`
+- **Status.** Established.
+- **Role.** Textbook chapter establishing the discrete-distribution form of the one-sided p-value used in modern resampling tests.
+- **`neurophase` mapping.** Supporting citation for claim C3 in [`CLAIMS.yaml`](../../CLAIMS.yaml): *"Phipson–Smyth +1-smoothed p-value estimator is strictly positive for finite surrogate samples"*.
+
+**28. Westfall, P. H., & Young, S. S. (1993).** "Resampling-Based Multiple Testing: Examples and Methods for P-Value Adjustment." *Wiley Series in Probability and Mathematical Statistics*. DOI: `10.1002/sim.4780122310`
+- **Status.** Established.
+- **Role.** Resampling-based multiple-testing methods that motivate the +1-smoothed estimator for finite-n surrogate batteries.
+- **`neurophase` mapping.** Supporting citation for claim C3 in [`CLAIMS.yaml`](../../CLAIMS.yaml).
+
 ---
 
 ## 6. Traceability matrix (claim → module → test → falsification)
