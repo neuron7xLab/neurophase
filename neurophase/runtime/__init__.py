@@ -15,6 +15,12 @@ Public API:
 
 from __future__ import annotations
 
+from neurophase.runtime.memory_audit import (
+    ComponentMemoryFootprint,
+    MemoryAuditError,
+    MemoryAuditReport,
+    audit_runtime_memory,
+)
 from neurophase.runtime.orchestrator import (
     OrchestratedFrame,
     OrchestratorConfig,
@@ -27,10 +33,14 @@ from neurophase.runtime.pipeline import (
 )
 
 __all__ = [
+    "ComponentMemoryFootprint",
     "DecisionFrame",
+    "MemoryAuditError",
+    "MemoryAuditReport",
     "OrchestratedFrame",
     "OrchestratorConfig",
     "PipelineConfig",
     "RuntimeOrchestrator",
     "StreamingPipeline",
+    "audit_runtime_memory",
 ]
