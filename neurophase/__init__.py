@@ -36,6 +36,12 @@ from neurophase.core.phase import (
     compute_phase,
     preprocess_signal,
 )
+from neurophase.data.temporal_validator import (
+    TemporalError,
+    TemporalQualityDecision,
+    TemporalValidator,
+    TimeQuality,
+)
 from neurophase.gate.direction_index import (
     Direction,
     DirectionDecision,
@@ -154,6 +160,10 @@ __all__ = [
     "StillnessDecision",
     "StillnessDetector",
     "StillnessState",
+    "TemporalError",
+    "TemporalQualityDecision",
+    "TemporalValidator",
+    "TimeQuality",
     "VerificationStep",
     "WhaleEvent",
     "__version__",
