@@ -246,3 +246,16 @@ honest_naming:
       - tests/test_benchmarks_phase_coupling.py::TestCouplingMonotonicity::test_plv_is_monotone_in_coupling_strength
     docs:
       - docs/theory/scientific_basis.md
+
+  - id: HN11
+    statement: "D1 threshold calibration is a pure grid search with out-of-sample validation: the best threshold is selected on the train split only, the test split is held out and its score is reported as the honest OOS number alongside the generalization gap."
+    enforced_in:
+      - path: neurophase/calibration/threshold.py
+        symbol: calibrate_gate_threshold
+    tests:
+      - tests/test_calibration_threshold.py::TestCalibrationEndToEnd::test_best_threshold_is_near_one_for_clean_separation
+      - tests/test_calibration_threshold.py::TestCalibrationEndToEnd::test_report_has_per_threshold_scores_on_both_splits
+      - tests/test_calibration_threshold.py::TestCalibrationEndToEnd::test_generalization_gap_is_reported
+      - tests/test_calibration_threshold.py::TestCalibrationDeterminism::test_same_grid_same_report
+    docs:
+      - docs/EVOLUTION_BOARD.md
