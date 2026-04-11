@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 9  
 **Advisory invariants:** 2  
-**Honest-naming contracts:** 31  
+**Honest-naming contracts:** 32  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -57,6 +57,7 @@
   - [HN29](#hn29)
   - [HN30](#hn30)
   - [HN31](#hn31)
+  - [HN32](#hn32)
 
 ## Gate state machine
 
@@ -1189,6 +1190,34 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_parameter_sweep.py::TestHelperAPI::test_by_coupling_filters`
 - `tests/test_parameter_sweep.py::TestHelperAPI::test_repr_surfaces_summary`
 - `tests/test_parameter_sweep.py::TestHelperAPI::test_cell_repr_format`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
+
+### HN32
+
+**Statement.** Seventh axis — Resistance (Опір): the runtime stack refuses to degrade under adversarial pressure. The ResistanceSuite registers exactly SIX composition-level adversarial scenarios and every one must pass on every PR: (1) gate sequence is byte-identical with and without an adversarial KLR that lies about every frame as SUCCESS; (2) after 10 000 orchestrator ticks every internal rolling buffer remains bounded by its declared cap; (3) a single-byte tamper of any record in a committed decision ledger is detected by verify_ledger at the tampered index; (4) a CLAIMS.yaml entry declaring status=FACT with < 3 supporting citations is rejected at load time; (5) a KLR intervention with a mis-shaped curriculum collapses to ROLLBACK, never to SUCCESS; (6) a hand-edit that inserts non-generated content into the committed monograph fails the regeneration guard. A single failing scenario is a merge block.
+
+**Enforcement sites:**
+
+- `neurophase/governance/resistance.py::ResistanceSuite`
+- `neurophase/governance/resistance.py::SEVENTH_AXIS_SCENARIOS`
+
+**Bound tests** (11):
+
+- `tests/test_seventh_axis.py::test_suite_enumerates_six_scenarios`
+- `tests/test_seventh_axis.py::test_resistance_scenario_is_frozen`
+- `tests/test_seventh_axis.py::test_gate_never_widens_under_adversarial_klr`
+- `tests/test_seventh_axis.py::test_memory_bounded_under_10k_ticks`
+- `tests/test_seventh_axis.py::test_ledger_tamper_detected`
+- `tests/test_seventh_axis.py::test_claim_forgery_rejected`
+- `tests/test_seventh_axis.py::test_curriculum_shape_corruption_rollback`
+- `tests/test_seventh_axis.py::test_monograph_drift_detected`
+- `tests/test_seventh_axis.py::test_full_suite_passes`
+- `tests/test_seventh_axis.py::test_unknown_scenario_raises_key_error`
+- `tests/test_seventh_axis.py::test_resistance_report_repr_format`
 
 **Documentation:**
 
