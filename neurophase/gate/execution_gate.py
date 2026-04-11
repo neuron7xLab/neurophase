@@ -3,17 +3,33 @@
 This is the operational core of the system. It is not a risk rule.
 It is a physical measurement translated into a binary permission.
 
-INVARIANT I1 (cannot be overridden):
-    R(t) < threshold → execution_allowed = False
+Invariants (cannot be overridden — enforced at ``GateDecision.__post_init__``):
 
-The gate operates on the composite order parameter R(t) computed from
-the joint Kuramoto network of market + neural oscillators.
+* ``I₁``: ``R(t) < threshold``          ⇒ ``execution_allowed = False``
+* ``I₂``: bio-sensor absent             ⇒ ``execution_allowed = False``
+* ``I₃``: ``R(t)`` invalid / NaN / OOR  ⇒ ``execution_allowed = False``
+* ``I₄``: stillness (no new information) ⇒ ``execution_allowed = False``
 
-States:
-    READY          R(t) ≥ threshold. Execution permitted.
-    BLOCKED        R(t) < threshold. Execution blocked.
-    SENSOR_ABSENT  Bio-sensor unavailable. Execution blocked.
-    DEGRADED       R(t) is NaN or out of range. Execution blocked.
+The gate operates on the composite order parameter ``R(t)`` computed from
+the joint Kuramoto network of market + neural oscillators. When a
+``StillnessDetector`` (``I₄``) is attached the gate additionally
+classifies ``READY`` into ``READY`` (active, execute) or ``UNNECESSARY``
+(still, no new information justifies action).
+
+States
+------
+
+* ``SENSOR_ABSENT``  — bio-sensor unavailable, ``I₂``.
+* ``DEGRADED``       — ``R(t)`` is NaN, None, or out of range, ``I₃``.
+* ``BLOCKED``        — ``R(t) < threshold``, ``I₁``.
+* ``READY``          — ``R(t) ≥ threshold`` and system is active.
+* ``UNNECESSARY``    — ``R(t) ≥ threshold`` but dynamics are still, ``I₄``.
+
+Only ``READY`` produces ``execution_allowed = True``. Every other state,
+including ``UNNECESSARY``, is non-permissive. The difference between
+``BLOCKED`` and ``UNNECESSARY`` is purely informational: ``BLOCKED``
+means "acting now would be lossy"; ``UNNECESSARY`` means "acting now
+would add no information". Both are forbidden by the gate.
 """
 
 from __future__ import annotations
@@ -24,25 +40,34 @@ from typing import Final
 
 import numpy as np
 
+from neurophase.gate.stillness_detector import (
+    StillnessDecision,
+    StillnessDetector,
+    StillnessState,
+)
+
 DEFAULT_THRESHOLD: Final[float] = 0.65
 
 
 class GateState(Enum):
-    """Gate state as a closed enumeration."""
+    """Gate state as a closed enumeration (5-state after ``I₄``)."""
 
     READY = auto()
     BLOCKED = auto()
     SENSOR_ABSENT = auto()
     DEGRADED = auto()
+    UNNECESSARY = auto()
 
 
 @dataclass(frozen=True)
 class GateDecision:
-    """Immutable gate decision enforcing invariant I1.
+    """Immutable gate decision enforcing ``execution_allowed`` invariants.
 
-    Constructing a decision with ``execution_allowed=True`` while the state
-    is not ``READY`` raises ``ValueError`` — the invariant holds at the type
-    boundary, not only at runtime.
+    Constructing a decision with ``execution_allowed=True`` while the
+    state is **not** ``READY`` raises ``ValueError`` — the invariant
+    holds at the type boundary, not only at runtime. This covers
+    ``I₁``–``I₄`` uniformly: ``BLOCKED``, ``SENSOR_ABSENT``, ``DEGRADED``
+    and ``UNNECESSARY`` can never be accidentally marked permissive.
     """
 
     state: GateState
@@ -50,6 +75,9 @@ class GateDecision:
     R: float | None
     threshold: float
     reason: str
+    #: Optional stillness-layer provenance (only populated when a
+    #: ``StillnessDetector`` was attached to the gate).
+    stillness_state: StillnessState | None = None
 
     def __post_init__(self) -> None:
         if self.execution_allowed and self.state is not GateState.READY:
@@ -57,34 +85,71 @@ class GateDecision:
 
 
 class ExecutionGate:
-    """Hard execution gate based on the Kuramoto order parameter R(t).
+    """Hard execution gate based on the Kuramoto order parameter ``R(t)``.
 
     Parameters
     ----------
-    threshold : float
-        Minimum R(t) for execution. Must be in (0, 1).
-        Lower values mean the system tolerates more desynchronization.
+    threshold
+        Minimum ``R(t)`` for execution. Must be in ``(0, 1)``. Lower
+        values mean the system tolerates more desynchronization.
+    stillness_detector
+        Optional ``StillnessDetector`` that classifies the ``READY``
+        regime into ``READY`` (active) or ``UNNECESSARY`` (still).
+        When omitted, the gate behaves exactly as the pre-``I₄`` 4-state
+        gate — no behavioral change for existing callers.
     """
 
-    def __init__(self, threshold: float = DEFAULT_THRESHOLD) -> None:
+    def __init__(
+        self,
+        threshold: float = DEFAULT_THRESHOLD,
+        stillness_detector: StillnessDetector | None = None,
+    ) -> None:
         if not 0.0 < threshold < 1.0:
             raise ValueError(f"threshold must be in (0, 1), got {threshold}")
         self.threshold: float = threshold
+        self.stillness_detector: StillnessDetector | None = stillness_detector
 
-    def evaluate(self, R: float | None, sensor_present: bool = True) -> GateDecision:
-        """Evaluate the current gate state from R(t) and sensor presence.
+    def evaluate(
+        self,
+        R: float | None,
+        sensor_present: bool = True,
+        delta: float | None = None,
+    ) -> GateDecision:
+        """Evaluate the gate state from ``R(t)``, sensor presence, and optional ``δ(t)``.
+
+        Evaluation order (strict — each check short-circuits):
+
+        1. ``sensor_present=False`` → ``SENSOR_ABSENT`` (``I₂``).
+        2. ``R`` invalid / None / out-of-range → ``DEGRADED`` (``I₃``).
+        3. ``R < threshold`` → ``BLOCKED`` (``I₁``).
+        4. ``R ≥ threshold``:
+
+           4.1 no stillness detector attached → ``READY``.
+           4.2 stillness detector attached but ``δ`` missing or invalid →
+               ``READY`` with reason ``"stillness evaluation skipped"``.
+               **Critical**: missing ``δ`` never degrades to ``DEGRADED``
+               or to ``BLOCKED`` — the stillness layer is optional and
+               its absence must never be conflated with a hardware
+               fault.
+           4.3 ``stillness_detector.update(R, δ)`` → ``STILL`` →
+               ``UNNECESSARY``; ``ACTIVE`` → ``READY``.
 
         Parameters
         ----------
-        R : float | None
-            Current order parameter value. None signals a failed computation.
-        sensor_present : bool
+        R
+            Current order parameter. ``None`` signals a failed computation.
+        sensor_present
             Whether bio-sensor data is available.
+        delta
+            Optional circular distance between brain and market mean
+            phases. Required only when a ``StillnessDetector`` is
+            attached and the caller wants the ``I₄`` layer to run.
 
         Returns
         -------
         GateDecision
-            Immutable decision carrying the ``execution_allowed`` flag.
+            Immutable decision carrying the ``execution_allowed`` flag
+            and (optionally) the stillness provenance.
         """
         if not sensor_present:
             return GateDecision(
@@ -116,10 +181,59 @@ class ExecutionGate:
                 ),
             )
 
+        # R ≥ threshold. Defer to the stillness layer if one is attached.
+        return self._classify_ready(R=R, delta=delta)
+
+    # ------------------------------------------------------------------
+    # Internals
+    # ------------------------------------------------------------------
+
+    def _classify_ready(self, *, R: float, delta: float | None) -> GateDecision:
+        """Split the ``READY`` regime via the optional ``I₄`` layer."""
+        if self.stillness_detector is None:
+            return GateDecision(
+                state=GateState.READY,
+                execution_allowed=True,
+                R=R,
+                threshold=self.threshold,
+                reason=f"R(t) = {R:.4f} ≥ threshold = {self.threshold:.4f}. Synchronized.",
+            )
+
+        if delta is None or not np.isfinite(delta) or not 0.0 <= delta <= np.pi + 1e-12:
+            # Optional layer cannot run. Fall back to 4-state READY
+            # without marking the gate DEGRADED — the hardware is fine.
+            return GateDecision(
+                state=GateState.READY,
+                execution_allowed=True,
+                R=R,
+                threshold=self.threshold,
+                reason=(
+                    f"R(t) = {R:.4f} ≥ threshold = {self.threshold:.4f}. "
+                    "Synchronized; stillness evaluation skipped (delta missing/invalid)."
+                ),
+            )
+
+        decision: StillnessDecision = self.stillness_detector.update(R=R, delta=delta)
+        if decision.state is StillnessState.STILL:
+            return GateDecision(
+                state=GateState.UNNECESSARY,
+                execution_allowed=False,
+                R=R,
+                threshold=self.threshold,
+                reason=(
+                    f"R(t) = {R:.4f} ≥ threshold = {self.threshold:.4f}, "
+                    f"but stillness layer rejects execution: {decision.reason}"
+                ),
+                stillness_state=decision.state,
+            )
         return GateDecision(
             state=GateState.READY,
             execution_allowed=True,
             R=R,
             threshold=self.threshold,
-            reason=f"R(t) = {R:.4f} ≥ threshold = {self.threshold:.4f}. Synchronized.",
+            reason=(
+                f"R(t) = {R:.4f} ≥ threshold = {self.threshold:.4f}. "
+                f"Synchronized and active: {decision.reason}"
+            ),
+            stillness_state=decision.state,
         )

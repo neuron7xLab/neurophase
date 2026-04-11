@@ -243,10 +243,21 @@ class TestRunSchema:
             "R",
             "psi_brain",
             "psi_market",
+            "delta",
             "execution_allowed",
         ]
         assert len(df) == 5
         assert df["execution_allowed"].dtype == bool
+        # delta is a circular distance in [0, π].
+        assert (df["delta"] >= 0.0).all()
+        assert (df["delta"] <= math.pi + 1e-9).all()
+
+    def test_delta_matches_circular_distance(self) -> None:
+        """The `delta` column must equal ``arccos(cos(ψ_brain − ψ_market))``."""
+        sys = CoupledBrainMarketSystem(seed=37)
+        df = sys.run(n_steps=10)
+        expected = np.arccos(np.clip(np.cos(df["psi_brain"] - df["psi_market"]), -1.0, 1.0))
+        np.testing.assert_allclose(df["delta"].to_numpy(), expected, atol=1e-12)
 
     def test_zero_steps_returns_empty_frame(self) -> None:
         sys = CoupledBrainMarketSystem(seed=31)
@@ -255,6 +266,13 @@ class TestRunSchema:
         assert len(df) == 0
 
     def test_coupled_step_dataclass_is_frozen(self) -> None:
-        step = CoupledStep(t=0.1, R=0.5, psi_brain=0.0, psi_market=0.1, execution_allowed=False)
+        step = CoupledStep(
+            t=0.1,
+            R=0.5,
+            psi_brain=0.0,
+            psi_market=0.1,
+            delta=0.1,
+            execution_allowed=False,
+        )
         with pytest.raises(dataclasses.FrozenInstanceError):
             step.R = 0.9  # type: ignore[misc]

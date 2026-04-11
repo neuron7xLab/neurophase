@@ -8,6 +8,67 @@ adheres to semantic versioning.
 
 ### Added
 
+**StillnessDetector + fourth invariant `I₄` + fifth gate state `UNNECESSARY`**
+
+- `neurophase/gate/stillness_detector.py` — новий детектор `I₄`:
+  `StillnessDetector` з rolling-window criterion (три кляузи:
+  `max |dR/dt| < ε_R`, `max |dF_proxy/dt| < ε_F`, `max δ < δ_min`),
+  warmup-семантика через `ACTIVE` (ніколи не `SENSOR_ABSENT`),
+  опціональна hysteresis через `hold_steps`, `StillnessDecision` з
+  повним provenance (dR/dt_max, dF_proxy/dt_max, delta_max,
+  window_filled, reason), `free_energy_proxy(δ) = ½·δ²` як чесний
+  геометричний surrogate (ніколи не full variational free energy).
+- `neurophase/gate/execution_gate.py` — розширено до **5 станів**:
+  `READY / BLOCKED / SENSOR_ABSENT / DEGRADED / UNNECESSARY`.
+  `ExecutionGate.__init__` приймає опціональний `stillness_detector`;
+  `ExecutionGate.evaluate` приймає опціональний `delta`. Strict
+  evaluation order: sensor → R invalid → R<θ → stillness layer.
+  Missing/invalid `δ` → `READY` (never `DEGRADED`). `GateDecision`
+  інваріант `execution_allowed=True ⇒ state=READY` розширений на
+  `UNNECESSARY` — enum включено в `__post_init__` перевірку.
+  `GateDecision.stillness_state` — новий optional provenance field.
+- `neurophase/sync/coupled_brain_market.py` — `run()` тепер повертає
+  додаткову колонку `delta` (circular distance), щоб downstream
+  `StillnessDetector` / `PredictionErrorMonitor` могли споживати
+  `(R, δ)` прямо з DataFrame. `CoupledStep` extended accordingly.
+- `tests/test_stillness_detector.py` — **55 тестів**, включно зі всіма
+  5 обов'язковими (`test_still_when_all_criteria_met`,
+  `test_active_when_R_changing`, `test_active_during_warmup`,
+  `test_active_when_delta_too_large`, `test_rejects_invalid_inputs`)
+  плюс: clause-wise isolation, ε-boundary behavior, window-wide vs
+  last-sample differential test (core design claim), dt-scaling,
+  F_proxy chain-rule verification, config validation, reset
+  semantics, frozen-dataclass invariant, reason-string contract,
+  hysteresis residency lock, window-size sweep, long-horizon noise
+  stability.
+- `tests/test_execution_gate.py` — розширено на повне `I₄` покриття:
+  `test_returns_unnecessary_when_ready_but_still`,
+  `test_still_is_not_blocked`, `test_five_gate_states_exhaustive`,
+  `test_ready_when_stillness_detector_not_configured`,
+  `test_ready_when_delta_missing_for_stillness_layer`, плюс priority
+  tests (upstream invariants override `I₄`) і parametrized
+  `GateDecision` invariant test включно з `UNNECESSARY`.
+- `tests/test_stillness_pipeline.py` — **4 end-to-end тести** повного
+  pipeline `CoupledBrainMarketSystem → (R, δ) → StillnessDetector →
+  ExecutionGate`: converges-to-UNNECESSARY at high coupling,
+  blocks-at-zero-coupling, stillness-state-reported-when-layer-runs,
+  DataFrame-contract sanity.
+- `docs/theory/stillness_invariant.md` — формальна деривація `I₄`:
+  motivation, honest free-energy derivation, three-clause criterion з
+  доказом що кожна кляуза незалежно необхідна, доказ що window-wide
+  max — єдиний правильний оператор (last-sample та EMA failure
+  modes), justification warmup → ACTIVE (not SENSOR_ABSENT), п'ять
+  станів gate з semantic distinctions, опційна hysteresis, три
+  worked counter-examples (oscillatory R, biased phase-lock at K=10,
+  micro-noise), falsification hook.
+- `docs/theory/scientific_basis.md` — Section 5 переписана з
+  "Three" на "Four Invariants", додано повний `I₄` блок з
+  посиланням на `stillness_invariant.md`.
+- `examples/stillness_demo.py` — runnable demo, що інтегрує
+  `CoupledBrainMarketSystem(K=50)` 500 RK4 steps через повний
+  5-стан gate і друкує гістограму станів + перше досягнення кожного
+  (на `seed=11`: 10 BLOCKED → 18 READY → 472 UNNECESSARY).
+
 **Coupled brain–market Kuramoto system + prediction-error monitor + formal scientific basis**
 
 - `neurophase/sync/coupled_brain_market.py` — новий модуль

@@ -20,7 +20,7 @@
 [![status](https://img.shields.io/badge/status-experimental-blueviolet?style=for-the-badge)](#status)
 [![invariants](https://img.shields.io/badge/invariants-3_hard-critical?style=for-the-badge)](#three-invariants)
 [![falsifiable](https://img.shields.io/badge/falsifiable-PLV_%3E_0-gold?style=for-the-badge)](#the-falsifiable-predicate)
-[![tests](https://img.shields.io/badge/tests-246-brightgreen?style=for-the-badge)](tests/)
+[![tests](https://img.shields.io/badge/tests-321-brightgreen?style=for-the-badge)](tests/)
 [![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=for-the-badge)](pyproject.toml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -75,6 +75,8 @@
 The brain (EEG α/β, HRV, pupil) generates predictions; the market generates reality. `R(t)` physically measures **accumulated prediction error** as phase desynchronization (Friston/Clark, 2026; Fioriti & Chinnici, 2012).
 
 When `R(t) < threshold`, the gate **blocks execution** — preserving the trader's executive function instead of enabling **cognitive surrender** (Ming/Wharton, 2026).
+
+When `R(t)` is sufficient but the joint dynamics are still — `|dR/dt| < ε`, `|dF_proxy/dt| < ε`, `δ < δ_min` over a rolling window — execution is marked **`UNNECESSARY`**: no new information justifies action (invariant **I₄**, see [`docs/theory/stillness_invariant.md`](docs/theory/stillness_invariant.md)).
 
 A neuro-symbolic trading agent grounded in **predictive-processing brain theory**. Falsifiable: `PLV(EEG_β, market_phase) > 0`.
 
@@ -139,7 +141,7 @@ Significance is assessed by a **surrogate test** over `N = 1000` random cyclic s
 
 ---
 
-## Three Invariants
+## Four Invariants
 
 > *Invariants are not rules. They are laws that cannot be overridden — enforced at construction time.*
 
@@ -152,13 +154,18 @@ Significance is assessed by a **surrogate test** over `N = 1000` random cyclic s
 </tr>
 <tr>
 <td align="center"><code>I₂</code></td>
-<td>PLV computed on <b>held-out</b> data only. No in-sample claims.</td>
-<td>Separate train / test split; <code>plv_significance</code> operates only on the test window.</td>
+<td>bio-sensor absent ⇒ <code>execution_allowed = False</code></td>
+<td>No synthetic fallback. No "graceful degradation to random." Silence is the only honest default — gate returns <code>SENSOR_ABSENT</code>.</td>
 </tr>
 <tr>
 <td align="center"><code>I₃</code></td>
-<td>If bio-sensor unavailable ⇒ state <code>SENSOR_ABSENT</code>.</td>
-<td>No synthetic fallback. No "graceful degradation to random." Silence is the only honest default.</td>
+<td><code>R(t)</code> invalid / NaN / OOR ⇒ <code>execution_allowed = False</code></td>
+<td>Failed <code>R(t)</code> computations are never silently coerced — gate returns <code>DEGRADED</code>.</td>
+</tr>
+<tr>
+<td align="center"><code>I₄</code></td>
+<td>stillness (<code>|dR/dt|&lt;ε</code> ∧ <code>|dF_proxy/dt|&lt;ε</code> ∧ <code>δ&lt;δ_min</code>) ⇒ <code>execution_allowed = False</code></td>
+<td>Rolling-window <code>StillnessDetector</code> in <code>neurophase.gate</code>. Gate returns <code>UNNECESSARY</code>: no new information justifies action. See <a href="docs/theory/stillness_invariant.md"><code>stillness_invariant.md</code></a>.</td>
 </tr>
 </table>
 
