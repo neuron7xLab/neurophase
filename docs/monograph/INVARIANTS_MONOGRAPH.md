@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 9  
 **Advisory invariants:** 2  
-**Honest-naming contracts:** 32  
+**Honest-naming contracts:** 33  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -58,6 +58,7 @@
   - [HN30](#hn30)
   - [HN31](#hn31)
   - [HN32](#hn32)
+  - [HN33](#hn33)
 
 ## Gate state machine
 
@@ -1223,6 +1224,46 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
+
+### HN33
+
+**Statement.** Eighth axis — Coherence (Цілісність): every source of truth about the system tells the same story. The Doctor runs EIGHT cross-source-of-truth coherence checks and all must pass on every PR: (1) INVARIANTS.yaml schema + bindings + enforced_in paths; (2) STATE_MACHINE.yaml schema + transition targets + non-READY non-permissive; (3) CLAIMS.yaml schema + mechanical promotion + HN cross-links; (4) committed monograph byte-equal to live generator; (5) every supporting DOI in CLAIMS.yaml resolves in the bibliography; (6) neurophase.api.__all__ is fully importable and identity-equal to canonical modules; (7) the seventh-axis adversarial sweep runs green (coherence implies resistance); (8) a 1024-tick orchestrator run leaves every rolling buffer bounded. A single failing check is a merge block. The doctor is exposed as `python -m neurophase doctor` with exit code 0 on healthy state and 1 on any drift.
+
+**Enforcement sites:**
+
+- `neurophase/governance/doctor.py::Doctor`
+- `neurophase/governance/doctor.py::DOCTOR_CHECKS`
+- `neurophase/__main__.py::_cmd_doctor`
+
+**Bound tests** (21):
+
+- `tests/test_eighth_axis_doctor.py::test_registry_enumerates_eight_checks`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[INVARIANT_REGISTRY_SCHEMA]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[STATE_MACHINE_SCHEMA]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[CLAIM_REGISTRY_SCHEMA]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[MONOGRAPH_FRESH]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[BIBLIOGRAPHY_DOI_COHERENCE]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[API_FACADE_SURFACE]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RESISTANCE_SUITE_GREEN]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RUNTIME_MEMORY_BOUNDED]`
+- `tests/test_eighth_axis_doctor.py::test_run_one_unknown_raises_key_error`
+- `tests/test_eighth_axis_doctor.py::test_report_all_healthy_disagreement_rejected`
+- `tests/test_eighth_axis_doctor.py::test_report_total_warnings_disagreement_rejected`
+- `tests/test_eighth_axis_doctor.py::test_full_doctor_runs_green_on_main`
+- `tests/test_eighth_axis_doctor.py::test_report_json_round_trip`
+- `tests/test_eighth_axis_doctor.py::test_json_projection_is_flat`
+- `tests/test_eighth_axis_doctor.py::test_markdown_rendering_is_deterministic`
+- `tests/test_eighth_axis_doctor.py::test_markdown_shows_drift_banner_on_failure`
+- `tests/test_eighth_axis_doctor.py::test_cli_doctor_exit_code_healthy`
+- `tests/test_eighth_axis_doctor.py::test_cli_doctor_json_mode`
+- `tests/test_eighth_axis_doctor.py::test_doctor_check_result_repr_format`
+- `tests/test_eighth_axis_doctor.py::test_doctor_report_repr_shows_summary`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
+- `docs/theory/neurophase_elite_bibliography.md`
 
 ---
 

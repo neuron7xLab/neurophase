@@ -1,0 +1,236 @@
+"""HN33 — Eighth axis (Coherence / Цілісність) contract tests.
+
+The eighth axis says: every source of truth about the system
+tells the same story. INVARIANTS.yaml, STATE_MACHINE.yaml,
+CLAIMS.yaml, the monograph, the bibliography, the exported API,
+and the runtime stack must all agree mechanically — and the
+doctor CLI is the single command that makes it so.
+
+Locks in:
+
+1. **Registry enumerates eight checks.** Adding or removing a
+   check without updating HN33 bindings is a contract violation.
+2. **Every check is individually invocable.**
+3. **DoctorReport is self-consistent** — the ``all_healthy``
+   and ``total_warnings`` fields cannot be lied to at construction.
+4. **The doctor runs green on main.** This is the load-bearing
+   HN33 row: if any coherence check fails on the committed repo
+   state, the PR cannot merge.
+5. **JSON projection is flat** and round-trips.
+6. **Markdown rendering is deterministic** — two invocations
+   produce byte-identical output.
+7. **CLI subcommand** ``python -m neurophase doctor`` exits
+   0 on healthy state and 1 on any drift.
+8. **Every DOI in CLAIMS.yaml resolves in the bibliography** —
+   the doctor catches drift that no per-module test can see.
+"""
+
+from __future__ import annotations
+
+import json
+
+import pytest
+
+from neurophase.governance.doctor import (
+    DOCTOR_CHECKS,
+    Doctor,
+    DoctorCheckResult,
+    DoctorReport,
+    run_doctor,
+)
+
+# ---------------------------------------------------------------------------
+# 1. Registry enumeration.
+# ---------------------------------------------------------------------------
+
+
+def test_registry_enumerates_eight_checks() -> None:
+    """The doctor registry is stable at exactly eight checks."""
+    assert len(DOCTOR_CHECKS) == 8
+    ids = {entry[0] for entry in DOCTOR_CHECKS}
+    assert ids == {
+        "INVARIANT_REGISTRY_SCHEMA",
+        "STATE_MACHINE_SCHEMA",
+        "CLAIM_REGISTRY_SCHEMA",
+        "MONOGRAPH_FRESH",
+        "BIBLIOGRAPHY_DOI_COHERENCE",
+        "API_FACADE_SURFACE",
+        "RESISTANCE_SUITE_GREEN",
+        "RUNTIME_MEMORY_BOUNDED",
+    }
+
+
+# ---------------------------------------------------------------------------
+# 2. Per-check invocation.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("check_id", [entry[0] for entry in DOCTOR_CHECKS])
+def test_individual_check_runs_green(check_id: str) -> None:
+    """Every registered check passes when run against the
+    committed repository state."""
+    result = Doctor().run_one(check_id)
+    assert isinstance(result, DoctorCheckResult)
+    assert result.passed, f"{check_id} failed: {result.detail}"
+
+
+def test_run_one_unknown_raises_key_error() -> None:
+    """Defensive: unknown check id is a loud error, never a silent fallback."""
+    with pytest.raises(KeyError):
+        Doctor().run_one("DEFINITELY_NOT_A_CHECK")
+
+
+# ---------------------------------------------------------------------------
+# 3. Report self-consistency.
+# ---------------------------------------------------------------------------
+
+
+def test_report_all_healthy_disagreement_rejected() -> None:
+    """A report that lies about ``all_healthy`` is refused at construction."""
+    with pytest.raises(ValueError, match="all_healthy"):
+        DoctorReport(
+            results=(
+                DoctorCheckResult("A", True, "ok"),
+                DoctorCheckResult("B", False, "drift"),
+            ),
+            all_healthy=True,  # lie — B failed
+            total_warnings=0,
+        )
+
+
+def test_report_total_warnings_disagreement_rejected() -> None:
+    """A report that lies about ``total_warnings`` is refused."""
+    with pytest.raises(ValueError, match="total_warnings"):
+        DoctorReport(
+            results=(DoctorCheckResult("A", True, "ok", warnings=("w1", "w2")),),
+            all_healthy=True,
+            total_warnings=99,  # lie
+        )
+
+
+# ---------------------------------------------------------------------------
+# 4. THE LOAD-BEARING CLAIM: doctor runs green on main.
+# ---------------------------------------------------------------------------
+
+
+def test_full_doctor_runs_green_on_main() -> None:
+    """This is HN33 in one line. If this test fails, the repository
+    has a coherence drift that must be fixed before merge."""
+    report = run_doctor()
+    failed = [r.check_id for r in report.results if not r.passed]
+    assert report.all_healthy, (
+        f"coherence drift on main: {len(failed)} check(s) failed: {failed}. "
+        f"Run `python -m neurophase doctor` for details."
+    )
+
+
+# ---------------------------------------------------------------------------
+# 5. JSON projection + round-trip.
+# ---------------------------------------------------------------------------
+
+
+def test_report_json_round_trip() -> None:
+    report = run_doctor()
+    payload = report.to_json_dict()
+    text = json.dumps(payload)
+    loaded = json.loads(text)
+    assert loaded["all_healthy"] == report.all_healthy
+    assert loaded["total_warnings"] == report.total_warnings
+    assert len(loaded["results"]) == len(report.results)
+    for i, r in enumerate(report.results):
+        assert loaded["results"][i]["check_id"] == r.check_id
+        assert loaded["results"][i]["passed"] == r.passed
+
+
+def test_json_projection_is_flat() -> None:
+    report = run_doctor()
+    payload = report.to_json_dict()
+    for result in payload["results"]:
+        for key, value in result.items():
+            assert isinstance(value, (str, bool, list)), (
+                f"result field {key!r} has non-primitive value {value!r}"
+            )
+            if isinstance(value, list):
+                for item in value:
+                    assert isinstance(item, str)
+
+
+# ---------------------------------------------------------------------------
+# 6. Markdown rendering is deterministic.
+# ---------------------------------------------------------------------------
+
+
+def test_markdown_rendering_is_deterministic() -> None:
+    """Two calls to :meth:`DoctorReport.as_markdown` on the same
+    report produce byte-identical output."""
+    report = run_doctor()
+    a = report.as_markdown()
+    b = report.as_markdown()
+    assert a == b
+    assert "neurophase doctor" in a
+    assert "8 / 8" in a  # pinned to the current eight checks
+
+
+def test_markdown_shows_drift_banner_on_failure() -> None:
+    drifty = DoctorReport(
+        results=(
+            DoctorCheckResult("PASS", True, "ok"),
+            DoctorCheckResult("FAIL", False, "boom"),
+        ),
+        all_healthy=False,
+        total_warnings=0,
+    )
+    md = drifty.as_markdown()
+    assert "DRIFT DETECTED" in md
+    assert "✗" in md
+
+
+# ---------------------------------------------------------------------------
+# 7. CLI subcommand.
+# ---------------------------------------------------------------------------
+
+
+def test_cli_doctor_exit_code_healthy(capsys: pytest.CaptureFixture[str]) -> None:
+    """The CLI exits 0 on a healthy state."""
+    from neurophase.__main__ import main
+
+    exit_code = main(["doctor"])
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "neurophase doctor" in captured.out
+    assert "HEALTHY" in captured.out
+
+
+def test_cli_doctor_json_mode(capsys: pytest.CaptureFixture[str]) -> None:
+    """The CLI supports a JSON-output mode for tooling."""
+    from neurophase.__main__ import main
+
+    exit_code = main(["doctor", "--json"])
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    payload = json.loads(captured.out)
+    assert payload["all_healthy"] is True
+    assert len(payload["results"]) == 8
+
+
+# ---------------------------------------------------------------------------
+# 8. Aesthetic.
+# ---------------------------------------------------------------------------
+
+
+def test_doctor_check_result_repr_format() -> None:
+    """Rich __repr__ follows the canonical HN22 design language."""
+    r = DoctorCheckResult("X", True, "ok", warnings=("a",))
+    assert repr(r).startswith("DoctorCheckResult[")
+    assert "X" in repr(r)
+    assert "✓" in repr(r)
+    assert "1 warn" in repr(r)
+
+
+def test_doctor_report_repr_shows_summary() -> None:
+    report = run_doctor()
+    r = repr(report)
+    assert r.startswith("DoctorReport[")
+    assert "/" in r
+    if report.all_healthy:
+        assert "✓" in r

@@ -216,8 +216,33 @@ def main(argv: list[str] | None = None) -> int:
     explain.add_argument("path", type=str, help="path to the ledger JSONL file")
     explain.set_defaults(func=_cmd_explain_ledger)
 
+    doctor = sub.add_parser(
+        "doctor",
+        help="run the axis-8 coherence audit across the whole repository",
+    )
+    doctor.add_argument(
+        "--json",
+        action="store_true",
+        help="emit the report as a flat JSON payload instead of Markdown",
+    )
+    doctor.set_defaults(func=_cmd_doctor)
+
     args = parser.parse_args(argv)
     return int(args.func(args))
+
+
+def _cmd_doctor(args: argparse.Namespace) -> int:
+    """Eighth-axis coherence audit. Exit code 0 iff every check passed."""
+    from neurophase.governance.doctor import run_doctor
+
+    report = run_doctor()
+    if args.json:
+        import json as _json
+
+        print(_json.dumps(report.to_json_dict(), indent=2))
+    else:
+        print(report.as_markdown())
+    return 0 if report.all_healthy else 1
 
 
 if __name__ == "__main__":  # pragma: no cover — entry point

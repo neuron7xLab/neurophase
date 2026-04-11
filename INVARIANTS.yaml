@@ -888,6 +888,42 @@ honest_naming:
       - docs/EVOLUTION_BOARD.md
       - docs/TASK_MAP.md
 
+  - id: HN33
+    statement: "Eighth axis — Coherence (Цілісність): every source of truth about the system tells the same story. The Doctor runs EIGHT cross-source-of-truth coherence checks and all must pass on every PR: (1) INVARIANTS.yaml schema + bindings + enforced_in paths; (2) STATE_MACHINE.yaml schema + transition targets + non-READY non-permissive; (3) CLAIMS.yaml schema + mechanical promotion + HN cross-links; (4) committed monograph byte-equal to live generator; (5) every supporting DOI in CLAIMS.yaml resolves in the bibliography; (6) neurophase.api.__all__ is fully importable and identity-equal to canonical modules; (7) the seventh-axis adversarial sweep runs green (coherence implies resistance); (8) a 1024-tick orchestrator run leaves every rolling buffer bounded. A single failing check is a merge block. The doctor is exposed as `python -m neurophase doctor` with exit code 0 on healthy state and 1 on any drift."
+    enforced_in:
+      - path: neurophase/governance/doctor.py
+        symbol: Doctor
+      - path: neurophase/governance/doctor.py
+        symbol: DOCTOR_CHECKS
+      - path: neurophase/__main__.py
+        symbol: _cmd_doctor
+    tests:
+      - tests/test_eighth_axis_doctor.py::test_registry_enumerates_eight_checks
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[INVARIANT_REGISTRY_SCHEMA]"
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[STATE_MACHINE_SCHEMA]"
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[CLAIM_REGISTRY_SCHEMA]"
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[MONOGRAPH_FRESH]"
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[BIBLIOGRAPHY_DOI_COHERENCE]"
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[API_FACADE_SURFACE]"
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RESISTANCE_SUITE_GREEN]"
+      - "tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RUNTIME_MEMORY_BOUNDED]"
+      - tests/test_eighth_axis_doctor.py::test_run_one_unknown_raises_key_error
+      - tests/test_eighth_axis_doctor.py::test_report_all_healthy_disagreement_rejected
+      - tests/test_eighth_axis_doctor.py::test_report_total_warnings_disagreement_rejected
+      - tests/test_eighth_axis_doctor.py::test_full_doctor_runs_green_on_main
+      - tests/test_eighth_axis_doctor.py::test_report_json_round_trip
+      - tests/test_eighth_axis_doctor.py::test_json_projection_is_flat
+      - tests/test_eighth_axis_doctor.py::test_markdown_rendering_is_deterministic
+      - tests/test_eighth_axis_doctor.py::test_markdown_shows_drift_banner_on_failure
+      - tests/test_eighth_axis_doctor.py::test_cli_doctor_exit_code_healthy
+      - tests/test_eighth_axis_doctor.py::test_cli_doctor_json_mode
+      - tests/test_eighth_axis_doctor.py::test_doctor_check_result_repr_format
+      - tests/test_eighth_axis_doctor.py::test_doctor_report_repr_shows_summary
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+      - docs/theory/neurophase_elite_bibliography.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:
