@@ -140,3 +140,25 @@ honest_naming:
       - tests/test_temporal_validator.py::TestDeterminism::test_same_input_same_decision_sequence
     docs:
       - docs/theory/time_integrity.md
+
+  - id: HN3
+    statement: "NullModelHarness p-values use Phipson–Smyth (1+k)/(1+n) smoothing — p_value is never zero for finite n."
+    enforced_in:
+      - path: neurophase/validation/null_model.py
+        symbol: NullModelHarness.test
+    tests:
+      - tests/test_null_model_harness.py::TestPValueMath::test_p_value_is_phipson_smyth_smoothed
+    docs:
+      - docs/theory/scientific_basis.md
+
+  - id: HN4
+    statement: "Surrogate generators are seeded via np.random.Generator only — same seed produces identical null distributions to the bit."
+    enforced_in:
+      - path: neurophase/validation/null_model.py
+        symbol: NullModelHarness
+      - path: neurophase/validation/surrogates.py
+        symbol: cyclic_shift
+    tests:
+      - tests/test_null_model_harness.py::TestDeterminism::test_same_seed_same_null_distribution
+    docs:
+      - docs/theory/scientific_basis.md
