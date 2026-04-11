@@ -29,6 +29,15 @@ from neurophase.analysis.prediction_error import (
     PredictionErrorMonitor,
     PredictionErrorSample,
 )
+from neurophase.audit.decision_ledger import (
+    GENESIS_HASH,
+    DecisionTraceLedger,
+    DecisionTraceRecord,
+    LedgerError,
+    LedgerVerification,
+    fingerprint_parameters,
+    verify_ledger,
+)
 from neurophase.core.kuramoto import KuramotoNetwork, KuramotoParams
 from neurophase.core.order_parameter import OrderParameterResult, order_parameter
 from neurophase.core.phase import (
@@ -126,11 +135,14 @@ from neurophase.validation.surrogates import (
 __all__ = [
     "DEFAULT_N_SURROGATES",
     "DEFAULT_THRESHOLD",
+    "GENESIS_HASH",
     "AgentEfficiency",
     "BTCFieldOrderRequest",
     "CognitiveState",
     "CoupledBrainMarketSystem",
     "CoupledStep",
+    "DecisionTraceLedger",
+    "DecisionTraceRecord",
     "DerivativesBlock",
     "Direction",
     "DirectionDecision",
@@ -146,6 +158,8 @@ __all__ = [
     "GateState",
     "KuramotoNetwork",
     "KuramotoParams",
+    "LedgerError",
+    "LedgerVerification",
     "MFDFAResult",
     "MarketContext",
     "MarketOscillators",
@@ -195,6 +209,7 @@ __all__ = [
     "detect_emergent_phase",
     "direction_index",
     "extract_market_phase",
+    "fingerprint_parameters",
     "fit_gpd_pot",
     "forman_ricci",
     "free_energy_proxy",
@@ -220,4 +235,5 @@ __all__ = [
     "topological_asymmetry",
     "tsallis_entropy",
     "validate_request",
+    "verify_ledger",
 ]
