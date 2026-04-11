@@ -620,6 +620,43 @@ honest_naming:
       - docs/EVOLUTION_BOARD.md
       - docs/TASK_MAP.md
 
+  - id: HN28
+    statement: "G5 RegimeTransitionTracker is a deterministic first-order Markov tracker over RegimeLabel sequences. observe(state) records exactly one transition per call after the first; the first call seeds the initial label and returns None. The 4x4 count matrix is non-negative integer-valued in the canonical RegimeLabel declaration order. snapshot() returns a frozen RegimeTransitionMatrix decoupled from live state. predict_next(label) returns the empirical mode of P(next|label); a row with zero observations raises InsufficientHistoryError rather than silently coercing a uniform fallback. Two trackers fed the same sequence emit byte-identical matrices and identical TransitionEvent streams. Self-loops are valid transitions and are counted on the diagonal. Pure counting, no ML, no learned weights."
+    enforced_in:
+      - path: neurophase/analysis/regime_transitions.py
+        symbol: RegimeTransitionTracker
+      - path: neurophase/analysis/regime_transitions.py
+        symbol: RegimeTransitionMatrix
+    tests:
+      - tests/test_regime_transitions.py::TestFirstOrderMarkov::test_first_observation_returns_none
+      - tests/test_regime_transitions.py::TestFirstOrderMarkov::test_second_observation_returns_event
+      - tests/test_regime_transitions.py::TestFirstOrderMarkov::test_self_loop_recorded
+      - tests/test_regime_transitions.py::TestFirstOrderMarkov::test_n_transitions_grows_by_one
+      - tests/test_regime_transitions.py::TestDeterminism::test_two_trackers_same_sequence_same_matrix
+      - tests/test_regime_transitions.py::TestDeterminism::test_event_stream_is_deterministic
+      - tests/test_regime_transitions.py::TestProbabilities::test_row_probability_sums_to_one
+      - tests/test_regime_transitions.py::TestProbabilities::test_unobserved_row_yields_zero_probability
+      - tests/test_regime_transitions.py::TestProbabilities::test_laplace_smoothing_redistributes
+      - tests/test_regime_transitions.py::TestPredictNext::test_predict_returns_argmax
+      - tests/test_regime_transitions.py::TestPredictNext::test_predict_on_empty_row_raises
+      - tests/test_regime_transitions.py::TestPredictNext::test_predict_on_single_transition
+      - tests/test_regime_transitions.py::TestSnapshotIsolation::test_snapshot_is_frozen_dataclass
+      - tests/test_regime_transitions.py::TestSnapshotIsolation::test_appending_after_snapshot_does_not_mutate_snapshot
+      - tests/test_regime_transitions.py::TestAesthetic::test_as_text_grid_includes_all_labels
+      - tests/test_regime_transitions.py::TestAesthetic::test_repr_shows_dominant_transition
+      - tests/test_regime_transitions.py::TestAesthetic::test_empty_matrix_repr
+      - tests/test_regime_transitions.py::TestAesthetic::test_transition_event_repr_arrow_for_non_self_loop
+      - tests/test_regime_transitions.py::TestAesthetic::test_transition_event_repr_self_loop_arrow
+      - tests/test_regime_transitions.py::TestMatrixValidation::test_wrong_row_count_rejected
+      - tests/test_regime_transitions.py::TestMatrixValidation::test_wrong_column_count_rejected
+      - tests/test_regime_transitions.py::TestMatrixValidation::test_negative_count_rejected
+      - tests/test_regime_transitions.py::TestMatrixValidation::test_inconsistent_n_transitions_rejected
+      - tests/test_regime_transitions.py::TestReset::test_reset_clears_matrix_and_last_label
+      - tests/test_regime_transitions.py::TestClassifierIntegration::test_tracker_consumes_classifier_output
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:

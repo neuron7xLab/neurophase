@@ -20,10 +20,17 @@ from neurophase.analysis.regime import (
     RegimeState,
     RegimeThresholds,
 )
+from neurophase.analysis.regime_transitions import (
+    InsufficientHistoryError,
+    RegimeTransitionMatrix,
+    RegimeTransitionTracker,
+    TransitionEvent,
+)
 
 __all__ = [
     "DEFAULT_REGIME_THRESHOLDS",
     "CognitiveState",
+    "InsufficientHistoryError",
     "PredictionErrorMonitor",
     "PredictionErrorResult",
     "PredictionErrorSample",
@@ -31,4 +38,7 @@ __all__ = [
     "RegimeLabel",
     "RegimeState",
     "RegimeThresholds",
+    "RegimeTransitionMatrix",
+    "RegimeTransitionTracker",
+    "TransitionEvent",
 ]
