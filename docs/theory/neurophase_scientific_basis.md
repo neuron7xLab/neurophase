@@ -12,7 +12,7 @@
 
 ## Three mechanisms mapped to system components
 
-### 1) Predictive Brain (Clark, 2026)
+### 1) Predictive Brain (Friston, 2010; Clark, 2016)
 
 **Твердження.** Мозок не пасивно записує реальність, а генерує передбачення і постійно мінімізує prediction error.
 
@@ -25,7 +25,7 @@
 
 ---
 
-### 2) Cognitive Surrender (Ming/Wharton, 2026)
+### 2) Cognitive Surrender / anti-offloading architecture
 
 **Твердження.** За надмірної залежності від LLM користувач схильний делегувати оцінку істинності, що послаблює executive function.
 
@@ -38,7 +38,7 @@
 
 ---
 
-### 3) Individual Resilience (NIH, 2026)
+### 3) Individual Resilience (adaptive longitudinal training)
 
 **Твердження.** Когнітивна резилієнс індивідуальна, вимірювана і тренована в longitudinal-підході.
 
@@ -75,3 +75,18 @@
 2. Стандартизувати anti-surrender feedback loop в інтерфейсі як обовʼязковий крок перед виконанням high-impact дій.
 3. Розширити `session archive` під longitudinal-аналітику PLV/HRV/load для персональної resilience-моделі.
 4. Проводити оцінку через falsification-first протокол: гіпотеза має право «померти», якщо дані не підтримують ефект.
+
+
+---
+
+## Bibliography anchor
+
+Для research-grade джерельної бази див. `docs/theory/neurophase_elite_bibliography.md`; компактний супровідний варіант: `docs/theory/hierarchical_status_bibliography.md`.
+
+
+## Evidence status for current thesis
+
+- Емерджентна самоорганізація та синхронізація як принцип: **Established**.
+- Predictive processing як механізм помилки передбачення: **Established**.
+- Anti-offloading architecture для LLM-контекстів як продуктова інтервенція: **Strongly Plausible** (потребує власних RCT/A-B валідацій у конкретному домені).
+- Персональний resilience signature на PLV/HRV/load: **Tentative** до накопичення longitudinal доказів.

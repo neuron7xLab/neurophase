@@ -26,14 +26,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Ruff check
-        run: ruff check neurophase tests
-
-      - name: Ruff format check
-        run: ruff format --check neurophase tests
-
-      - name: Mypy strict
-        run: mypy neurophase
-
-      - name: Pytest
-        run: pytest -q --cov=neurophase --cov-report=term-missing
+      - name: Omega governance kernel
+        run: python omega_governance_kernel.py

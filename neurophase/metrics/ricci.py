@@ -28,10 +28,13 @@ from collections.abc import Iterable
 
 import networkx as nx
 import numpy as np
+import numpy.typing as npt
 from scipy.stats import wasserstein_distance
 
 
-def _local_distribution(G: nx.Graph, node: int) -> tuple[np.ndarray, np.ndarray]:
+def _local_distribution(
+    G: nx.Graph, node: int
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Return (support, probabilities) of the one-step random walk from ``node``.
 
     For an isolated node the walk stays in place with mass 1.
@@ -45,9 +48,11 @@ def _local_distribution(G: nx.Graph, node: int) -> tuple[np.ndarray, np.ndarray]
     )
     total = float(np.sum(weights))
     if total <= 0:
-        probs = np.full(len(neighbors), 1.0 / len(neighbors), dtype=np.float64)
+        probs: npt.NDArray[np.float64] = np.full(
+            len(neighbors), 1.0 / len(neighbors), dtype=np.float64
+        )
     else:
-        probs = weights / total
+        probs = np.asarray(weights / total, dtype=np.float64)
     support = np.array(neighbors, dtype=np.float64)
     return support, probs
 
