@@ -10,6 +10,7 @@ from neurophase.reset.adaptive_threshold import AdaptiveThreshold
 from neurophase.reset.config import KLRConfig
 from neurophase.reset.controller import KetamineLikeResetController, ResetReport
 from neurophase.reset.curriculum import Curriculum
+from neurophase.reset.gamma_witness import GammaWitness, GammaWitnessReport
 from neurophase.reset.integrity import IntegrityOracle
 from neurophase.reset.ledger import RollbackLedger
 from neurophase.reset.metrics import SystemMetrics
@@ -27,10 +28,17 @@ class KLRFrame:
     ntk_rank_delta: float
     report: ResetReport
     plasticity_report: PlasticityReport
+    witness_report: GammaWitnessReport | None = None
 
 
 class KLRPipeline:
-    def __init__(self, initial_state: SystemState, config: KLRConfig | None = None) -> None:
+    def __init__(
+        self,
+        initial_state: SystemState,
+        config: KLRConfig | None = None,
+        *,
+        enable_witness: bool = True,
+    ) -> None:
         self.config = config or KLRConfig()
         self.controller = KetamineLikeResetController(self.config)
         self.adaptive_threshold = AdaptiveThreshold(
@@ -43,6 +51,7 @@ class KLRPipeline:
         self.plasticity_injector = PlasticityInjector()
         self.plasticity_monitor = PlasticityMonitor()
         self.twin_state = TwinStateManager(active=initial_state, passive=_clone(initial_state))
+        self.gamma_witness: GammaWitness | None = GammaWitness() if enable_witness else None
         self.step_counter = 0
 
     def auto_curriculum(self) -> Curriculum:
@@ -62,6 +71,17 @@ class KLRPipeline:
         _ = self.integrity.checksum_state(active)
         refractory_active = not self.refractory.can_intervene(float(self.step_counter))
         ntk_rank = self.ntk_monitor.rank_proxy(active.weights)
+
+        # Advisory γ-verification witness (NEO-I1 / NEO-I2). The observation
+        # is performed before any mutating component so the snapshot reflects
+        # the same pre-intervention state that drives the gate decision.
+        witness_report: GammaWitnessReport | None = None
+        if self.gamma_witness is not None:
+            try:
+                witness_report = self.gamma_witness.observe(active)
+            except Exception:
+                witness_report = None
+
         injection_triggered = False
         if not refractory_active:
             injection_triggered = self.plasticity_injector.maybe_inject(
@@ -122,6 +142,7 @@ class KLRPipeline:
             ntk_rank_delta=float(rank_post - rank_pre),
             report=report,
             plasticity_report=plast_report,
+            witness_report=witness_report,
         )
 
 

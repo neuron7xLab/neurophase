@@ -27,6 +27,14 @@ dev = [
     "ruff>=0.6",
     "mypy>=1.11",
 ]
+# Optional external γ-verification witness.
+# Pulls the single-file ``neosynaptex`` integrating mirror directly from
+# its canonical repository. When absent, ``GammaWitness`` degrades to a
+# no-op and every ``KLRFrame.witness_report`` is ``None`` — all core
+# invariants (I₁–I₄, KLR-I₁–I₄, NEO-I₁–I₂) continue to hold.
+witness = [
+    "neosynaptex @ git+https://github.com/neuron7xLab/neosynaptex.git@main",
+]
 
 [tool.setuptools.packages.find]
 include = ["neurophase*"]
@@ -67,6 +75,14 @@ strict_equality = true
 
 [[tool.mypy.overrides]]
 module = ["scipy.*", "pywt.*", "networkx.*", "sklearn.*", "pandas.*", "yaml.*"]
+ignore_missing_imports = true
+
+# The external ``neosynaptex`` witness is an optional dependency — the
+# code path is typed defensively and falls back to ``INSUFFICIENT_DATA``
+# when absent. The top-level module has no submodule imports so a single
+# module entry is enough.
+[[tool.mypy.overrides]]
+module = ["neosynaptex"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

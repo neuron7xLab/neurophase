@@ -3,7 +3,7 @@
 # neurophase — System Invariants Monograph
 
 **Schema version:** 1  
-**Hard invariants:** 9  
+**Hard invariants:** 11  
 **Advisory invariants:** 2  
 **Honest-naming contracts:** 37  
 **Gate states:** 5  
@@ -21,6 +21,8 @@
   - [KLR-I2 — KLR-I₂](#klr-i2)
   - [KLR-I3 — KLR-I₃](#klr-i3)
   - [KLR-C1 — KLR-C₁](#klr-c1)
+  - [NEO-I1 — NEO-I₁](#neo-i1)
+  - [NEO-I2 — NEO-I₂](#neo-i2)
   - [RT-KLR-I1 — RT-KLR-I₁](#rt-klr-i1)
 - [Advisory invariants](#advisory-invariants)
   - [I4 — I₄](#i4)
@@ -270,6 +272,53 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 
 - `tests/test_plasticity_injector.py::test_no_inject_above_floor`
 - `tests/test_plasticity_injector.py::test_inject_below_floor`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
+
+### NEO-I1 — NEO-I₁
+
+**Statement.** GammaWitness.observe() never mutates the SystemState it inspects — the external γ-verification channel is a pure read-only projection via NeosynaptexResetAdapter, whose update() method is the only write path into the witness.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #NEO-1
+
+**Enforcement sites:**
+
+- `neurophase/reset/neosynaptex_adapter.py::NeosynaptexResetAdapter.update`
+- `neurophase/reset/gamma_witness.py::GammaWitness.observe`
+
+**Bound tests** (3):
+
+- `tests/test_gamma_witness.py::test_witness_readonly`
+- `tests/test_gamma_witness.py::test_adapter_state_projection`
+- `tests/test_gamma_witness.py::test_adapter_update_never_mutates_state`
+
+**Documentation:**
+
+- `docs/theory/klr_reset_contract.md`
+
+### NEO-I2 — NEO-I₂
+
+**Statement.** A GammaWitness verdict — COHERENT, INCOHERENT or INSUFFICIENT_DATA — is advisory-only: it must never alter KLRFrame.decision, never propagate exceptions out of KLRPipeline.tick(), and the witness must degrade silently (verdict=INSUFFICIENT_DATA, phase=WARMUP) on any internal neosynaptex failure.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #NEO-1
+
+**Enforcement sites:**
+
+- `neurophase/reset/pipeline.py::KLRPipeline.tick`
+- `neurophase/reset/gamma_witness.py::GammaWitness.observe`
+
+**Bound tests** (4):
+
+- `tests/test_gamma_witness.py::test_incoherent_does_not_block`
+- `tests/test_gamma_witness.py::test_witness_in_frame`
+- `tests/test_gamma_witness.py::test_witness_disabled_returns_none_frame`
+- `tests/test_gamma_witness.py::test_neosynaptex_exception_handled`
 
 **Documentation:**
 
