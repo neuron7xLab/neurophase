@@ -1,0 +1,18 @@
+"""Coupled synchronization dynamics — brain × market Kuramoto systems.
+
+This subpackage hosts full coupled-oscillator models where brain-side
+oscillators (EEG α / β, HRV, pupil) and market-side oscillators (price,
+volume, spread) share a **single order parameter** ``R(t)``.
+
+The flagship model is ``CoupledBrainMarketSystem`` (equation 8.1 from the
+R&D report; cf. Fioriti & Chinnici, 2012).
+"""
+
+from __future__ import annotations
+
+from neurophase.sync.coupled_brain_market import (
+    CoupledBrainMarketSystem,
+    CoupledStep,
+)
+
+__all__ = ["CoupledBrainMarketSystem", "CoupledStep"]

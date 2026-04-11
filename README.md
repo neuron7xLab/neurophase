@@ -20,7 +20,7 @@
 [![status](https://img.shields.io/badge/status-experimental-blueviolet?style=for-the-badge)](#status)
 [![invariants](https://img.shields.io/badge/invariants-3_hard-critical?style=for-the-badge)](#three-invariants)
 [![falsifiable](https://img.shields.io/badge/falsifiable-PLV_%3E_0-gold?style=for-the-badge)](#the-falsifiable-predicate)
-[![tests](https://img.shields.io/badge/tests-208-brightgreen?style=for-the-badge)](tests/)
+[![tests](https://img.shields.io/badge/tests-246-brightgreen?style=for-the-badge)](tests/)
 [![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=for-the-badge)](pyproject.toml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
@@ -70,11 +70,13 @@
 </td>
 <td width="50%" valign="top">
 
-**neurophase** models the brain and the market as coupled Kuramoto oscillators. The brain (EEG, HRV, pupil) generates predictions; the market generates reality. `R(t)` measures the accumulated prediction error as phase desynchronization.
+**NeuroPhase** models brain and market as **coupled Kuramoto oscillators sharing a single order parameter** `R(t)`.
 
-When `R(t)` drops below threshold, the gate **physically blocks execution** — preserving the trader's executive function. Instead of cognitive surrender, the system strengthens human cognition through early divergence detection.
+The brain (EEG α/β, HRV, pupil) generates predictions; the market generates reality. `R(t)` physically measures **accumulated prediction error** as phase desynchronization (Friston/Clark, 2026; Fioriti & Chinnici, 2012).
 
-A neuro-symbolic trading agent grounded in **predictive processing** brain theory.
+When `R(t) < threshold`, the gate **blocks execution** — preserving the trader's executive function instead of enabling **cognitive surrender** (Ming/Wharton, 2026).
+
+A neuro-symbolic trading agent grounded in **predictive-processing brain theory**. Falsifiable: `PLV(EEG_β, market_phase) > 0`.
 
 ```
               1   N
@@ -82,11 +84,21 @@ R(t)·e^{iΨ} = ─  Σ  e^{iθ_k(t)}
               N  k=1
 ```
 
-**Claim:** when `R(t) < θ_critical`, the trader is desynchronized from the market. Execution in this state is statistically lossy. The system blocks it — not by rule, but by **physics**.
-
 </td>
 </tr>
 </table>
+
+### Citations
+
+| Claim | Source |
+|-------|--------|
+| `R(t)` forecasts market critical points | Fioriti & Chinnici (2012) |
+| Brain as predictive engine | Friston / Clark (2026) |
+| Cognitive surrender under AI | Ming / Wharton (2026) |
+| EEG Kuramoto synchronization | Nguyen et al. (2020) |
+| Capital-weighted Kuramoto | Capital-Weighted Kuramoto WG (2026) |
+
+Full reference list and evidence chain: [`docs/theory/scientific_basis.md`](docs/theory/scientific_basis.md).
 
 ---
 

@@ -8,6 +8,35 @@ adheres to semantic versioning.
 
 ### Added
 
+**Coupled brain–market Kuramoto system + prediction-error monitor + formal scientific basis**
+
+- `neurophase/sync/coupled_brain_market.py` — новий модуль
+  `CoupledBrainMarketSystem`, що реалізує рівняння 8.1 R&D звіту
+  (Fioriti & Chinnici, 2012): brain ∪ market оператори діляться
+  **одним** order parameter `R(t)`, RK4 на детерміністичному дрейфі,
+  Euler–Maruyama на шумі, опціональна затримка `τ` через кільцевий
+  буфер середніх фаз підпопуляцій. `run(n_steps)` повертає
+  `pandas.DataFrame` зі схемою `t, R, psi_brain, psi_market,
+  execution_allowed`.
+- `tests/test_coupled_brain_market.py` — 23 тести, включно з усіма
+  обов'язковими: `test_R_is_shared_between_brain_and_market`,
+  `test_synchronizes_at_high_K`, `test_gate_blocks_when_R_below_threshold`,
+  `test_equations_match_8_1_numerically` (RK4 до 1e-12),
+  `test_delay_reduces_synchronization`, `test_noise_sigma_bounded_output`.
+- `neurophase/analysis/prediction_error.py` — новий модуль
+  `PredictionErrorMonitor`: Friston/Clark prediction error як circular
+  distance `δ(t) = arccos(cos(ψ_brain − ψ_market))`, похідний
+  `R_proxy = (1 + cos δ)/2`, three-band cognitive state
+  (SYNCHRONIZED / DIVERGING / SURRENDERED), session archive через
+  `history() -> pd.DataFrame`.
+- `tests/test_prediction_error.py` — 15 тестів: zero error, maximum
+  error, surrendered state, history schema, плюс validation, reset,
+  монотонність `R_proxy` в δ.
+- `docs/theory/scientific_basis.md` — формальний науковий базис: 6
+  секцій (Theoretical Foundation / Neuroscience Evidence / Financial
+  Evidence / Falsifiable Prediction / Gate Invariant / References),
+  28 джерел, включно з R&D звітом і всіма цитатами з README.
+
 **Cognitive-safety science basis and executive monitor**
 
 - `docs/science_basis.md` — теоретичне обґрунтування архітектури через три
@@ -32,7 +61,12 @@ adheres to semantic versioning.
 
 - `README.md` — секція *The Hypothesis* переписана під predictive-processing
   формулювання (brain = predictions, market = reality, `R(t)` = accumulated
-  prediction error). Badge з кількістю тестів оновлено до 208.
+  prediction error) + додана таблиця цитувань на 5 ключових джерел з
+  посиланням на повний референсний лист у
+  `docs/theory/scientific_basis.md`.
+- `pyproject.toml` — `pandas>=2.0` перенесено у основні залежності
+  (`CoupledBrainMarketSystem.run` і `PredictionErrorMonitor.history`
+  повертають `pandas.DataFrame`).
 
 ## [0.3.0] — 2026-04-11
 
