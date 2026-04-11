@@ -49,6 +49,11 @@ from neurophase.analysis.regime import (
     RegimeState,
     RegimeThresholds,
 )
+from neurophase.analysis.regime_transitions import (
+    RegimeTransitionMatrix,
+    RegimeTransitionTracker,
+    TransitionEvent,
+)
 from neurophase.data.temporal_validator import TimeQuality
 from neurophase.explain import (
     Contract,
@@ -129,11 +134,14 @@ __all__ = [
     "RegimeLabel",
     "RegimeState",
     "RegimeThresholds",
+    "RegimeTransitionMatrix",
+    "RegimeTransitionTracker",
     "RuntimeOrchestrator",
     "StillnessDetector",
     "StillnessState",
     "StreamingPipeline",
     "TimeQuality",
+    "TransitionEvent",
     "Verdict",
     "__version__",
     "create_pipeline",
