@@ -15,6 +15,13 @@ Public API:
 
 from __future__ import annotations
 
+from neurophase.benchmarks.parameter_sweep import (
+    SweepCellResult,
+    SweepError,
+    SweepGrid,
+    SweepReport,
+    sweep_parameters,
+)
 from neurophase.benchmarks.phase_coupling import (
     PhaseCouplingConfig,
     PhaseCouplingTrace,
@@ -25,6 +32,11 @@ from neurophase.benchmarks.phase_coupling import (
 __all__ = [
     "PhaseCouplingConfig",
     "PhaseCouplingTrace",
+    "SweepCellResult",
+    "SweepError",
+    "SweepGrid",
+    "SweepReport",
     "generate_anti_coupled",
     "generate_phase_coupling",
+    "sweep_parameters",
 ]
