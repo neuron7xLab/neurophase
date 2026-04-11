@@ -4,6 +4,63 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased] — A3 cross-module invariant matrix + HN16
+
+### Added — A3 cross-module invariant matrix (PR follows)
+
+- `tests/test_invariant_matrix.py` — **25 new tests** enforcing the
+  safety-proof complement to every per-module test.
+  - **Analytical predictor**: a pure function encoding
+    `STATE_MACHINE.yaml` verbatim (`B₁ > I₂ > I₃ > I₁ > I₄` priority
+    order). No dependency on `ExecutionGate`; readable as the formal
+    gate specification.
+  - **Full Cartesian sweep**: ~3 744 distinct cells over
+    `(time_quality, sensor_present, R, δ, has_stillness, forced_stillness)`.
+    Every cell checked: `ExecutionGate.evaluate` output must equal
+    predictor output. A single disagreement fails CI.
+  - **Reachability**: every `GateState` member reached by at least
+    one matrix cell; parametrized per-state for specific failure
+    messages.
+  - **Priority ordering**: eight tests each construct inputs that
+    satisfy *two* failing conditions simultaneously and verify the
+    higher-priority one wins (e.g. `temporal=GAPPED + sensor=False`
+    → `DEGRADED` not `SENSOR_ABSENT`).
+  - **State-machine × matrix consistency**: loads `STATE_MACHINE.yaml`
+    and verifies every declared transition target is reached by ≥ 1
+    matrix cell; every `execution_allowed=True` transition targets
+    `READY`.
+  - **Pipeline reachability**: complementary liveness proof driving
+    the full `StreamingPipeline` (B1 → B2+B6 → gate) with a natural
+    tick sequence and asserting every `GateState` is reached —
+    `DEGRADED` via bad R, `BLOCKED` via low R, `READY` via healthy
+    high R, `UNNECESSARY` via still high R, `SENSOR_ABSENT` via
+    direct gate call (the pipeline has no sensor hook by design).
+- `docs/theory/invariant_matrix.md` — formal documentation of the
+  matrix: why it exists, the analytical predictor, what it covers,
+  what it deliberately does not, and how to extend it.
+- `INVARIANTS.yaml` — honest-naming contract **HN16** registered
+  and bound to 18 strongest matrix tests. Enforced by the A1 CI
+  meta-test.
+
+### Why A3 matters (Karpathy / Sutskever-mode)
+
+Every other test file in the suite probes one axis at a time. A
+future refactor of `ExecutionGate._classify_ready` that accidentally
+lets a single `(time_quality, sensor_present, R, δ, stillness)`
+combination slip from `UNNECESSARY` to `READY` would pass every
+isolated test — because none of them touches that specific
+combination. A3 sweeps the full cross-product and compares the
+live gate against a pure analytical predictor encoded from
+`STATE_MACHINE.yaml`. This is the load-bearing *"a proof that
+something cannot silently fail"* test for the gate-level semantic
+surface.
+
+### Stats
+
+- **624 tests** green (up from 598).
+- **96 source files** pass `mypy --strict`.
+- **16 honest-naming contracts** (HN1–HN16) CI-bound.
+
 ## [Unreleased] — Research-grade bibliography + HN15 honest-citation contract
 
 ### Added
