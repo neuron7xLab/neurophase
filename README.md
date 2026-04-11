@@ -20,7 +20,7 @@
 [![status](https://img.shields.io/badge/status-experimental-blueviolet?style=for-the-badge)](#status)
 [![invariants](https://img.shields.io/badge/invariants-3_hard-critical?style=for-the-badge)](#three-invariants)
 [![falsifiable](https://img.shields.io/badge/falsifiable-PLV_%3E_0-gold?style=for-the-badge)](#the-falsifiable-predicate)
-[![tests](https://img.shields.io/badge/tests-662-brightgreen?style=for-the-badge)](tests/)
+[![tests](https://img.shields.io/badge/tests-703-brightgreen?style=for-the-badge)](tests/)
 [![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=for-the-badge)](pyproject.toml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
