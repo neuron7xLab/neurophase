@@ -50,12 +50,16 @@ from neurophase.metrics.hurst import hurst_dfa, hurst_rs
 from neurophase.metrics.ism import compute_ism, compute_topological_energy, ism_derivative
 from neurophase.metrics.plv import PLVResult, plv, plv_significance, rolling_plv
 from neurophase.metrics.ricci import forman_ricci, mean_ricci, ollivier_ricci
+from neurophase.risk.evt import EVTFit, compute_cvar, compute_var, fit_gpd_pot
+from neurophase.risk.mfdfa import MFDFAResult, mfdfa, multifractal_instability
+from neurophase.risk.sizer import PositionSize, RiskProfile, size_position
 
 __all__ = [
     "DEFAULT_THRESHOLD",
     "Direction",
     "DirectionDecision",
     "DirectionIndexWeights",
+    "EVTFit",
     "EmergentPhaseCriteria",
     "EmergentPhaseDecision",
     "ExecutionGate",
@@ -63,18 +67,24 @@ __all__ = [
     "GateState",
     "KuramotoNetwork",
     "KuramotoParams",
+    "MFDFAResult",
     "OrderParameterResult",
     "PLVResult",
+    "PositionSize",
+    "RiskProfile",
     "__version__",
     "adaptive_threshold",
+    "compute_cvar",
     "compute_fmn",
     "compute_ism",
     "compute_phase",
     "compute_qilm",
     "compute_topological_energy",
+    "compute_var",
     "delta_entropy",
     "detect_emergent_phase",
     "direction_index",
+    "fit_gpd_pot",
     "forman_ricci",
     "freedman_diaconis_bins",
     "hurst_dfa",
@@ -82,6 +92,8 @@ __all__ = [
     "ism_derivative",
     "kurtosis",
     "mean_ricci",
+    "mfdfa",
+    "multifractal_instability",
     "ollivier_ricci",
     "order_parameter",
     "plv",
@@ -90,6 +102,7 @@ __all__ = [
     "renyi_entropy",
     "rolling_plv",
     "shannon_entropy",
+    "size_position",
     "skewness",
     "topological_asymmetry",
     "tsallis_entropy",
