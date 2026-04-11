@@ -21,6 +21,9 @@ class TestFacadeContract:
 
         expected = {
             "DEFAULT_THRESHOLD",
+            "ActionDecision",
+            "ActionIntent",
+            "ActionPolicy",
             "Contract",
             "DecisionExplanation",
             "DecisionFrame",
@@ -29,6 +32,7 @@ class TestFacadeContract:
             "GateDecision",
             "GateState",
             "PipelineConfig",
+            "PolicyConfig",
             "RegimeClassifier",
             "RegimeLabel",
             "RegimeState",

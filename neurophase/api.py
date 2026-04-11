@@ -65,6 +65,12 @@ from neurophase.gate.execution_gate import (
     GateState,
 )
 from neurophase.gate.stillness_detector import StillnessDetector, StillnessState
+from neurophase.policy.action import (
+    ActionDecision,
+    ActionIntent,
+    ActionPolicy,
+    PolicyConfig,
+)
 from neurophase.runtime.pipeline import (
     DecisionFrame,
     PipelineConfig,
@@ -100,6 +106,9 @@ __version__ = _pkg_version
 
 __all__ = [
     "DEFAULT_THRESHOLD",
+    "ActionDecision",
+    "ActionIntent",
+    "ActionPolicy",
     "Contract",
     "DecisionExplanation",
     "DecisionFrame",
@@ -108,6 +117,7 @@ __all__ = [
     "GateDecision",
     "GateState",
     "PipelineConfig",
+    "PolicyConfig",
     "RegimeClassifier",
     "RegimeLabel",
     "RegimeState",
