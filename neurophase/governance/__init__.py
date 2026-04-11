@@ -1,16 +1,20 @@
-"""Governance layer — machine-readable invariant registry.
+"""Governance layer — machine-readable invariant + state-machine registries.
 
-This subpackage loads and validates ``INVARIANTS.yaml`` at the
-repository root. The registry is consumed by a CI meta-test to
-guarantee that every registered invariant has at least one bound
-pytest node id and that every referenced test file actually exists.
+This subpackage loads and validates two top-level YAML artifacts:
+
+* ``INVARIANTS.yaml`` — the invariant registry (task A1).
+* ``STATE_MACHINE.yaml`` — the formal gate state-machine specification (task A2).
+
+Both registries are consumed by CI meta-tests to guarantee that every
+registered contract has at least one bound pytest node id and that
+every referenced file exists on disk.
 
 Public API:
 
-* :class:`Invariant` — typed record of a single invariant.
-* :class:`InvariantRegistry` — loaded registry with helpers.
-* :class:`HonestNamingContract` — typed record of an honest-naming contract.
-* :func:`load_registry` — default loader that resolves ``INVARIANTS.yaml``.
+* :class:`Invariant`, :class:`InvariantRegistry`, :func:`load_registry`
+* :class:`Transition`, :class:`StateMachineSpec`, :func:`load_state_machine`
+* typed error classes :class:`InvariantRegistryError`,
+  :class:`StateMachineRegistryError`.
 """
 
 from __future__ import annotations
@@ -25,14 +29,30 @@ from neurophase.governance.invariants import (
     InvariantSeverity,
     load_registry,
 )
+from neurophase.governance.state_machine import (
+    DEFAULT_STATE_MACHINE_PATH,
+    GlobalInvariant,
+    StateMachineRegistryError,
+    StateMachineSpec,
+    StateSpec,
+    Transition,
+    load_state_machine,
+)
 
 __all__ = [
     "DEFAULT_REGISTRY_PATH",
+    "DEFAULT_STATE_MACHINE_PATH",
     "EnforcementSite",
+    "GlobalInvariant",
     "HonestNamingContract",
     "Invariant",
     "InvariantRegistry",
     "InvariantRegistryError",
     "InvariantSeverity",
+    "StateMachineRegistryError",
+    "StateMachineSpec",
+    "StateSpec",
+    "Transition",
     "load_registry",
+    "load_state_machine",
 ]

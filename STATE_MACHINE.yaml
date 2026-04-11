@@ -1,0 +1,161 @@
+# neurophase — machine-readable gate state-machine specification
+#
+# Load-bearing. Governed by docs/EVOLUTION_BOARD.md and enforced by
+# tests/test_state_machine_spec.py. This file is the canonical
+# specification of the 5-state ExecutionGate as of PR #17 (task A2).
+#
+# Each transition is a 4-tuple (trigger, guard, target, test_binding).
+# The CI meta-test verifies:
+#   1. Every `target` is a valid GateState enum member.
+#   2. Every `from_state` is valid too.
+#   3. Every non-sink state has ≥ 1 outgoing transition.
+#   4. Every READY-and-permissive transition has `execution_allowed: true`
+#      while every non-READY transition has `execution_allowed: false`
+#      (invariants I₁–I₄ + B₁ at the machine level).
+#   5. Every transition has ≥ 1 bound test (no orphan transitions).
+#   6. Every bound test file exists on disk.
+#
+# This is A2. It lives alongside (not inside) INVARIANTS.yaml because
+# the state machine is a structural specification while INVARIANTS.yaml
+# is a behavioral one.
+
+version: 1
+
+gate_states:
+  - name: SENSOR_ABSENT
+    execution_allowed: false
+    semantic: "bio-sensor unavailable (I₂)"
+  - name: DEGRADED
+    execution_allowed: false
+    semantic: "R(t) invalid / temporal integrity failure (I₃ ∪ B₁)"
+  - name: BLOCKED
+    execution_allowed: false
+    semantic: "R(t) < threshold — desynchronized (I₁)"
+  - name: READY
+    execution_allowed: true
+    semantic: "R(t) ≥ threshold, dynamics active — the only permissive state"
+  - name: UNNECESSARY
+    execution_allowed: false
+    semantic: "R(t) ≥ threshold, stillness detected (I₄)"
+
+# Transitions encoded as declarative rules. Each rule is an atomic
+# evaluation clause inside ExecutionGate.evaluate; the full evaluation
+# is the ordered first-match over this list.
+#
+# `priority` is used only by the CI meta-test to verify evaluation
+# order matches the documented strict-short-circuit contract.
+transitions:
+  - id: T0_temporal_invalid
+    priority: 0
+    from_state: "*"
+    trigger: "time_quality is supplied and quality != VALID"
+    guard: "time_quality is not None and time_quality.quality is not TimeQuality.VALID"
+    target: DEGRADED
+    execution_allowed: false
+    invariant: B1
+    tests:
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.GAPPED]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.STALE]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.REVERSED]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.DUPLICATE]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.WARMUP]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.INVALID]
+
+  - id: T1_sensor_absent
+    priority: 1
+    from_state: "*"
+    trigger: "sensor_present == False"
+    guard: "not sensor_present"
+    target: SENSOR_ABSENT
+    execution_allowed: false
+    invariant: I2
+    tests:
+      - tests/test_execution_gate.py::test_sensor_absent
+
+  - id: T2_R_invalid
+    priority: 2
+    from_state: "*"
+    trigger: "R is None / NaN / out-of-range"
+    guard: "R is None or not isfinite(R) or not 0 <= R <= 1"
+    target: DEGRADED
+    execution_allowed: false
+    invariant: I3
+    tests:
+      - tests/test_execution_gate.py::test_degraded_on_nan
+      - tests/test_execution_gate.py::test_degraded_on_none
+
+  - id: T3_R_below_threshold
+    priority: 3
+    from_state: "*"
+    trigger: "R < threshold"
+    guard: "R < threshold"
+    target: BLOCKED
+    execution_allowed: false
+    invariant: I1
+    tests:
+      - tests/test_execution_gate.py::test_blocks_below_threshold
+
+  - id: T4_ready_no_stillness
+    priority: 4
+    from_state: "*"
+    trigger: "R ≥ threshold AND stillness_detector is None"
+    guard: "R >= threshold and stillness_detector is None"
+    target: READY
+    execution_allowed: true
+    invariant: null  # READY is the unique permissive state, no invariant to violate
+    tests:
+      - tests/test_execution_gate.py::test_permits_above_threshold
+      - tests/test_execution_gate.py::test_ready_when_stillness_detector_not_configured
+
+  - id: T5_ready_stillness_skipped
+    priority: 5
+    from_state: "*"
+    trigger: "R ≥ threshold AND stillness_detector attached but δ missing or invalid"
+    guard: "R >= threshold and stillness_detector is not None and delta missing/invalid"
+    target: READY
+    execution_allowed: true
+    invariant: null
+    tests:
+      - tests/test_execution_gate.py::test_ready_when_delta_missing_for_stillness_layer
+      - tests/test_execution_gate.py::test_ready_when_delta_invalid_for_stillness_layer[nan]
+      - tests/test_execution_gate.py::test_ready_when_delta_invalid_for_stillness_layer[inf]
+      - tests/test_execution_gate.py::test_ready_when_delta_invalid_for_stillness_layer[-0.1]
+      - tests/test_execution_gate.py::test_ready_when_delta_invalid_for_stillness_layer[10.0]
+
+  - id: T6_ready_stillness_active
+    priority: 6
+    from_state: "*"
+    trigger: "R ≥ threshold AND stillness_detector.update(R, δ) == ACTIVE"
+    guard: "R >= threshold and stillness evaluation returns ACTIVE"
+    target: READY
+    execution_allowed: true
+    invariant: null
+    tests:
+      - tests/test_execution_gate.py::test_active_stillness_returns_ready
+
+  - id: T7_unnecessary_stillness_still
+    priority: 7
+    from_state: "*"
+    trigger: "R ≥ threshold AND stillness_detector.update(R, δ) == STILL"
+    guard: "R >= threshold and stillness evaluation returns STILL"
+    target: UNNECESSARY
+    execution_allowed: false
+    invariant: I4
+    tests:
+      - tests/test_execution_gate.py::test_returns_unnecessary_when_ready_but_still
+      - tests/test_execution_gate.py::test_still_is_not_blocked
+
+# Global invariant: every transition with execution_allowed=true MUST
+# target the READY state, and the READY state MUST be reachable only
+# via transitions with execution_allowed=true.
+global_invariant:
+  statement: "execution_allowed=True ⇒ state=READY. Enforced at GateDecision.__post_init__ and verified here at the state-machine level."
+  enforced_in:
+    - path: neurophase/gate/execution_gate.py
+      symbol: GateDecision.__post_init__
+  tests:
+    - tests/test_execution_gate.py::test_invariant_cannot_be_bypassed
+    - tests/test_execution_gate.py::test_invariant_holds_for_unnecessary_too[GateState.BLOCKED]
+    - tests/test_execution_gate.py::test_invariant_holds_for_unnecessary_too[GateState.SENSOR_ABSENT]
+    - tests/test_execution_gate.py::test_invariant_holds_for_unnecessary_too[GateState.DEGRADED]
+    - tests/test_execution_gate.py::test_invariant_holds_for_unnecessary_too[GateState.UNNECESSARY]
