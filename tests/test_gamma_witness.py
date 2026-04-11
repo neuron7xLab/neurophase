@@ -24,7 +24,17 @@ from neurophase.reset import (
 from neurophase.reset.gamma_witness import COHERENCE_THRESHOLD, DEFAULT_WINDOW
 from neurophase.reset.neosynaptex_adapter import NeosynaptexResetAdapter
 
-pytest.importorskip("neosynaptex")
+# ``pytest.importorskip`` only catches ImportError. Some releases of
+# ``neosynaptex`` raise a domain-specific error during module initialisation
+# when their bundled evidence ledger is missing — broaden the guard so the
+# whole suite becomes a clean skip rather than a hard collection failure.
+try:  # pragma: no cover - environment-dependent
+    import neosynaptex  # noqa: F401
+except Exception as _exc:  # pragma: no cover - environment-dependent
+    pytest.skip(
+        f"neosynaptex witness unavailable in this environment: {_exc}",
+        allow_module_level=True,
+    )
 
 
 # ---------------------------------------------------------------------------
