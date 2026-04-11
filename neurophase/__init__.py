@@ -19,6 +19,11 @@ from neurophase.agents.pi_agent import (
     PiRule,
     SemanticMemory,
 )
+from neurophase.analysis.prediction_error import (
+    CognitiveState,
+    PredictionErrorMonitor,
+    PredictionErrorSample,
+)
 from neurophase.core.kuramoto import KuramotoNetwork, KuramotoParams
 from neurophase.core.order_parameter import OrderParameterResult, order_parameter
 from neurophase.core.phase import (
@@ -86,11 +91,18 @@ from neurophase.state.executive_monitor import (
     PacingDirective,
     VerificationStep,
 )
+from neurophase.sync.coupled_brain_market import (
+    CoupledBrainMarketSystem,
+    CoupledStep,
+)
 
 __all__ = [
     "DEFAULT_THRESHOLD",
     "AgentEfficiency",
     "BTCFieldOrderRequest",
+    "CognitiveState",
+    "CoupledBrainMarketSystem",
+    "CoupledStep",
     "DerivativesBlock",
     "Direction",
     "DirectionDecision",
@@ -121,6 +133,8 @@ __all__ = [
     "PiAgent",
     "PiRule",
     "PositionSize",
+    "PredictionErrorMonitor",
+    "PredictionErrorSample",
     "RiskProfile",
     "Scenario",
     "SemanticMemory",
