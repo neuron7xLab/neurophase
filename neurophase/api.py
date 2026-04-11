@@ -71,6 +71,11 @@ from neurophase.policy.action import (
     ActionPolicy,
     PolicyConfig,
 )
+from neurophase.runtime.orchestrator import (
+    OrchestratedFrame,
+    OrchestratorConfig,
+    RuntimeOrchestrator,
+)
 from neurophase.runtime.pipeline import (
     DecisionFrame,
     PipelineConfig,
@@ -116,12 +121,15 @@ __all__ = [
     "ExplanationStep",
     "GateDecision",
     "GateState",
+    "OrchestratedFrame",
+    "OrchestratorConfig",
     "PipelineConfig",
     "PolicyConfig",
     "RegimeClassifier",
     "RegimeLabel",
     "RegimeState",
     "RegimeThresholds",
+    "RuntimeOrchestrator",
     "StillnessDetector",
     "StillnessState",
     "StreamingPipeline",

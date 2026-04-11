@@ -15,6 +15,11 @@ Public API:
 
 from __future__ import annotations
 
+from neurophase.runtime.orchestrator import (
+    OrchestratedFrame,
+    OrchestratorConfig,
+    RuntimeOrchestrator,
+)
 from neurophase.runtime.pipeline import (
     DecisionFrame,
     PipelineConfig,
@@ -23,6 +28,9 @@ from neurophase.runtime.pipeline import (
 
 __all__ = [
     "DecisionFrame",
+    "OrchestratedFrame",
+    "OrchestratorConfig",
     "PipelineConfig",
+    "RuntimeOrchestrator",
     "StreamingPipeline",
 ]
