@@ -45,7 +45,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 from neurophase.audit.decision_ledger import (
     DecisionTraceLedger,
@@ -376,6 +379,121 @@ class StreamingPipeline:
             gate=gated_decision,
             ledger_record=ledger_record,
         )
+
+    def tick_batch(self, frame: pd.DataFrame) -> pd.DataFrame:
+        """Advance the pipeline over every row of a DataFrame in one call.
+
+        This is the **batch complement** to :meth:`tick`: for offline
+        replay and calibration-grade scoring, paying the Python
+        function-call cost per sample is wasteful. ``tick_batch``
+        iterates the underlying stateful layers internally and
+        materialises one row in the output DataFrame per input row,
+        preserving the exact same state transitions as a sequence of
+        :meth:`tick` calls would produce.
+
+        Required columns
+        ----------------
+        * ``timestamp`` — float, monotonically non-decreasing.
+        * ``R``         — float or ``None`` / ``NaN``.
+
+        Optional columns
+        ----------------
+        * ``delta``         — float; treated as ``None`` when absent.
+        * ``reference_now`` — float; treated as ``None`` when absent.
+
+        Output columns
+        --------------
+        ``tick_index``, ``timestamp``, ``R``, ``delta``,
+        ``gate_state``, ``execution_allowed``, ``time_quality``,
+        ``stream_regime``, ``stream_fault_rate``, ``gate_reason``,
+        ``ledger_record_hash``.
+
+        Contract
+        --------
+        * **Semantic parity.** For the same inputs,
+          ``tick_batch`` produces exactly the same ``gate_state``
+          sequence as iterating :meth:`tick` row by row. This is
+          certified by ``tests/test_batch_pipeline.py``.
+        * **Statefulness.** ``tick_batch`` continues from the
+          current pipeline state — calling it twice in a row
+          appends to the same rolling windows. Use :meth:`reset`
+          at session boundaries.
+        * **Ledger compatible.** When a ledger is attached, every
+          batch row is appended to the ledger exactly as if the
+          caller had invoked :meth:`tick` for each row. The final
+          ledger file is byte-identical to the serial path.
+
+        Parameters
+        ----------
+        frame
+            ``pandas.DataFrame`` with the required columns above.
+            The column order is irrelevant; missing optional
+            columns are treated as ``None``.
+
+        Returns
+        -------
+        pandas.DataFrame
+            One row per input row. Row order matches the input.
+        """
+        import pandas as pd  # lazy import — top-level pipeline avoids it
+
+        required = {"timestamp", "R"}
+        missing = required - set(frame.columns)
+        if missing:
+            raise ValueError(f"tick_batch input missing required columns: {sorted(missing)}")
+
+        has_delta = "delta" in frame.columns
+        has_ref = "reference_now" in frame.columns
+
+        rows: list[dict[str, Any]] = []
+        for _, row in frame.iterrows():
+            ts = float(row["timestamp"])
+            raw_R = row["R"]
+            r_val: float | None
+            if raw_R is None or (isinstance(raw_R, float) and pd.isna(raw_R)):
+                r_val = None
+            else:
+                r_val = float(raw_R)
+            delta_val: float | None = None
+            if has_delta:
+                raw_delta = row["delta"]
+                if raw_delta is not None and not (
+                    isinstance(raw_delta, float) and pd.isna(raw_delta)
+                ):
+                    delta_val = float(raw_delta)
+            ref_val: float | None = None
+            if has_ref:
+                raw_ref = row["reference_now"]
+                if raw_ref is not None and not (isinstance(raw_ref, float) and pd.isna(raw_ref)):
+                    ref_val = float(raw_ref)
+
+            tick_frame = self.tick(
+                timestamp=ts,
+                R=r_val,
+                delta=delta_val,
+                reference_now=ref_val,
+            )
+            rows.append(
+                {
+                    "tick_index": tick_frame.tick_index,
+                    "timestamp": tick_frame.timestamp,
+                    "R": tick_frame.R,
+                    "delta": tick_frame.delta,
+                    "gate_state": tick_frame.gate_state.name,
+                    "execution_allowed": tick_frame.execution_allowed,
+                    "time_quality": tick_frame.time_quality.name,
+                    "stream_regime": tick_frame.stream_regime.name,
+                    "stream_fault_rate": tick_frame.stream.stats.fault_rate,
+                    "gate_reason": tick_frame.gate.reason,
+                    "ledger_record_hash": (
+                        tick_frame.ledger_record.record_hash
+                        if tick_frame.ledger_record is not None
+                        else None
+                    ),
+                }
+            )
+
+        return pd.DataFrame(rows)
 
     def reset(self) -> None:
         """Reset all stateful layers. Use at session boundaries."""

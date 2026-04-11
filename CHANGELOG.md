@@ -4,6 +4,75 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased] — Interpretability + batch API + public façade + CLI
+
+### Added — Interpretability layer (HN19)
+
+- `neurophase/explain.py` — structured `DecisionExplanation`
+  replacing opaque `reason: str` fields.
+  - `Contract` enum: `B1 / I1 / I2 / I3 / I4 / READY`.
+  - `Verdict` enum: `PASS / FAIL / SKIPPED`.
+  - `ExplanationStep` frozen dataclass with typed `contract`,
+    `verdict`, `observed`, `detail`.
+  - `DecisionExplanation` frozen dataclass with `final_state`,
+    `execution_allowed`, `causal_contract` (the first FAIL step
+    in the chain, or READY), `chain`, `summary`. Deterministic;
+    `as_text()` tree renderer; flat `to_dict()` for JSON pipelines.
+  - `explain_decision(frame)` walks the priority order B₁ → I₂ →
+    I₃ → I₁ → I₄ and emits one step per layer with structured
+    pass/fail/skipped verdicts. No string parsing.
+  - `explain_gate(decision)` convenience wrapper for bare
+    `GateDecision` consumers (unit tests, direct gate calls).
+- `tests/test_explain.py` — 17 new tests including determinism,
+  flat JSON contract, causal-root marking, replay-bit-identity.
+
+### Added — Vectorized batch API (HN20)
+
+- `StreamingPipeline.tick_batch(frame)` — DataFrame in, DataFrame out.
+  Processes `(timestamp, R, delta)` rows through the same stateful
+  layers as serial `tick()` calls and emits one output row per input.
+  When a ledger is attached, the resulting file is
+  **byte-identical** to the serial path — strongest possible parity
+  contract.
+- `tests/test_batch_pipeline.py` — 13 new tests including column
+  contract, semantic parity with the serial path, state-preservation
+  across multiple `tick_batch` calls, NaN/missing handling,
+  ledger byte-identity.
+
+### Added — Public API façade + CLI (HN21)
+
+- `neurophase/api.py` — single blessed import path re-exporting the
+  minimal stable public surface: `StreamingPipeline`, `PipelineConfig`,
+  `DecisionFrame`, `DecisionExplanation`, `Contract`, `Verdict`,
+  `ExecutionGate`, `GateState`, `GateDecision`, `StillnessDetector`,
+  `StillnessState`, `TimeQuality`, `create_pipeline`,
+  `explain_decision`, `explain_gate`, `__version__`. Every symbol is
+  identity-equal to its canonical module; the façade never wraps.
+- `neurophase/__main__.py` — `python -m neurophase` CLI with four
+  subcommands:
+  - `version` — print installed version.
+  - `demo [--ticks N]` — run a short synthetic pipeline and print
+    gate states line by line.
+  - `verify-ledger <path>` — verify a decision ledger's SHA256
+    chain; exit code 0 iff verified.
+  - `explain-ledger <path>` — emit one JSONL `DecisionExplanation`
+    per ledger record for postmortem inspection.
+- `tests/test_api_and_cli.py` — 11 new tests including façade
+  contract (`__all__` frozen set, identity-equal symbols, version
+  parity), `create_pipeline` round-trip, and CLI smoke tests for
+  all four subcommands (clean and tampered ledger paths).
+
+### INVARIANTS.yaml — HN19 / HN20 / HN21
+
+Three new honest-naming contracts registered and bound to the
+strongest tests of each layer. Enforced by the A1 CI meta-test.
+
+### Stats
+
+- **703 tests** green (up from 662).
+- **106 source files** pass `mypy --strict`.
+- **21 honest-naming contracts** (HN1–HN21) CI-bound.
+
 ## [Unreleased] — D2 stillness calibration + F2 replay engine
 
 ### Added — D2 (PR follows)

@@ -351,6 +351,56 @@ honest_naming:
     docs:
       - docs/EVOLUTION_BOARD.md
 
+  - id: HN19
+    statement: "DecisionExplanation is deterministic: explain_decision(frame) returns a frozen, JSON-safe, bit-identical structured chain for any frame on every call. The to_dict() projection is flat — no nested dataclasses. The causal_contract field identifies the first-failing invariant (or READY if every step passed), providing machine-parseable interpretability without string parsing."
+    enforced_in:
+      - path: neurophase/explain.py
+        symbol: explain_decision
+    tests:
+      - tests/test_explain.py::TestDeterminism::test_same_frame_same_explanation
+      - tests/test_explain.py::TestDeterminism::test_as_dict_is_flat
+      - tests/test_explain.py::TestDeterminism::test_as_dict_is_json_serializable
+      - tests/test_explain.py::TestBasicContract::test_ready_frame_has_all_pass_chain
+      - tests/test_explain.py::TestBasicContract::test_blocked_frame_has_i1_as_causal_root
+      - tests/test_explain.py::TestBasicContract::test_degraded_frame_has_b1_as_causal_root
+      - tests/test_explain.py::TestBasicContract::test_unnecessary_frame_has_i4_as_causal_root
+      - tests/test_explain.py::TestExplainReplay::test_explanations_are_bit_identical_on_replay
+    docs:
+      - docs/EVOLUTION_BOARD.md
+
+  - id: HN20
+    statement: "StreamingPipeline.tick_batch(df) is semantically equivalent to iterating tick() row-by-row on the same inputs: the resulting gate_state sequence is identical, and when a ledger is attached the two paths produce BYTE-IDENTICAL ledger files. Batch API preserves pipeline state across calls and does not reset rolling buffers mid-batch."
+    enforced_in:
+      - path: neurophase/runtime/pipeline.py
+        symbol: StreamingPipeline.tick_batch
+    tests:
+      - tests/test_batch_pipeline.py::TestSerialParity::test_batch_equals_serial_gate_state_sequence
+      - tests/test_batch_pipeline.py::TestSerialParity::test_batch_produces_same_tick_indices
+      - tests/test_batch_pipeline.py::TestSerialParity::test_batch_preserves_pipeline_state
+      - tests/test_batch_pipeline.py::TestBatchLedgerCompat::test_batch_ledger_is_byte_identical_to_serial_ledger
+      - tests/test_batch_pipeline.py::TestMissingValues::test_nan_R_is_treated_as_none
+    docs:
+      - docs/EVOLUTION_BOARD.md
+
+  - id: HN21
+    statement: "neurophase.api is the single blessed public import path: it re-exports a frozen minimal symbol set identity-equal to the canonical internal modules. The CLI (python -m neurophase) exposes version / demo / verify-ledger / explain-ledger subcommands and is the runnable onboarding surface."
+    enforced_in:
+      - path: neurophase/api.py
+        symbol: neurophase_api_facade
+      - path: neurophase/__main__.py
+        symbol: cli_main
+    tests:
+      - tests/test_api_and_cli.py::TestFacadeContract::test_facade_exports_minimal_set
+      - tests/test_api_and_cli.py::TestFacadeContract::test_facade_version_matches_package
+      - tests/test_api_and_cli.py::TestFacadeContract::test_create_pipeline_returns_streaming_pipeline
+      - tests/test_api_and_cli.py::TestFacadeContract::test_facade_symbols_are_the_real_classes
+      - tests/test_api_and_cli.py::TestCLIVersion::test_version_command
+      - tests/test_api_and_cli.py::TestCLIDemo::test_demo_runs_and_prints_header
+      - tests/test_api_and_cli.py::TestCLIVerifyLedger::test_verify_clean_ledger
+      - tests/test_api_and_cli.py::TestCLIExplainLedger::test_explain_ledger_outputs_jsonl
+    docs:
+      - docs/EVOLUTION_BOARD.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:
