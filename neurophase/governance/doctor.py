@@ -492,6 +492,27 @@ def _check_runtime_memory_bounded() -> DoctorCheckResult:
     )
 
 
+def _check_completeness_suite_green() -> DoctorCheckResult:
+    """Check 9: the ninth-axis completeness auditor finds zero gaps."""
+    from neurophase.governance.completeness import run_completeness
+
+    report = run_completeness()
+    if not report.complete:
+        offenders = [r.check_id for r in report.results if not r.passed]
+        warns = tuple(f"{r.check_id}: {r.detail}" for r in report.results if not r.passed)
+        return DoctorCheckResult(
+            "COMPLETENESS_SUITE_GREEN",
+            False,
+            f"{len(offenders)} axis-9 completeness check(s) failing",
+            warnings=warns,
+        )
+    return DoctorCheckResult(
+        "COMPLETENESS_SUITE_GREEN",
+        True,
+        f"all {len(report.results)} axis-9 completeness checks passed",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Registry + runner
 # ---------------------------------------------------------------------------
@@ -507,6 +528,7 @@ DOCTOR_CHECKS: tuple[tuple[str, Callable[[], DoctorCheckResult]], ...] = (
     ("API_FACADE_SURFACE", _check_api_facade_surface),
     ("RESISTANCE_SUITE_GREEN", _check_resistance_suite_green),
     ("RUNTIME_MEMORY_BOUNDED", _check_runtime_memory_bounded),
+    ("COMPLETENESS_SUITE_GREEN", _check_completeness_suite_green),
 )
 
 

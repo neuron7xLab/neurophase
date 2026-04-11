@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 9  
 **Advisory invariants:** 2  
-**Honest-naming contracts:** 33  
+**Honest-naming contracts:** 34  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -59,6 +59,7 @@
   - [HN31](#hn31)
   - [HN32](#hn32)
   - [HN33](#hn33)
+  - [HN35](#hn35)
 
 ## Gate state machine
 
@@ -804,7 +805,7 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_aesthetics_contract.py::TestRichRepr::test_threshold_calibration_report_repr`
 - `tests/test_aesthetics_contract.py::TestRichRepr::test_replay_result_repr`
 - `tests/test_aesthetics_contract.py::TestFacadeDocstrings::test_every_public_symbol_has_docstring`
-- `tests/test_aesthetics_contract.py::TestCanonicalOrdering::test_facade_all_is_sorted`
+- `tests/test_aesthetics_contract.py::TestCanonicalOrdering::test_facade_all_matches_ruff_canonical_sort`
 - `tests/test_aesthetics_contract.py::TestArchitectureDocs::test_mermaid_state_diagram_exists`
 - `tests/test_aesthetics_contract.py::TestArchitectureDocs::test_one_page_architecture_exists`
 - `tests/test_aesthetics_contract.py::TestArchitectureDocs::test_mermaid_priority_flowchart_is_present`
@@ -1235,9 +1236,9 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `neurophase/governance/doctor.py::DOCTOR_CHECKS`
 - `neurophase/__main__.py::_cmd_doctor`
 
-**Bound tests** (21):
+**Bound tests** (22):
 
-- `tests/test_eighth_axis_doctor.py::test_registry_enumerates_eight_checks`
+- `tests/test_eighth_axis_doctor.py::test_registry_enumerates_nine_checks`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[INVARIANT_REGISTRY_SCHEMA]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[STATE_MACHINE_SCHEMA]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[CLAIM_REGISTRY_SCHEMA]`
@@ -1246,6 +1247,7 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[API_FACADE_SURFACE]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RESISTANCE_SUITE_GREEN]`
 - `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[RUNTIME_MEMORY_BOUNDED]`
+- `tests/test_eighth_axis_doctor.py::test_individual_check_runs_green[COMPLETENESS_SUITE_GREEN]`
 - `tests/test_eighth_axis_doctor.py::test_run_one_unknown_raises_key_error`
 - `tests/test_eighth_axis_doctor.py::test_report_all_healthy_disagreement_rejected`
 - `tests/test_eighth_axis_doctor.py::test_report_total_warnings_disagreement_rejected`
@@ -1264,6 +1266,42 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
 - `docs/theory/neurophase_elite_bibliography.md`
+
+### HN35
+
+**Statement.** Ninth axis — Completeness (Повнота): dual of Coherence. The CompletenessAuditor registers exactly FIVE completeness checks and every one must pass on every PR: (1) every non-constant symbol in neurophase.api.__all__ appears as a substring in at least one tests/test_*.py file; (2) every non-private .py module under neurophase/ is reachable via the public import tree rooted at neurophase/__init__.py; (3) every pytest node id referenced in INVARIANTS.yaml resolves to a real test function (dead-binding detector); (4) every adapter name registered in DEFAULT_ADAPTER_REGISTRY is mentioned in a test file; (5) every HN id from the invariant registry appears verbatim in the committed monograph as a section heading. Axis 9 is surfaced inside the doctor as the 9th check (COMPLETENESS_SUITE_GREEN); a failing completeness scenario is a merge block.
+
+**Enforcement sites:**
+
+- `neurophase/governance/completeness.py::CompletenessAuditor`
+- `neurophase/governance/completeness.py::COMPLETENESS_CHECKS`
+- `neurophase/governance/doctor.py::_check_completeness_suite_green`
+
+**Bound tests** (18):
+
+- `tests/test_ninth_axis_completeness.py::test_registry_enumerates_five_checks`
+- `tests/test_ninth_axis_completeness.py::test_individual_check_runs_complete[API_SYMBOL_TEST_COVERAGE]`
+- `tests/test_ninth_axis_completeness.py::test_individual_check_runs_complete[PUBLIC_MODULE_REACHABLE]`
+- `tests/test_ninth_axis_completeness.py::test_individual_check_runs_complete[INVARIANT_TEST_NODE_EXISTS]`
+- `tests/test_ninth_axis_completeness.py::test_individual_check_runs_complete[SENSOR_ADAPTER_HAS_TEST]`
+- `tests/test_ninth_axis_completeness.py::test_individual_check_runs_complete[MONOGRAPH_MENTIONS_EVERY_HN]`
+- `tests/test_ninth_axis_completeness.py::test_run_one_unknown_raises_key_error`
+- `tests/test_ninth_axis_completeness.py::test_report_complete_disagreement_rejected`
+- `tests/test_ninth_axis_completeness.py::test_report_total_gaps_disagreement_rejected`
+- `tests/test_ninth_axis_completeness.py::test_check_result_rejects_gaps_with_passed_true`
+- `tests/test_ninth_axis_completeness.py::test_check_result_accepts_clean_pass`
+- `tests/test_ninth_axis_completeness.py::test_full_completeness_suite_runs_green_on_main`
+- `tests/test_ninth_axis_completeness.py::test_doctor_exposes_completeness_check`
+- `tests/test_ninth_axis_completeness.py::test_report_json_round_trip`
+- `tests/test_ninth_axis_completeness.py::test_json_projection_is_flat`
+- `tests/test_ninth_axis_completeness.py::test_check_result_repr_format`
+- `tests/test_ninth_axis_completeness.py::test_check_result_repr_shows_gap_count`
+- `tests/test_ninth_axis_completeness.py::test_report_repr_shows_summary`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
 
 ---
 
