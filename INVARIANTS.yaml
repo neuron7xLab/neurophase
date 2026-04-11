@@ -1,0 +1,142 @@
+# neurophase — machine-readable invariant registry
+#
+# Load-bearing. Governed by docs/EVOLUTION_BOARD.md and docs/TASK_MAP.md.
+# Every registered invariant MUST bind to ≥ 1 passing pytest node id.
+# A CI meta-test (tests/test_invariants_registry.py) fails if any binding
+# is broken, any test is missing, or any invariant has zero bound tests.
+#
+# Schema:
+#   version:       registry schema version (integer; bump on breaking changes)
+#   invariants:    list of Invariant records
+#     id:             short stable identifier  (string, unique)
+#     symbol:         display symbol            (e.g. "I₁")
+#     statement:      mathematical / prose statement (one line)
+#     severity:       "hard" | "advisory"
+#     enforced_in:    list of (path, symbol) where enforcement lives
+#     tests:          list of pytest node ids that verify the invariant
+#     docs:           list of doc paths with the formal specification
+#     introduced_in:  PR number where the invariant was first enforced
+#
+# This file is hand-maintained. The loader in
+# neurophase/governance/invariants.py validates the schema at load time
+# and the CI meta-test validates the bindings.
+
+version: 1
+
+invariants:
+  - id: I1
+    symbol: "I₁"
+    statement: "R(t) < threshold ⇒ execution_allowed = False"
+    severity: hard
+    enforced_in:
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate.evaluate
+      - path: neurophase/gate/execution_gate.py
+        symbol: GateDecision.__post_init__
+    tests:
+      - tests/test_execution_gate.py::test_blocks_below_threshold
+      - tests/test_execution_gate.py::test_invariant_cannot_be_bypassed
+      - tests/test_execution_gate.py::test_five_gate_states_exhaustive
+    docs:
+      - docs/theory/scientific_basis.md
+      - docs/theory/stillness_invariant.md
+    introduced_in: "initial"
+
+  - id: I2
+    symbol: "I₂"
+    statement: "bio-sensor absent ⇒ execution_allowed = False (gate returns SENSOR_ABSENT)"
+    severity: hard
+    enforced_in:
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate.evaluate
+    tests:
+      - tests/test_execution_gate.py::test_sensor_absent
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "initial"
+
+  - id: I3
+    symbol: "I₃"
+    statement: "R(t) invalid / None / NaN / out-of-range ⇒ execution_allowed = False (gate returns DEGRADED)"
+    severity: hard
+    enforced_in:
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate.evaluate
+    tests:
+      - tests/test_execution_gate.py::test_degraded_on_nan
+      - tests/test_execution_gate.py::test_degraded_on_none
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "initial"
+
+  - id: I4
+    symbol: "I₄"
+    statement: "stillness (max |dR/dt| < ε_R ∧ max |dF_proxy/dt| < ε_F ∧ max δ < δ_min over rolling window) ⇒ execution_allowed = False (gate returns UNNECESSARY)"
+    severity: advisory
+    enforced_in:
+      - path: neurophase/gate/stillness_detector.py
+        symbol: StillnessDetector
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate.evaluate
+      - path: neurophase/gate/execution_gate.py
+        symbol: GateDecision.__post_init__
+    tests:
+      - tests/test_stillness_detector.py::TestRequiredStillCriterion::test_still_when_all_criteria_met
+      - tests/test_stillness_detector.py::TestRequiredActiveOnRChange::test_active_when_R_changing
+      - tests/test_stillness_detector.py::TestRequiredActiveOnLargeDelta::test_active_when_delta_too_large
+      - tests/test_stillness_detector.py::TestWindowWideVsLastSample::test_window_wide_beats_last_sample
+      - tests/test_execution_gate.py::test_returns_unnecessary_when_ready_but_still
+      - tests/test_execution_gate.py::test_invariant_holds_for_unnecessary_too[GateState.UNNECESSARY]
+    docs:
+      - docs/theory/stillness_invariant.md
+      - docs/theory/scientific_basis.md
+    introduced_in: "PR #9"
+
+  - id: B1
+    symbol: "B₁"
+    statement: "temporal precondition: input time_quality ≠ VALID ⇒ execution_allowed = False (gate returns DEGRADED with temporal: reason)"
+    severity: hard
+    enforced_in:
+      - path: neurophase/data/temporal_validator.py
+        symbol: TemporalValidator
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate.evaluate
+    tests:
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_unchanged_when_time_quality_not_supplied
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_ready_with_valid_time_quality
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.GAPPED]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.STALE]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.REVERSED]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.DUPLICATE]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.WARMUP]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_gate_degraded_on_non_valid_time_quality[TimeQuality.INVALID]
+      - tests/test_temporal_validator.py::TestGateIntegration::test_temporal_check_overrides_ready
+      - tests/test_temporal_validator.py::TestGateIntegration::test_temporal_check_overrides_sensor_absent
+      - tests/test_temporal_validator.py::TestGateIntegration::test_end_to_end_pipeline_with_validator
+    docs:
+      - docs/theory/time_integrity.md
+    introduced_in: "PR #11"
+
+# Honest-naming contracts — these are not permission invariants but
+# they are load-bearing and must be enforced by tests so that future
+# refactors cannot weaken them silently.
+honest_naming:
+  - id: HN1
+    statement: "F_proxy = ½·δ² is a geometric surrogate, never called full free energy in the public API"
+    enforced_in:
+      - path: neurophase/gate/stillness_detector.py
+        symbol: free_energy_proxy
+    tests:
+      - tests/test_stillness_detector.py::TestFreeEnergyProxy::test_free_energy_proxy_matches_formula
+    docs:
+      - docs/theory/stillness_invariant.md
+
+  - id: HN2
+    statement: "TemporalValidator never repairs time — it only reports. No interpolation, no resampling, no drift estimation."
+    enforced_in:
+      - path: neurophase/data/temporal_validator.py
+        symbol: TemporalValidator
+    tests:
+      - tests/test_temporal_validator.py::TestDeterminism::test_same_input_same_decision_sequence
+    docs:
+      - docs/theory/time_integrity.md
