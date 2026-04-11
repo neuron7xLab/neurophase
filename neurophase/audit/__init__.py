@@ -15,6 +15,10 @@ Public API:
   SHA256 hash chain across records.
 * :func:`verify_ledger` — stateless verification of a ledger file.
 * :class:`LedgerError` — raised on tamper detection or schema mismatch.
+* :func:`replay_ledger` — **F2** replay engine: re-run a pipeline
+  against the original input stream and verify the resulting
+  ledger matches the stored one byte-for-byte. Postmortem
+  precondition.
 """
 
 from __future__ import annotations
@@ -28,6 +32,7 @@ from neurophase.audit.decision_ledger import (
     fingerprint_parameters,
     verify_ledger,
 )
+from neurophase.audit.replay import ReplayInput, ReplayResult, replay_ledger
 
 __all__ = [
     "GENESIS_HASH",
@@ -35,6 +40,9 @@ __all__ = [
     "DecisionTraceRecord",
     "LedgerError",
     "LedgerVerification",
+    "ReplayInput",
+    "ReplayResult",
     "fingerprint_parameters",
+    "replay_ledger",
     "verify_ledger",
 ]

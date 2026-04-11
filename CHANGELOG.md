@@ -4,6 +4,58 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased] — D2 stillness calibration + F2 replay engine
+
+### Added — D2 (PR follows)
+
+- `neurophase/calibration/stillness.py` — `calibrate_stillness_parameters`
+  grid search over `(eps_R, eps_F, delta_min, window)` against H1
+  synthetic quiet / active traces. Train/test split with
+  generalization-gap reporting, parameter fingerprint, frozen
+  `StillnessCalibrationReport`, JSON-serializable. 25 new tests in
+  `tests/test_calibration_stillness.py` including determinism,
+  fingerprint distinguishes grids, and physical-reality checks
+  (tight `eps_R` rejects drifting R; loose params admit quiet
+  traces).
+- `INVARIANTS.yaml` — HN17 registered and bound to 8 tests.
+
+### Added — F2 replay engine (same PR)
+
+- `neurophase/audit/replay.py` — `replay_ledger()` non-destructive
+  byte-level replay engine. Given an original ledger + input stream
+  + `PipelineConfig`, re-runs the full pipeline into a scratch
+  file and verifies the scratch is byte-identical to the original.
+  Any config drift (e.g. threshold change) surfaces as a record-0
+  divergence because `parameter_fingerprint` differs. Never writes
+  to the original path.
+- `ReplayInput` tuple mirrors `StreamingPipeline.tick` signature.
+- `ReplayResult` frozen dataclass with `ok`, `n_records`,
+  `original_tip_hash`, `replayed_tip_hash`, `first_divergent_index`,
+  `scratch_path`, `reason`.
+- Tampered original ledger is detected BEFORE replay starts
+  (F1's `verify_ledger` is re-run as a safety check).
+- 13 new tests in `tests/test_replay_engine.py` including happy
+  path, config-drift divergence, tampered-original rejection, and
+  full `CoupledBrainMarketSystem → ledger → replay` round-trip.
+- `INVARIANTS.yaml` — HN18 registered and bound to 8 tests.
+
+### Added — A3 (PR #25, merged separately)
+
+- `tests/test_invariant_matrix.py` — **25 new tests** enforcing the
+  safety-proof complement to every per-module test.
+  Cartesian sweep of ~3 744 distinct gate-input cells against a
+  pure analytical predictor encoded from `STATE_MACHINE.yaml`
+  verbatim, plus 8 priority-ordering tests and 5 pipeline
+  reachability tests.
+- `docs/theory/invariant_matrix.md` — formal documentation.
+- `INVARIANTS.yaml` — HN16 registered and bound to 18 tests.
+
+### Stats
+
+- **662 tests** green (up from 598).
+- **100 source files** pass `mypy --strict`.
+- **18 honest-naming contracts** (HN1–HN18) CI-bound.
+
 ## [Unreleased] — A3 cross-module invariant matrix + HN16
 
 ### Added — A3 cross-module invariant matrix (PR follows)

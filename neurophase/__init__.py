@@ -38,11 +38,22 @@ from neurophase.audit.decision_ledger import (
     fingerprint_parameters,
     verify_ledger,
 )
+from neurophase.audit.replay import ReplayInput, ReplayResult, replay_ledger
 from neurophase.benchmarks.phase_coupling import (
     PhaseCouplingConfig,
     PhaseCouplingTrace,
     generate_anti_coupled,
     generate_phase_coupling,
+)
+from neurophase.calibration.stillness import (
+    DEFAULT_DELTA_MIN_GRID,
+    DEFAULT_EPS_F_GRID,
+    DEFAULT_EPS_R_GRID,
+    DEFAULT_WINDOW_GRID,
+    StillnessCalibrationReport,
+    StillnessCellEvaluation,
+    StillnessGrid,
+    calibrate_stillness_parameters,
 )
 from neurophase.calibration.threshold import (
     DEFAULT_THRESHOLD_GRID,
@@ -166,10 +177,14 @@ from neurophase.validation.surrogates import (
 )
 
 __all__ = [
+    "DEFAULT_DELTA_MIN_GRID",
+    "DEFAULT_EPS_F_GRID",
+    "DEFAULT_EPS_R_GRID",
     "DEFAULT_N_SURROGATES",
     "DEFAULT_PLV_N_SURROGATES",
     "DEFAULT_THRESHOLD",
     "DEFAULT_THRESHOLD_GRID",
+    "DEFAULT_WINDOW_GRID",
     "GENESIS_HASH",
     "AgentEfficiency",
     "BTCFieldOrderRequest",
@@ -220,13 +235,18 @@ __all__ = [
     "PositionSize",
     "PredictionErrorMonitor",
     "PredictionErrorSample",
+    "ReplayInput",
+    "ReplayResult",
     "RiskProfile",
     "Scenario",
     "SemanticMemory",
     "SensorStatus",
     "SpotBlock",
+    "StillnessCalibrationReport",
+    "StillnessCellEvaluation",
     "StillnessDecision",
     "StillnessDetector",
+    "StillnessGrid",
     "StillnessState",
     "StreamQualityDecision",
     "StreamQualityStats",
@@ -247,6 +267,7 @@ __all__ = [
     "block_bootstrap",
     "build_signal_scan_payload",
     "calibrate_gate_threshold",
+    "calibrate_stillness_parameters",
     "compute_cvar",
     "compute_fmn",
     "compute_ism",
@@ -281,6 +302,7 @@ __all__ = [
     "plv_significance",
     "preprocess_signal",
     "renyi_entropy",
+    "replay_ledger",
     "rolling_plv",
     "shannon_entropy",
     "size_position",

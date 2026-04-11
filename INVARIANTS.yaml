@@ -317,6 +317,40 @@ honest_naming:
       - docs/theory/hierarchical_status_bibliography.md
       - docs/validation/evidence_labeling_style_guide.md
 
+  - id: HN17
+    statement: "D2 stillness-parameter calibration is a pure Cartesian grid search with out-of-sample validation: the best (eps_R, eps_F, delta_min, window) 4-tuple is selected on the train split only, the test split is held out, and the honest OOS number is reported alongside the generalization gap. Determinism: same grid → bit-identical StillnessCalibrationReport with matching parameter_fingerprint."
+    enforced_in:
+      - path: neurophase/calibration/stillness.py
+        symbol: calibrate_stillness_parameters
+    tests:
+      - tests/test_calibration_stillness.py::TestCalibrationEndToEnd::test_best_cell_has_positive_youden_j
+      - tests/test_calibration_stillness.py::TestCalibrationEndToEnd::test_quiet_traces_are_classified_as_still_most_of_the_time
+      - tests/test_calibration_stillness.py::TestCalibrationEndToEnd::test_generalization_gap_is_reported
+      - tests/test_calibration_stillness.py::TestCalibrationEndToEnd::test_best_cell_is_in_train_evaluations
+      - tests/test_calibration_stillness.py::TestStillnessDeterminism::test_same_grid_same_report
+      - tests/test_calibration_stillness.py::TestStillnessDeterminism::test_fingerprint_distinguishes_grids
+      - tests/test_calibration_stillness.py::TestPhysicalReality::test_tight_eps_R_rejects_drifting_R
+      - tests/test_calibration_stillness.py::TestPhysicalReality::test_loose_eps_R_admits_quiet_traces_as_still
+    docs:
+      - docs/EVOLUTION_BOARD.md
+
+  - id: HN18
+    statement: "F2 replay engine is non-destructive and byte-level: given an original ledger + the original input stream + the original PipelineConfig, replay_ledger() produces a scratch ledger byte-identical to the original. Any config drift (e.g. threshold change) surfaces as a record-0 divergence because the parameter_fingerprint differs. The replay engine never writes to the original ledger path."
+    enforced_in:
+      - path: neurophase/audit/replay.py
+        symbol: replay_ledger
+    tests:
+      - tests/test_replay_engine.py::TestHappyPath::test_replay_matches_original_byte_for_byte
+      - tests/test_replay_engine.py::TestHappyPath::test_replayed_ledger_verifies_independently
+      - tests/test_replay_engine.py::TestDivergence::test_divergent_inputs_are_reported
+      - tests/test_replay_engine.py::TestDivergence::test_divergent_config_changes_fingerprint
+      - tests/test_replay_engine.py::TestSafetyContracts::test_scratch_must_differ_from_original
+      - tests/test_replay_engine.py::TestSafetyContracts::test_replay_does_not_modify_original
+      - tests/test_replay_engine.py::TestTamperedOriginal::test_tampered_original_reports_failure_without_replay
+      - tests/test_replay_engine.py::TestEndToEndReplay::test_coupled_system_replay_matches
+    docs:
+      - docs/EVOLUTION_BOARD.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:
