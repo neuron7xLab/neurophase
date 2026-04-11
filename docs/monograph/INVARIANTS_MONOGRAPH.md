@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 4  
 **Advisory invariants:** 1  
-**Honest-naming contracts:** 29  
+**Honest-naming contracts:** 30  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -49,6 +49,7 @@
   - [HN27](#hn27)
   - [HN28](#hn28)
   - [HN29](#hn29)
+  - [HN30](#hn30)
 
 ## Gate state machine
 
@@ -962,6 +963,58 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `docs/monograph/INVARIANTS_MONOGRAPH.md`
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
+
+### HN30
+
+**Statement.** C8 claim registry: CLAIMS.yaml stores scientific claims with a three-rung mechanical promotion ladder (HYPOTHESIS → THEORY → FACT). The loader enforces: HYPOTHESIS is unconstrained; THEORY requires ≥ 1 supporting citation and zero contradicting; FACT requires ≥ 3 supporting citations and zero contradicting. A status declared in the YAML that does not match the evidence count + sign is rejected at load time. Every related_invariants id must exist in INVARIANTS.yaml — dangling cross-references are rejected. Schema-version pinning rejects mismatched files. Two loads of the same YAML produce equal ClaimRegistry objects (deterministic). Claim, EvidenceCitation, and ClaimRegistry are all frozen dataclasses.
+
+**Enforcement sites:**
+
+- `neurophase/governance/claims.py::load_claims`
+- `neurophase/governance/claims.py::Claim`
+- `CLAIMS.yaml::claim_registry_artifact`
+
+**Bound tests** (32):
+
+- `tests/test_claim_registry.py::TestCommittedRegistry::test_committed_file_loads`
+- `tests/test_claim_registry.py::TestCommittedRegistry::test_default_path_is_repo_root`
+- `tests/test_claim_registry.py::TestCommittedRegistry::test_every_committed_claim_has_unique_id`
+- `tests/test_claim_registry.py::TestCommittedRegistry::test_every_committed_claim_links_to_at_least_one_invariant`
+- `tests/test_claim_registry.py::TestCommittedRegistry::test_every_linked_invariant_is_real`
+- `tests/test_claim_registry.py::TestPromotionRule::test_fact_with_three_supporting_loads`
+- `tests/test_claim_registry.py::TestPromotionRule::test_fact_with_two_supporting_rejected`
+- `tests/test_claim_registry.py::TestPromotionRule::test_fact_with_contradicting_rejected`
+- `tests/test_claim_registry.py::TestPromotionRule::test_theory_with_one_supporting_loads`
+- `tests/test_claim_registry.py::TestPromotionRule::test_theory_with_zero_supporting_rejected`
+- `tests/test_claim_registry.py::TestPromotionRule::test_theory_with_contradicting_rejected`
+- `tests/test_claim_registry.py::TestPromotionRule::test_hypothesis_with_zero_evidence_loads`
+- `tests/test_claim_registry.py::TestPromotionRule::test_hypothesis_with_contradicting_loads`
+- `tests/test_claim_registry.py::TestCrossLinks::test_dangling_invariant_link_rejected`
+- `tests/test_claim_registry.py::TestCrossLinks::test_real_invariant_link_accepted`
+- `tests/test_claim_registry.py::TestSchemaValidation::test_missing_file_raises`
+- `tests/test_claim_registry.py::TestSchemaValidation::test_wrong_version_rejected`
+- `tests/test_claim_registry.py::TestSchemaValidation::test_duplicate_id_rejected`
+- `tests/test_claim_registry.py::TestSchemaValidation::test_invalid_status_rejected`
+- `tests/test_claim_registry.py::TestSchemaValidation::test_supports_must_be_bool`
+- `tests/test_claim_registry.py::TestDeterminism::test_two_loads_equal`
+- `tests/test_claim_registry.py::TestFrozen::test_claim_is_frozen`
+- `tests/test_claim_registry.py::TestFrozen::test_evidence_citation_is_frozen`
+- `tests/test_claim_registry.py::TestFrozen::test_registry_is_frozen`
+- `tests/test_claim_registry.py::TestRepr::test_claim_repr_contains_status_icon`
+- `tests/test_claim_registry.py::TestRepr::test_registry_repr_shows_status_breakdown`
+- `tests/test_claim_registry.py::TestHelperAPI::test_by_id_returns_claim`
+- `tests/test_claim_registry.py::TestHelperAPI::test_by_id_unknown_raises`
+- `tests/test_claim_registry.py::TestHelperAPI::test_by_status_filters`
+- `tests/test_claim_registry.py::TestHelperAPI::test_linked_invariants_dedupes_and_sorts`
+- `tests/test_claim_registry.py::TestHelperAPI::test_n_supporting_n_contradicting`
+- `tests/test_claim_registry.py::TestHelperAPI::test_constants_match_promotion_rule`
+
+**Documentation:**
+
+- `CLAIMS.yaml`
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
+- `docs/theory/neurophase_elite_bibliography.md`
 
 ---
 
