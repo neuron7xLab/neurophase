@@ -216,3 +216,20 @@ honest_naming:
       - tests/test_plv_held_out.py::TestPLVOnHeldOut::test_noise_is_not_significant
     docs:
       - docs/theory/scientific_basis.md
+
+  - id: HN9
+    statement: "Full-pipeline replay is bit-deterministic: same seeds + same inputs produce byte-identical decision trace ledger files across two independent runs of CoupledBrainMarketSystem → TemporalValidator → ExecutionGate(stillness) → DecisionTraceLedger."
+    enforced_in:
+      - path: neurophase/sync/coupled_brain_market.py
+        symbol: CoupledBrainMarketSystem
+      - path: neurophase/audit/decision_ledger.py
+        symbol: DecisionTraceLedger
+    tests:
+      - tests/test_determinism_certification.py::TestCoupledSystemDeterminism::test_same_seed_same_trajectory
+      - tests/test_determinism_certification.py::TestCoupledSystemDeterminism::test_same_seed_same_noisy_trajectory
+      - tests/test_determinism_certification.py::TestLedgerTipDeterminism::test_same_pipeline_same_tip
+      - tests/test_determinism_certification.py::TestLedgerTipDeterminism::test_ledger_file_is_byte_identical_on_replay
+      - tests/test_determinism_certification.py::TestLedgerReopenCorrectness::test_reopen_continues_chain_identically
+      - tests/test_determinism_certification.py::TestEndToEndReplay::test_full_stack_byte_identical_replay
+    docs:
+      - docs/EVOLUTION_BOARD.md
