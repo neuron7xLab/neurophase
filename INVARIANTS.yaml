@@ -190,3 +190,29 @@ honest_naming:
       - tests/test_decision_ledger.py::TestDeterminism::test_distinct_parameters_yield_distinct_hashes
     docs:
       - docs/EVOLUTION_BOARD.md
+
+  - id: HN7
+    statement: "PLV significance is computed via NullModelHarness — never via a naive unsmoothed surrogate estimator. p-value is Phipson–Smyth smoothed and strictly positive for any finite n_surrogates."
+    enforced_in:
+      - path: neurophase/metrics/plv.py
+        symbol: plv_significance
+    tests:
+      - tests/test_plv_held_out.py::TestHarnessDelegation::test_p_value_is_strictly_positive
+      - tests/test_plv_held_out.py::TestDeterminism::test_same_seed_same_p_value
+    docs:
+      - docs/theory/scientific_basis.md
+
+  - id: HN8
+    statement: "plv_on_held_out refuses to compute PLV on overlapping train/test indices — HeldOutSplit construction raises HeldOutViolation before any statistic is evaluated. In-sample PLV is architecturally impossible through this entry point."
+    enforced_in:
+      - path: neurophase/metrics/plv.py
+        symbol: HeldOutSplit
+      - path: neurophase/metrics/plv.py
+        symbol: plv_on_held_out
+    tests:
+      - tests/test_plv_held_out.py::TestHeldOutSplitConstruction::test_overlap_rejected
+      - tests/test_plv_held_out.py::TestPLVOnHeldOut::test_held_out_partition_is_disjoint
+      - tests/test_plv_held_out.py::TestPLVOnHeldOut::test_locked_signal_is_significant
+      - tests/test_plv_held_out.py::TestPLVOnHeldOut::test_noise_is_not_significant
+    docs:
+      - docs/theory/scientific_basis.md
