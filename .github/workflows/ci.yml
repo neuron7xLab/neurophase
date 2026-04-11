@@ -37,3 +37,6 @@ jobs:
 
       - name: Pytest
         run: pytest -q --cov=neurophase --cov-report=term-missing
+
+      - name: Doctor (axis 7 + 8 + 9 composition-level gate)
+        run: python -m neurophase doctor

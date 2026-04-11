@@ -44,14 +44,14 @@ from neurophase.governance.doctor import (
 # ---------------------------------------------------------------------------
 
 
-def test_registry_enumerates_nine_checks() -> None:
-    """The doctor registry is stable at exactly nine checks.
+def test_registry_enumerates_ten_checks() -> None:
+    """The doctor registry is stable at exactly ten checks.
 
-    Axis 9 (Completeness) was added as the ninth doctor check.
-    Changes to DOCTOR_CHECKS must update this assertion *and*
-    the HN33 bindings in INVARIANTS.yaml.
+    Check #10 is the self-enforcing loop: the doctor verifies
+    that CI runs the doctor. If the CI step is removed, the
+    doctor flags it on the next local run.
     """
-    assert len(DOCTOR_CHECKS) == 9
+    assert len(DOCTOR_CHECKS) == 10
     ids = {entry[0] for entry in DOCTOR_CHECKS}
     assert ids == {
         "INVARIANT_REGISTRY_SCHEMA",
@@ -63,6 +63,7 @@ def test_registry_enumerates_nine_checks() -> None:
         "RESISTANCE_SUITE_GREEN",
         "RUNTIME_MEMORY_BOUNDED",
         "COMPLETENESS_SUITE_GREEN",
+        "CI_WORKFLOW_DOCTOR_STEP_PRESENT",
     }
 
 
@@ -174,7 +175,7 @@ def test_markdown_rendering_is_deterministic() -> None:
     b = report.as_markdown()
     assert a == b
     assert "neurophase doctor" in a
-    assert "9 / 9" in a  # pinned to the current nine checks
+    assert "10 / 10" in a  # pinned to the current ten checks
 
 
 def test_markdown_shows_drift_banner_on_failure() -> None:
@@ -216,7 +217,7 @@ def test_cli_doctor_json_mode(capsys: pytest.CaptureFixture[str]) -> None:
     assert exit_code == 0
     payload = json.loads(captured.out)
     assert payload["all_healthy"] is True
-    assert len(payload["results"]) == 9
+    assert len(payload["results"]) == 10
 
 
 # ---------------------------------------------------------------------------
@@ -240,3 +241,58 @@ def test_doctor_report_repr_shows_summary() -> None:
     assert "/" in r
     if report.all_healthy:
         assert "✓" in r
+
+
+# ---------------------------------------------------------------------------
+# 9. Self-enforcing loop: CI step present + doctor check of the CI step.
+# ---------------------------------------------------------------------------
+
+
+def test_ci_workflow_contains_doctor_step() -> None:
+    """The committed CI workflow must contain the doctor step.
+
+    This is the load-bearing enforcement claim: every PR MUST
+    run ``python -m neurophase doctor`` in CI, not just pass
+    ``pytest``. Removing the step makes the doctor a theoretical
+    tool — axis 7/8/9 become opt-in instead of enforced.
+    """
+    from pathlib import Path
+
+    workflow_path = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "ci.yml"
+    assert workflow_path.is_file(), f"CI workflow missing at {workflow_path}"
+    text = workflow_path.read_text(encoding="utf-8")
+    assert "python -m neurophase doctor" in text, (
+        "CI workflow does not run the doctor — the self-enforcing loop is broken"
+    )
+
+
+def test_doctor_self_enforcement_check_passes() -> None:
+    """The 10th doctor check (CI_WORKFLOW_DOCTOR_STEP_PRESENT)
+    verifies the CI step exists. Must be green on main."""
+    from neurophase.governance.doctor import Doctor
+
+    result = Doctor().run_one("CI_WORKFLOW_DOCTOR_STEP_PRESENT")
+    assert result.passed, result.detail
+
+
+def test_doctor_self_enforcement_check_reads_real_workflow() -> None:
+    """The self-enforcement check reads the committed CI
+    workflow and succeeds iff the doctor step is present.
+
+    This is the falsification proof for the self-enforcing
+    loop: the check is substring-sensitive to the marker
+    ``python -m neurophase doctor``, and the marker is
+    currently present in ``.github/workflows/ci.yml``.
+    Removing it would flip this test to red.
+    """
+    from pathlib import Path
+
+    from neurophase.governance.doctor import _check_ci_workflow_has_doctor_step
+
+    workflow = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "ci.yml"
+    text = workflow.read_text(encoding="utf-8")
+    marker = "python -m neurophase doctor"
+    assert marker in text
+
+    result = _check_ci_workflow_has_doctor_step()
+    assert result.passed

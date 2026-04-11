@@ -142,15 +142,11 @@ def test_full_completeness_suite_runs_green_on_main() -> None:
 
 
 def test_doctor_exposes_completeness_check() -> None:
-    """Axis 9 is surfaced inside the doctor as the 9th check."""
+    """Axis 9 is surfaced inside the doctor as a registered check."""
     from neurophase.governance.doctor import DOCTOR_CHECKS, Doctor
 
     ids = [entry[0] for entry in DOCTOR_CHECKS]
     assert "COMPLETENESS_SUITE_GREEN" in ids
-
-    # It must be the ninth — axis 9 is the last check in the
-    # doctor pipeline.
-    assert ids[-1] == "COMPLETENESS_SUITE_GREEN"
 
     result = Doctor().run_one("COMPLETENESS_SUITE_GREEN")
     assert result.passed, result.detail
