@@ -84,21 +84,30 @@ as a cognitive-state signal.
 3. **Dan et al. (2025)** use the KOP (Kuramoto Order Parameter) to
    quantify inter-regional coupling during cognitive load tasks,
    showing monotonic `R` → executive-performance relationships.
-4. **Friston (2010)** and **Clark (2013, 2026)** formalise the
+4. **Friston (2010)** and **Clark (2013, 2016)** formalise the
    predictive brain: cortical hierarchies continuously minimise free
    energy (equivalently: variational prediction error), and breakdowns
    in this minimisation correspond to perceptual and decision
-   failures.
-5. **Petalas et al. (2020)** provide behavioural evidence that
-   prediction error computed in the Friston sense predicts response
-   latency and error bursts in high-tempo decision tasks.
-6. **Ming / Wharton (2026)** document the **cognitive surrender**
-   phenomenon: users over-rely on confident LLM outputs and bypass
-   their own verification, degrading the executive-function loop.
-7. **NIH resilience cohort (2026)** shows that individual cognitive
-   resilience is **trainable** through longitudinal adaptive
-   feedback — the evidence base for `neurophase`'s session-archive
-   training loop.
+   failures. Full references in
+   [`neurophase_elite_bibliography.md`](neurophase_elite_bibliography.md).
+5. **Shenhav, Botvinick & Cohen (2013)** provide the
+   expected-value-of-control framework linking prediction-error
+   signals to allocation of cognitive effort in high-tempo decisions
+   (DOI `10.1016/j.neuron.2013.07.007`).
+6. **Anti-offloading architecture** — *Strongly Plausible, not yet
+   Established*: the design thesis that structured friction in the
+   human↔AI loop preserves executive function. Mechanism is grounded
+   in Miyake et al. (2000) on executive-function decomposition and
+   Arnsten (2009) on stress-induced PFC degradation, but the specific
+   LLM-mediated "cognitive surrender" claim requires its own A/B
+   validation and is currently labelled `Tentative` in the evidence
+   taxonomy. See
+   [`docs/validation/evidence_labeling_style_guide.md`](../validation/evidence_labeling_style_guide.md).
+7. **Individual resilience via longitudinal training** — mechanism
+   supported by Thayer & Lane (2000) on neurovisceral integration and
+   Shaffer & Ginsberg (2017) on HRV metrics, but the product claim
+   that `neurophase`'s session archive will produce transfer is
+   currently labelled `Tentative` until longitudinal data accumulates.
 8. **Sadaghiani et al. (2010)** link alpha-band EEG synchronization
    strength to attentional engagement, providing a concrete handle on
    the brain-side oscillators.
@@ -119,9 +128,12 @@ as a cognitive-state signal.
 2. **Ikeda (2020)** — phase-synchronization analysis of the 2008
    financial crisis identifies an extended pre-crisis window of
    rising `R(t)` across major exchanges, then a sharp collapse.
-3. **Capital-Weighted Kuramoto (2026)** — a capital-weighted variant
-   of the Kuramoto order parameter flags crowding regimes in
-   algorithmic trading and outperforms volume-weighted proxies.
+3. **Capital-weighted Kuramoto (working hypothesis, *Tentative*)** —
+   a capital-weighted variant of the Kuramoto order parameter has
+   been proposed as a crowding-regime indicator in algorithmic
+   trading. No peer-reviewed validation yet; this claim is currently
+   labelled `Tentative` and requires its own falsification trial
+   before any product decision is tied to it.
 4. **Mantegna & Stanley (2000)** — foundational text on econophysics
    justifying the treatment of markets as complex interacting
    oscillator systems.
@@ -240,44 +252,53 @@ current formulation.
 
 ## 6. References
 
-The numbering below matches the R&D report citation list where
-applicable. All 28 sources are load-bearing for the scientific claims
-in this document.
+This is the compact reference list for claims that appear in this
+document. The **authoritative, DOI-annotated, evidence-labelled**
+bibliography lives in
+[`docs/theory/neurophase_elite_bibliography.md`](neurophase_elite_bibliography.md);
+a compact hierarchical companion is at
+[`docs/theory/hierarchical_status_bibliography.md`](hierarchical_status_bibliography.md).
+
+Every citation below is a **real peer-reviewed source or published
+book**.
+
+Earlier drafts of this file contained fake (fabricated) future-dated citations "Clark/Friston/Ming/Wharton (2026)" and the fake (fabricated) "NIH (2026)" entry; those fabricated names have been removed and replaced with their real-dated counterparts.
+Any claim that required a non-existent 2026 reference has been
+down-labelled to `Tentative` or `Strongly Plausible` and now
+explicitly points at the evidence-labeling style guide.
 
 ### Kuramoto theory and complex systems
 
 1. Kuramoto, Y. (1984). *Chemical Oscillations, Waves, and Turbulence*. Springer.
-2. Acebrón, J. A., Bonilla, L. L., Vicente, C. J. P., Ritort, F., & Spigler, R. (2005). "The Kuramoto model: A simple paradigm for synchronization phenomena." *Reviews of Modern Physics*, **77**(1), 137–185.
-3. Strogatz, S. H. (2000). "From Kuramoto to Crawford: Exploring the onset of synchronization in populations of coupled oscillators." *Physica D*, **143**(1–4), 1–20.
-4. Rodrigues, F. A., Peron, T. K. DM., Ji, P., & Kurths, J. (2016). "The Kuramoto model in complex networks." *Physics Reports*, **610**, 1–98.
+2. Acebrón, J. A., Bonilla, L. L., Vicente, C. J. P., Ritort, F., & Spigler, R. (2005). "The Kuramoto model: A simple paradigm for synchronization phenomena." *Reviews of Modern Physics*, **77**(1), 137–185. DOI: `10.1103/RevModPhys.77.137`
+3. Strogatz, S. H. (2000). "From Kuramoto to Crawford: Exploring the onset of synchronization in populations of coupled oscillators." *Physica D*, **143**(1–4), 1–20. DOI: `10.1016/S0167-2789(00)00094-4`
+4. Strogatz, S. H. (2003). *Sync: The Emerging Science of Spontaneous Order*. Hyperion.
+5. Rodrigues, F. A., Peron, T. K. DM., Ji, P., & Kurths, J. (2016). "The Kuramoto model in complex networks." *Physics Reports*, **610**, 1–98. DOI: `10.1016/j.physrep.2015.10.008`
+6. Haken, H. (1983). *Synergetics: An Introduction*. Springer-Verlag.
+7. Kelso, J. A. S. (1995). *Dynamic Patterns: The Self-Organization of Brain and Behavior*. MIT Press.
+8. Bak, P., Tang, C., & Wiesenfeld, K. (1987). "Self-organized criticality: an explanation of the 1/f noise." *Physical Review Letters*, **59**(4), 381. DOI: `10.1103/PhysRevLett.59.381`
 
 ### Neuroscience and predictive processing
 
-5. Friston, K. (2010). "The free-energy principle: a unified brain theory?" *Nature Reviews Neuroscience*, **11**(2), 127–138.
-6. Clark, A. (2013). "Whatever next? Predictive brains, situated agents, and the future of cognitive science." *Behavioral and Brain Sciences*, **36**(3), 181–204.
-7. Clark, A. (2026). *The Predictive Brain: Consensus Edition*. MIT Press.
-8. Petalas, D. P., Van Schie, H., & Hendriks, M. (2020). "Forecasting behavior: a unified account via active inference and predictive processing." *Psychonomic Bulletin & Review*, **27**, 1–18.
-9. Nguyen, H. B., et al. (2020). "Kuramoto order parameter tracks the Hurst exponent in intracranial EEG." *NeuroImage*, **218**, 116–162.
-10. Myrov, S., et al. (2024). "Hierarchical Kuramoto networks in resting-state brain activity." *PLoS Computational Biology*, **20**(4), e1012033.
-11. Dan, J., et al. (2025). "The Kuramoto order parameter as a marker of inter-regional coupling during cognitive load." *Frontiers in Computational Neuroscience*, **19**, 1345678.
-12. Sadaghiani, S., et al. (2010). "Intrinsic alpha-band EEG synchronization and attentional engagement." *Journal of Neuroscience*, **30**(30), 10243–10250.
-13. Buzsáki, G., & Watson, B. O. (2012). "Brain rhythms and neural syntax." *Dialogues in Clinical Neuroscience*, **14**(4), 345–367.
-14. Helfrich, R. F., et al. (2018). "Neural and autonomic interactions in executive control." *Neuron*, **97**(3), 735–751.
-15. Ming, Y. & Wharton Behavioral Lab (2026). "Cognitive surrender: evidence for delegated truth-evaluation under generative AI exposure." *Nature Human Behaviour*, **10**, 412–428.
-16. NIH Resilience Consortium (2026). "Longitudinal trainability of cognitive resilience." *NIH Technical Report 2026-04*.
-17. Frontiers in Cognitive Neuroscience (2026). "Special Issue: phase-synchronization biomarkers for attention and decision." *Frontiers in CogNeuro*, **7**.
+9. Friston, K. (2010). "The free-energy principle: a unified brain theory?" *Nature Reviews Neuroscience*, **11**(2), 127–138. DOI: `10.1038/nrn2787`
+10. Clark, A. (2013). "Whatever next? Predictive brains, situated agents, and the future of cognitive science." *Behavioral and Brain Sciences*, **36**(3), 181–204. DOI: `10.1017/S0140525X12000477`
+11. Clark, A. (2016). *Surfing Uncertainty: Prediction, Action, and the Embodied Mind*. Oxford University Press.
+12. Miyake, A., et al. (2000). "The unity and diversity of executive functions and their contributions to complex 'frontal lobe' tasks." *Cognitive Psychology*, **41**(1), 49–100. DOI: `10.1006/cogp.1999.0734`
+13. Arnsten, A. F. T. (2009). "Stress signalling pathways that impair prefrontal cortex structure and function." *Nature Reviews Neuroscience*, **10**(6), 410–422. DOI: `10.1038/nrn2648`
+14. Shenhav, A., Botvinick, M. M., & Cohen, J. D. (2013). "The expected value of control." *Neuron*, **79**(2), 217–240. DOI: `10.1016/j.neuron.2013.07.007`
+15. Engel, A. K., Fries, P., & Singer, W. (2001). "Dynamic predictions: oscillations and synchrony in top-down processing." *Nature Reviews Neuroscience*, **2**(10), 704–716. DOI: `10.1038/35094565`
+16. Cavanagh, J. F., & Frank, M. J. (2014). "Frontal theta as a mechanism for cognitive control." *Trends in Cognitive Sciences*, **18**(8), 414–421. DOI: `10.1016/j.tics.2014.04.012`
+17. Buzsáki, G. (2006). *Rhythms of the Brain*. Oxford University Press.
+18. Thayer, J. F., & Lane, R. D. (2000). "A model of neurovisceral integration in emotion regulation and dysregulation." *Journal of Affective Disorders*, **61**(3), 201–216. DOI: `10.1016/S0165-0327(00)00338-4`
+19. Shaffer, F., & Ginsberg, J. P. (2017). "An overview of heart rate variability metrics and norms." *Frontiers in Public Health*, **5**, 258. DOI: `10.3389/fpubh.2017.00258`
 
 ### Financial evidence and econophysics
 
-18. Fioriti, V. & Chinnici, M. (2012). "Predicting financial crises with a Kuramoto-style synchronization model." *Physica A*, **391**(24), 6556–6562.
-19. Ikeda, Y. (2020). "Phase synchronization analysis of the 2008 global financial crisis." *Journal of Economic Interaction and Coordination*, **15**, 553–571.
-20. Mantegna, R. N. & Stanley, H. E. (2000). *An Introduction to Econophysics*. Cambridge University Press.
-21. Cont, R. (2001). "Empirical properties of asset returns: stylized facts and statistical issues." *Quantitative Finance*, **1**(2), 223–236.
-22. Bouchaud, J.-P. & Potters, M. (2003). *Theory of Financial Risk and Derivative Pricing*. Cambridge University Press.
-23. Battiston, S., et al. (2016). "Complexity theory and financial regulation." *Science*, **351**(6275), 818–819.
-24. Preis, T., et al. (2011). "Complex dynamics of our economic life on different scales: insights from search-engine query data." *Philosophical Transactions of the Royal Society A*, **368**(1933), 5707–5719.
-25. Capital-Weighted Kuramoto Working Group (2026). "Capital-weighted synchronization flags crowding in algorithmic trading." *arXiv:2601.04521*.
-26. Morrison, A., et al. (2018). "Phase-locking value estimators for financial time series." *Physica A*, **509**, 1099–1112.
+20. Fioriti, V. & Chinnici, M. (2012). "Predicting financial crises with a Kuramoto-style synchronization model." *Physica A*, **391**(24), 6556–6562.
+21. Ikeda, Y. (2020). "Phase synchronization analysis of the 2008 global financial crisis." *Journal of Economic Interaction and Coordination*, **15**, 553–571.
+22. Mantegna, R. N. & Stanley, H. E. (2000). *An Introduction to Econophysics*. Cambridge University Press.
+23. Cont, R. (2001). "Empirical properties of asset returns: stylized facts and statistical issues." *Quantitative Finance*, **1**(2), 223–236. DOI: `10.1080/713665670`
+24. Bouchaud, J.-P. & Potters, M. (2003). *Theory of Financial Risk and Derivative Pricing*. Cambridge University Press.
 
 ### Methodological
 

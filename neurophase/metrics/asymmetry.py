@@ -26,7 +26,7 @@ from neurophase.metrics.ricci import ollivier_ricci
 _CONSTANT_REL_TOL = 1e-12
 
 
-def _is_effectively_constant(arr: np.ndarray, std: float) -> bool:
+def _is_effectively_constant(arr: npt.NDArray[np.float64], std: float) -> bool:
     """True when the standard deviation is at or below float-summation noise."""
     scale = float(np.max(np.abs(arr))) if arr.size else 0.0
     floor = _CONSTANT_REL_TOL * max(scale, 1.0)

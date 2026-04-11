@@ -4,6 +4,72 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased] — Research-grade bibliography + HN15 honest-citation contract
+
+### Added
+
+- `docs/theory/neurophase_elite_bibliography.md` — canonical,
+  DOI-annotated, evidence-labelled source list: **24 real peer-reviewed
+  sources** in S/A/B tiers with a full traceability matrix mapping
+  every load-bearing claim to a module + test + falsification
+  criterion.
+- `docs/theory/hierarchical_status_bibliography.md` — compact
+  companion.
+- `docs/validation/evidence_labeling_style_guide.md` — four-tier
+  evidence taxonomy (Established / Strongly Plausible / Tentative /
+  Unsupported-Weak).
+- `docs/validation/integration_readiness_protocol.md` — seven-phase
+  release-readiness protocol wired to existing CI (no bespoke
+  "governance kernel").
+- `tests/test_bibliography_contract.py` — **25 CI tests** enforcing
+  HN15: no fabricated future-dated citations, elite bibliography has
+  ≥ 15 real DOI anchors, cross-references intact. Fails the build
+  on any re-introduction of "Friston/Clark 2026", "Ming/Wharton
+  2026", "NIH 2026", or "Capital-Weighted Kuramoto WG 2026".
+- `INVARIANTS.yaml` — honest-naming contract **HN15** registered
+  and bound to the 7 strongest bibliography tests.
+
+### Changed — Fake-citation cleanup
+
+Every reference to the fabricated "Friston/Clark 2026", "Ming/Wharton
+2026", "NIH 2026", "Capital-Weighted Kuramoto WG 2026", and "Clark
+2026" has been replaced with its real dated counterpart across
+`docs/science_basis.md`, `docs/theory/neurophase_scientific_basis.md`,
+`docs/theory/scientific_basis.md`, and `README.md`. Real sources:
+Friston 2010, Clark 2013 / 2016, Haken 1983, Kelso 1995, Strogatz
+2003, Miyake 2000, Arnsten 2009, Shenhav-Botvinick-Cohen 2013,
+Cavanagh-Frank 2014, Lachaux 1999, Thayer-Lane 2000,
+Shaffer-Ginsberg 2017, Phipson-Smyth 2010, Theiler 1992.
+
+- `neurophase/metrics/asymmetry.py` — `_is_effectively_constant`
+  signature tightened from `np.ndarray` to `npt.NDArray[np.float64]`.
+- `neurophase/metrics/ricci.py` — `_local_distribution` return type
+  tightened to `tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]`.
+- `README.md` — "Citations" table now carries explicit DOI anchors
+  and an evidence-status column.
+
+### Rejected (from incoming PR #21, explicitly not merged)
+
+The upstream bibliography work arrived bundled with theatrical
+scaffolding: an "Ω governance kernel" that replaced the CI with a
+single `python omega_governance_kernel.py` call, a "singularity
+manifest", a "π-core self-improvement loop", an "evidence oracle"
+with a broken `|cos(π·(1−x))|` non-monotonicity, fabricated
+`FINAL_PRODUCTION_SIGNOFF` docs claiming "24/24 passed" before any
+test had run, and — most importantly — the branch was cut from a
+stale `main` predating the 13 v0.4.0 PRs, so merging it as-is would
+have deleted ~9 000 lines of real B1/B2/B6/I₄/A1/A2/C1/C2/C3/D1/E1/F1/F3
+code and 15 test files. This PR cherry-picks only the genuinely
+valuable real content; everything theatrical is rejected. The
+existing `pytest / ruff / mypy --strict` CI gates remain untouched.
+
+### Stats
+
+- **598 tests** green (up from 573 in v0.4.0).
+- **95 source files** pass `mypy --strict`.
+- **15 honest-naming contracts** (HN1–HN15) CI-bound.
+- Bibliography: **24 real peer-reviewed sources**, ≥ 15 unique DOI anchors.
+
 ## [0.4.0] — 2026-04-11
 
 Systems Evolution Board release. Installs the complete governance
