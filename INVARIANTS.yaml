@@ -162,3 +162,31 @@ honest_naming:
       - tests/test_null_model_harness.py::TestDeterminism::test_same_seed_same_null_distribution
     docs:
       - docs/theory/scientific_basis.md
+
+  - id: HN5
+    statement: "DecisionTraceLedger is append-only and tamper-evident — any post-hoc mutation of any record breaks verify_ledger at the first affected index."
+    enforced_in:
+      - path: neurophase/audit/decision_ledger.py
+        symbol: DecisionTraceLedger
+      - path: neurophase/audit/decision_ledger.py
+        symbol: verify_ledger
+    tests:
+      - tests/test_decision_ledger.py::TestTamperDetection::test_mutated_reason_detected
+      - tests/test_decision_ledger.py::TestTamperDetection::test_mutated_R_detected
+      - tests/test_decision_ledger.py::TestTamperDetection::test_swapped_records_detected
+      - tests/test_decision_ledger.py::TestTamperDetection::test_deleted_record_detected
+      - tests/test_decision_ledger.py::TestTamperDetection::test_bogus_hash_detected
+      - tests/test_decision_ledger.py::TestTamperDetection::test_truncated_line_detected
+    docs:
+      - docs/EVOLUTION_BOARD.md
+
+  - id: HN6
+    statement: "DecisionTraceLedger output is deterministic: same inputs + same parameter fingerprint → identical hash chain to the bit."
+    enforced_in:
+      - path: neurophase/audit/decision_ledger.py
+        symbol: DecisionTraceLedger
+    tests:
+      - tests/test_decision_ledger.py::TestDeterminism::test_two_ledgers_produce_identical_hash_chain
+      - tests/test_decision_ledger.py::TestDeterminism::test_distinct_parameters_yield_distinct_hashes
+    docs:
+      - docs/EVOLUTION_BOARD.md
