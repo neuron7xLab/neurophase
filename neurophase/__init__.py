@@ -12,6 +12,13 @@ from __future__ import annotations
 
 __version__ = "0.2.0"
 
+from neurophase.agents.pi_agent import (
+    AgentEfficiency,
+    MarketContext,
+    PiAgent,
+    PiRule,
+    SemanticMemory,
+)
 from neurophase.core.kuramoto import KuramotoNetwork, KuramotoParams
 from neurophase.core.order_parameter import OrderParameterResult, order_parameter
 from neurophase.core.phase import (
@@ -38,6 +45,17 @@ from neurophase.gate.execution_gate import (
 )
 from neurophase.indicators.fmn import compute_fmn
 from neurophase.indicators.qilm import compute_qilm
+from neurophase.intel.btc_field_order import (
+    BTCFieldOrderRequest,
+    DerivativesBlock,
+    OnchainBlock,
+    OrderBookBlock,
+    Scenario,
+    SpotBlock,
+    WhaleEvent,
+    build_signal_scan_payload,
+    validate_request,
+)
 from neurophase.metrics.asymmetry import kurtosis, skewness, topological_asymmetry
 from neurophase.metrics.entropy import (
     delta_entropy,
@@ -56,6 +74,9 @@ from neurophase.risk.sizer import PositionSize, RiskProfile, size_position
 
 __all__ = [
     "DEFAULT_THRESHOLD",
+    "AgentEfficiency",
+    "BTCFieldOrderRequest",
+    "DerivativesBlock",
     "Direction",
     "DirectionDecision",
     "DirectionIndexWeights",
@@ -68,12 +89,22 @@ __all__ = [
     "KuramotoNetwork",
     "KuramotoParams",
     "MFDFAResult",
+    "MarketContext",
+    "OnchainBlock",
+    "OrderBookBlock",
     "OrderParameterResult",
     "PLVResult",
+    "PiAgent",
+    "PiRule",
     "PositionSize",
     "RiskProfile",
+    "Scenario",
+    "SemanticMemory",
+    "SpotBlock",
+    "WhaleEvent",
     "__version__",
     "adaptive_threshold",
+    "build_signal_scan_payload",
     "compute_cvar",
     "compute_fmn",
     "compute_ism",
@@ -106,4 +137,5 @@ __all__ = [
     "skewness",
     "topological_asymmetry",
     "tsallis_entropy",
+    "validate_request",
 ]
