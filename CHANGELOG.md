@@ -4,6 +4,65 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased] — External γ-verification witness (NEO-1)
+
+Wires the [`neosynaptex`](https://github.com/neuron7xLab/neosynaptex)
+integrating mirror into `KLRPipeline` as a strictly advisory
+γ-verification channel. A second, independent measurement of γ runs
+alongside the internal `_gamma()` probe on every tick and is surfaced
+through `KLRFrame.witness_report` — without ever touching gate
+decisions, `KLRFrame.decision`, or any existing invariant.
+
+### Added
+
+- `neurophase/reset/neosynaptex_adapter.py` — read-only
+  `NeosynaptexResetAdapter` projecting `SystemState` onto the 3-key
+  vector `(ntk_rank, frozen_ratio, usage_entropy)` with non-frozen
+  count as topology signal and `1 − ntk_rank` as thermodynamic cost.
+- `neurophase/reset/gamma_witness.py` — `GammaWitness` (lazy-initialised,
+  exception-safe, degrades to `INSUFFICIENT_DATA` on any failure) and
+  frozen `GammaWitnessReport` (`gamma_external`, `phase`, `coherence`,
+  `verdict`).
+- `KLRFrame.witness_report` — optional `GammaWitnessReport` attached to
+  every KLR frame. `None` when the witness is disabled or the optional
+  `neosynaptex` dependency is missing.
+- `KLRPipeline(..., enable_witness=True)` — opt-out flag for the witness,
+  threaded through `tick()` and called **before** any mutating component
+  so the observed state is the same one the gate sees.
+- `NEO-I1` — read-only witness (enforced by
+  `neurophase/reset/neosynaptex_adapter.py` and
+  `neurophase/reset/gamma_witness.py`, bound to
+  `tests/test_gamma_witness.py`).
+- `NEO-I2` — advisory-only verdict (enforced by
+  `neurophase/reset/pipeline.py` and
+  `neurophase/reset/gamma_witness.py`, bound to
+  `tests/test_gamma_witness.py`).
+- `tests/test_gamma_witness.py` — 10 tests covering schema stability,
+  NEO-I1 read-only, adapter projection, warmup placeholder, post-warmup
+  phase transition, NEO-I2 decision equivalence with/without witness,
+  frame wiring, disabled passthrough, and exception tolerance.
+- `docs/theory/klr_reset_contract.md` — formal *External γ-verification
+  witness* section with projection schema, report schema, invariants,
+  and explicit non-claims.
+- `pyproject.toml` — optional `witness` extras group pinning
+  `neosynaptex` directly from its canonical repository plus a narrow
+  mypy override so the strict type-check stays green whether the
+  dependency is installed locally or not.
+- `.github/workflows/ci.yml` — CI now installs `.[dev,witness]` so the
+  new 10-test suite runs on every push and every PR.
+
+### Not changed
+
+- Internal `_gamma()` row-entropy probe remains the sole input to gate
+  decisions — the witness is additive, never substitutive.
+- `I₁`–`I₄`, `B₁`, `KLR-I₁`–`KLR-I₄`, `RT-KLR-I₁`, and every other
+  pre-existing invariant remain bit-for-bit unchanged and pass on every
+  Python version in the CI matrix.
+- Runtime cost: measured median `tick()` latency increases by ≈0.2 ms
+  with the witness enabled (≈0.1 ms → ≈0.3 ms on the reference 6-node
+  fixture), well under the 10 ms hot-path contract stated in the
+  integration protocol.
+
 ## [Unreleased] — Architectural aesthetics (HN22)
 
 Polish layer on top of the solid v0.4.0 + Tier-2 foundation.

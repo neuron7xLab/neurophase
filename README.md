@@ -328,9 +328,14 @@ git clone https://github.com/neuron7xLab/neurophase
 cd neurophase
 pip install -e ".[dev]"
 
+# Optional — enable the external γ-verification witness (NEO-I1/NEO-I2).
+# Adds `neosynaptex` as an advisory channel on KLRFrame.witness_report;
+# without it KLRPipeline keeps working and witness_report stays None.
+pip install -e ".[dev,witness]"
+
 ruff check neurophase tests
-mypy neurophase        # --strict, 30 source files, 0 errors
-pytest -q              # 176 passed
+mypy neurophase        # --strict, 102 source files, 0 errors
+pytest -q              # 1127 passed, 4 skipped
 ```
 
 <br>

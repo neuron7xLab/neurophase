@@ -194,6 +194,41 @@ invariants:
       - docs/theory/klr_reset_contract.md
     introduced_in: "PR #KLR-C1"
 
+  - id: NEO-I1
+    symbol: "NEO-I₁"
+    statement: "GammaWitness.observe() never mutates the SystemState it inspects — the external γ-verification channel is a pure read-only projection via NeosynaptexResetAdapter, whose update() method is the only write path into the witness."
+    severity: hard
+    enforced_in:
+      - path: neurophase/reset/neosynaptex_adapter.py
+        symbol: NeosynaptexResetAdapter.update
+      - path: neurophase/reset/gamma_witness.py
+        symbol: GammaWitness.observe
+    tests:
+      - tests/test_gamma_witness.py::test_witness_readonly
+      - tests/test_gamma_witness.py::test_adapter_state_projection
+      - tests/test_gamma_witness.py::test_adapter_update_never_mutates_state
+    docs:
+      - docs/theory/klr_reset_contract.md
+    introduced_in: "PR #NEO-1"
+
+  - id: NEO-I2
+    symbol: "NEO-I₂"
+    statement: "A GammaWitness verdict — COHERENT, INCOHERENT or INSUFFICIENT_DATA — is advisory-only: it must never alter KLRFrame.decision, never propagate exceptions out of KLRPipeline.tick(), and the witness must degrade silently (verdict=INSUFFICIENT_DATA, phase=WARMUP) on any internal neosynaptex failure."
+    severity: hard
+    enforced_in:
+      - path: neurophase/reset/pipeline.py
+        symbol: KLRPipeline.tick
+      - path: neurophase/reset/gamma_witness.py
+        symbol: GammaWitness.observe
+    tests:
+      - tests/test_gamma_witness.py::test_incoherent_does_not_block
+      - tests/test_gamma_witness.py::test_witness_in_frame
+      - tests/test_gamma_witness.py::test_witness_disabled_returns_none_frame
+      - tests/test_gamma_witness.py::test_neosynaptex_exception_handled
+    docs:
+      - docs/theory/klr_reset_contract.md
+    introduced_in: "PR #NEO-1"
+
   - id: RT-KLR-I1
     symbol: "RT-KLR-I₁"
     statement: "KLR advisory output attached to StreamingPipeline never modifies GateState or execution_allowed. KLR exceptions are caught, logged via klr_warning, and never propagate out of StreamingPipeline.tick()."

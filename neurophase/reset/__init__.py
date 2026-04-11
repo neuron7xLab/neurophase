@@ -23,10 +23,12 @@ from neurophase.reset.curriculum import Curriculum
 from neurophase.reset.deterministic_oracle import SeedTrace, derive_seed
 from neurophase.reset.ensemble import EnsembleDecision, KLREnsemble
 from neurophase.reset.frozen_analysis import FrozenNodeAnalyzer, FrozenWarning
+from neurophase.reset.gamma_witness import GammaWitness, GammaWitnessReport
 from neurophase.reset.integrity import IntegrityError, IntegrityOracle, MutationRecord
 from neurophase.reset.ledger import LedgerEntry, RollbackLedger
 from neurophase.reset.market_coupling import MarketCouplingValidator, MarketPhase
 from neurophase.reset.metrics import SystemMetrics
+from neurophase.reset.neosynaptex_adapter import NeosynaptexResetAdapter
 from neurophase.reset.ntk_monitor import NTKMonitor, NTKSnapshot
 from neurophase.reset.passive_learner import PassiveLearner
 from neurophase.reset.pipeline import KLRFrame, KLRPipeline
@@ -44,6 +46,8 @@ __all__ = [
     "EnsembleDecision",
     "FrozenNodeAnalyzer",
     "FrozenWarning",
+    "GammaWitness",
+    "GammaWitnessReport",
     "IntegrityError",
     "IntegrityOracle",
     "KLRConfig",
@@ -58,6 +62,7 @@ __all__ = [
     "MutationRecord",
     "NTKMonitor",
     "NTKSnapshot",
+    "NeosynaptexResetAdapter",
     "PassiveLearner",
     "PlasticityInjector",
     "PlasticityMonitor",

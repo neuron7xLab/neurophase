@@ -21,10 +21,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install package
+      - name: Install package (with optional γ-witness extras)
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -e ".[dev,witness]"
 
       - name: Ruff check
         run: ruff check neurophase tests
