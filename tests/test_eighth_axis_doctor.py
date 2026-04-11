@@ -44,9 +44,14 @@ from neurophase.governance.doctor import (
 # ---------------------------------------------------------------------------
 
 
-def test_registry_enumerates_eight_checks() -> None:
-    """The doctor registry is stable at exactly eight checks."""
-    assert len(DOCTOR_CHECKS) == 8
+def test_registry_enumerates_nine_checks() -> None:
+    """The doctor registry is stable at exactly nine checks.
+
+    Axis 9 (Completeness) was added as the ninth doctor check.
+    Changes to DOCTOR_CHECKS must update this assertion *and*
+    the HN33 bindings in INVARIANTS.yaml.
+    """
+    assert len(DOCTOR_CHECKS) == 9
     ids = {entry[0] for entry in DOCTOR_CHECKS}
     assert ids == {
         "INVARIANT_REGISTRY_SCHEMA",
@@ -57,6 +62,7 @@ def test_registry_enumerates_eight_checks() -> None:
         "API_FACADE_SURFACE",
         "RESISTANCE_SUITE_GREEN",
         "RUNTIME_MEMORY_BOUNDED",
+        "COMPLETENESS_SUITE_GREEN",
     }
 
 
@@ -168,7 +174,7 @@ def test_markdown_rendering_is_deterministic() -> None:
     b = report.as_markdown()
     assert a == b
     assert "neurophase doctor" in a
-    assert "8 / 8" in a  # pinned to the current eight checks
+    assert "9 / 9" in a  # pinned to the current nine checks
 
 
 def test_markdown_shows_drift_banner_on_failure() -> None:
@@ -210,7 +216,7 @@ def test_cli_doctor_json_mode(capsys: pytest.CaptureFixture[str]) -> None:
     assert exit_code == 0
     payload = json.loads(captured.out)
     assert payload["all_healthy"] is True
-    assert len(payload["results"]) == 8
+    assert len(payload["results"]) == 9
 
 
 # ---------------------------------------------------------------------------

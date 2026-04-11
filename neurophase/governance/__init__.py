@@ -19,6 +19,12 @@ Public API:
 
 from __future__ import annotations
 
+from neurophase.governance.completeness import (
+    CompletenessAuditor,
+    CompletenessCheckResult,
+    CompletenessReport,
+    run_completeness,
+)
 from neurophase.governance.invariants import (
     DEFAULT_REGISTRY_PATH,
     EnforcementSite,
@@ -42,6 +48,9 @@ from neurophase.governance.state_machine import (
 __all__ = [
     "DEFAULT_REGISTRY_PATH",
     "DEFAULT_STATE_MACHINE_PATH",
+    "CompletenessAuditor",
+    "CompletenessCheckResult",
+    "CompletenessReport",
     "EnforcementSite",
     "GlobalInvariant",
     "HonestNamingContract",
@@ -55,4 +64,5 @@ __all__ = [
     "Transition",
     "load_registry",
     "load_state_machine",
+    "run_completeness",
 ]
