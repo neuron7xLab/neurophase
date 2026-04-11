@@ -68,6 +68,13 @@ from neurophase.metrics.hurst import hurst_dfa, hurst_rs
 from neurophase.metrics.ism import compute_ism, compute_topological_energy, ism_derivative
 from neurophase.metrics.plv import PLVResult, plv, plv_significance, rolling_plv
 from neurophase.metrics.ricci import forman_ricci, mean_ricci, ollivier_ricci
+from neurophase.oscillators.market import MarketOscillators, extract_market_phase
+from neurophase.oscillators.neural_protocol import (
+    NeuralFrame,
+    NeuralPhaseExtractor,
+    NullNeuralExtractor,
+    SensorStatus,
+)
 from neurophase.risk.evt import EVTFit, compute_cvar, compute_var, fit_gpd_pot
 from neurophase.risk.mfdfa import MFDFAResult, mfdfa, multifractal_instability
 from neurophase.risk.sizer import PositionSize, RiskProfile, size_position
@@ -90,6 +97,10 @@ __all__ = [
     "KuramotoParams",
     "MFDFAResult",
     "MarketContext",
+    "MarketOscillators",
+    "NeuralFrame",
+    "NeuralPhaseExtractor",
+    "NullNeuralExtractor",
     "OnchainBlock",
     "OrderBookBlock",
     "OrderParameterResult",
@@ -100,6 +111,7 @@ __all__ = [
     "RiskProfile",
     "Scenario",
     "SemanticMemory",
+    "SensorStatus",
     "SpotBlock",
     "WhaleEvent",
     "__version__",
@@ -115,6 +127,7 @@ __all__ = [
     "delta_entropy",
     "detect_emergent_phase",
     "direction_index",
+    "extract_market_phase",
     "fit_gpd_pot",
     "forman_ricci",
     "freedman_diaconis_bins",
