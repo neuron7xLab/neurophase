@@ -735,6 +735,44 @@ honest_naming:
       - docs/TASK_MAP.md
       - docs/theory/neurophase_elite_bibliography.md
 
+  - id: HN31
+    statement: "H7 parameter sweep lab: sweep_parameters(grid, seed) is a deterministic pure function of (SweepGrid, seed). Two runs with the same inputs produce byte-identical SweepReports. Every cell in the Cartesian product (threshold × coupling × trace_seed) is exercised exactly once and reported in canonical threshold-major / coupling / seed order. Per-cell metrics are physically sensible: admission rate is monotone non-decreasing in coupling_strength on average across seeds, monotone non-increasing in threshold for a fixed (coupling, seed) cell, and at coupling_strength=1 every cell admits 100% of samples and mean R_proxy equals 1.0 (closed-form ground truth). SweepGrid validates threshold ordering, coupling range, sample count at construction time. SweepCellResult validates per-cell numeric ranges. JSON-safe round-trip via to_json_dict."
+    enforced_in:
+      - path: neurophase/benchmarks/parameter_sweep.py
+        symbol: sweep_parameters
+      - path: neurophase/benchmarks/parameter_sweep.py
+        symbol: SweepGrid
+    tests:
+      - tests/test_parameter_sweep.py::TestDeterminism::test_two_runs_byte_identical
+      - tests/test_parameter_sweep.py::TestDeterminism::test_results_are_in_canonical_order
+      - tests/test_parameter_sweep.py::TestEnumeration::test_total_cells_matches_product
+      - tests/test_parameter_sweep.py::TestEnumeration::test_every_cell_unique
+      - tests/test_parameter_sweep.py::TestMonotoneInCoupling::test_higher_coupling_admits_more_on_average
+      - tests/test_parameter_sweep.py::TestMonotoneInCoupling::test_mean_R_proxy_monotone_in_coupling
+      - tests/test_parameter_sweep.py::TestMonotoneInThreshold::test_admission_decreases_with_threshold
+      - tests/test_parameter_sweep.py::TestBoundaryCorrectness::test_full_coupling_yields_unit_R_proxy
+      - tests/test_parameter_sweep.py::TestBoundaryCorrectness::test_full_coupling_admits_everything_below_unit_threshold
+      - tests/test_parameter_sweep.py::TestSchemaValidation::test_empty_thresholds_rejected
+      - tests/test_parameter_sweep.py::TestSchemaValidation::test_threshold_out_of_range_rejected
+      - tests/test_parameter_sweep.py::TestSchemaValidation::test_non_increasing_thresholds_rejected
+      - tests/test_parameter_sweep.py::TestSchemaValidation::test_coupling_out_of_range_rejected
+      - tests/test_parameter_sweep.py::TestSchemaValidation::test_too_few_samples_rejected
+      - tests/test_parameter_sweep.py::TestSchemaValidation::test_empty_seeds_rejected
+      - tests/test_parameter_sweep.py::TestJsonProjection::test_to_json_dict_round_trip
+      - tests/test_parameter_sweep.py::TestJsonProjection::test_results_are_flat_dicts
+      - tests/test_parameter_sweep.py::TestFrozen::test_grid_is_frozen
+      - tests/test_parameter_sweep.py::TestFrozen::test_cell_result_is_frozen
+      - tests/test_parameter_sweep.py::TestFrozen::test_report_is_frozen
+      - tests/test_parameter_sweep.py::TestFrozen::test_cell_result_validates_proportion_in_unit_interval
+      - tests/test_parameter_sweep.py::TestFrozen::test_report_validates_results_length
+      - tests/test_parameter_sweep.py::TestHelperAPI::test_by_threshold_filters
+      - tests/test_parameter_sweep.py::TestHelperAPI::test_by_coupling_filters
+      - tests/test_parameter_sweep.py::TestHelperAPI::test_repr_surfaces_summary
+      - tests/test_parameter_sweep.py::TestHelperAPI::test_cell_repr_format
+    docs:
+      - docs/EVOLUTION_BOARD.md
+      - docs/TASK_MAP.md
+
   - id: HN16
     statement: "Cross-module invariant matrix: the live ExecutionGate.evaluate output matches a pure analytical predictor encoding the STATE_MACHINE.yaml priority order (B₁ > I₂ > I₃ > I₁ > I₄) across the full Cartesian product of (time_quality, sensor_present, R, delta, stillness_attached, stillness_result) inputs. Every GateState member is reachable by ≥ 1 matrix cell AND through a natural StreamingPipeline tick sequence. A single disagreement between the live gate and the predictor — including a missing reachability — is a cross-module invariant violation and fails CI."
     enforced_in:

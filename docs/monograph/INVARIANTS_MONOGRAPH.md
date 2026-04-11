@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 4  
 **Advisory invariants:** 1  
-**Honest-naming contracts:** 30  
+**Honest-naming contracts:** 31  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -50,6 +50,7 @@
   - [HN28](#hn28)
   - [HN29](#hn29)
   - [HN30](#hn30)
+  - [HN31](#hn31)
 
 ## Gate state machine
 
@@ -1015,6 +1016,49 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
 - `docs/theory/neurophase_elite_bibliography.md`
+
+### HN31
+
+**Statement.** H7 parameter sweep lab: sweep_parameters(grid, seed) is a deterministic pure function of (SweepGrid, seed). Two runs with the same inputs produce byte-identical SweepReports. Every cell in the Cartesian product (threshold × coupling × trace_seed) is exercised exactly once and reported in canonical threshold-major / coupling / seed order. Per-cell metrics are physically sensible: admission rate is monotone non-decreasing in coupling_strength on average across seeds, monotone non-increasing in threshold for a fixed (coupling, seed) cell, and at coupling_strength=1 every cell admits 100% of samples and mean R_proxy equals 1.0 (closed-form ground truth). SweepGrid validates threshold ordering, coupling range, sample count at construction time. SweepCellResult validates per-cell numeric ranges. JSON-safe round-trip via to_json_dict.
+
+**Enforcement sites:**
+
+- `neurophase/benchmarks/parameter_sweep.py::sweep_parameters`
+- `neurophase/benchmarks/parameter_sweep.py::SweepGrid`
+
+**Bound tests** (26):
+
+- `tests/test_parameter_sweep.py::TestDeterminism::test_two_runs_byte_identical`
+- `tests/test_parameter_sweep.py::TestDeterminism::test_results_are_in_canonical_order`
+- `tests/test_parameter_sweep.py::TestEnumeration::test_total_cells_matches_product`
+- `tests/test_parameter_sweep.py::TestEnumeration::test_every_cell_unique`
+- `tests/test_parameter_sweep.py::TestMonotoneInCoupling::test_higher_coupling_admits_more_on_average`
+- `tests/test_parameter_sweep.py::TestMonotoneInCoupling::test_mean_R_proxy_monotone_in_coupling`
+- `tests/test_parameter_sweep.py::TestMonotoneInThreshold::test_admission_decreases_with_threshold`
+- `tests/test_parameter_sweep.py::TestBoundaryCorrectness::test_full_coupling_yields_unit_R_proxy`
+- `tests/test_parameter_sweep.py::TestBoundaryCorrectness::test_full_coupling_admits_everything_below_unit_threshold`
+- `tests/test_parameter_sweep.py::TestSchemaValidation::test_empty_thresholds_rejected`
+- `tests/test_parameter_sweep.py::TestSchemaValidation::test_threshold_out_of_range_rejected`
+- `tests/test_parameter_sweep.py::TestSchemaValidation::test_non_increasing_thresholds_rejected`
+- `tests/test_parameter_sweep.py::TestSchemaValidation::test_coupling_out_of_range_rejected`
+- `tests/test_parameter_sweep.py::TestSchemaValidation::test_too_few_samples_rejected`
+- `tests/test_parameter_sweep.py::TestSchemaValidation::test_empty_seeds_rejected`
+- `tests/test_parameter_sweep.py::TestJsonProjection::test_to_json_dict_round_trip`
+- `tests/test_parameter_sweep.py::TestJsonProjection::test_results_are_flat_dicts`
+- `tests/test_parameter_sweep.py::TestFrozen::test_grid_is_frozen`
+- `tests/test_parameter_sweep.py::TestFrozen::test_cell_result_is_frozen`
+- `tests/test_parameter_sweep.py::TestFrozen::test_report_is_frozen`
+- `tests/test_parameter_sweep.py::TestFrozen::test_cell_result_validates_proportion_in_unit_interval`
+- `tests/test_parameter_sweep.py::TestFrozen::test_report_validates_results_length`
+- `tests/test_parameter_sweep.py::TestHelperAPI::test_by_threshold_filters`
+- `tests/test_parameter_sweep.py::TestHelperAPI::test_by_coupling_filters`
+- `tests/test_parameter_sweep.py::TestHelperAPI::test_repr_surfaces_summary`
+- `tests/test_parameter_sweep.py::TestHelperAPI::test_cell_repr_format`
+
+**Documentation:**
+
+- `docs/EVOLUTION_BOARD.md`
+- `docs/TASK_MAP.md`
 
 ---
 
