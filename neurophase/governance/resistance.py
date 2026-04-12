@@ -1,11 +1,11 @@
-"""Seventh axis — Resistance (Опір): adversarial sweep suite.
+"""Seventh axis — Resistance: adversarial sweep suite.
 
-The first six Sutskever axes — elegance, aesthetics, beauty,
-simplicity, precision, adaptability — tell you how a system
-*reads*. The seventh axis, **Resistance**, tells you how it
-*holds under attack*. A beautiful system that bends under
-pressure is theatre. A beautiful system that refuses to bend is
-engineering.
+The first six formal review axes — elegance, aesthetics, beauty,
+simplicity, precision, adaptability — describe how a system
+*reads*. The seventh axis, **Resistance**, describes how it
+*holds under attack*. A system that bends under pressure cannot
+serve as infrastructure; a system that refuses to bend under
+declared adversarial conditions can.
 
 This module makes the seventh axis machine-checkable. It is
 **not** a unit-test file — it is a declarative registry of

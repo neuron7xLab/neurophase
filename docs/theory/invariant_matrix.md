@@ -32,16 +32,13 @@ Cartesian product of upstream inputs and compares the live
 predictor** that encodes `STATE_MACHINE.yaml` verbatim. A single
 disagreement between the two fails CI.
 
-> **Doctrine (Evolution Board v2.0):**
->
-> *"A proof that something cannot silently fail > a proof that
-> it works."*
-> — Sutskever-mode
->
-> *"What does the system NOT know about itself?"*
-> — Karpathy-mode
+**Design principle.** The A3 matrix addresses a stronger claim than
+per-axis unit tests: *not only does the system work on the inputs
+we thought to check, but no reachable combination of inputs can
+produce a state the specification forbids.* This is the standard
+test-oracle form for a finite-state specification.
 
-A3 is exactly that proof for the gate-level semantic surface.
+A3 is that proof for the gate-level semantic surface.
 
 ---
 

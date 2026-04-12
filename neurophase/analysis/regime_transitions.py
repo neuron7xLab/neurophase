@@ -7,8 +7,8 @@ the simplest possible empirical transition model — a 4×4 first-
 order Markov **count** matrix over observed regime sequences,
 with row-normalised probabilities derived on demand.
 
-Design constraints (Sutskever's six axes)
------------------------------------------
+Design constraints (formal review axes)
+----------------------------------------
 
 * **Elegance** — one stateful object, three methods (``observe``,
   ``predict_next``, ``snapshot``). No knobs, no priors except an

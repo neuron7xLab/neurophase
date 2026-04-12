@@ -1,8 +1,8 @@
-"""HN32 — Seventh axis (Resistance / Опір) contract tests.
+"""HN32 — Seventh axis (Resistance) contract tests.
 
-The first six Sutskever axes say how the system *reads*. The
-seventh axis says how it *holds under attack*. This test file
-binds every :class:`~neurophase.governance.resistance.ResistanceScenario`
+The first six formal review axes describe how the system *reads*.
+The seventh axis describes how it *holds under attack*. This test
+file binds every :class:`~neurophase.governance.resistance.ResistanceScenario`
 to an individual pytest node id so a single failing adversarial
 scenario is a merge block.
 

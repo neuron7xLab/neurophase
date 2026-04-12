@@ -1,6 +1,6 @@
-"""Eighth axis — Coherence (Цілісність): neurophase doctor.
+"""Eighth axis — Coherence: neurophase doctor.
 
-The first six Sutskever axes describe how the system *reads*.
+The first six formal review axes describe how the system *reads*.
 The seventh (Resistance) describes how it *holds under attack*.
 The eighth (Coherence) describes whether the system's **multiple
 self-descriptions agree mechanically**.
