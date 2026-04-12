@@ -22,7 +22,7 @@ from neurophase.reset import (
     SystemState,
 )
 from neurophase.reset.gamma_witness import COHERENCE_THRESHOLD, DEFAULT_WINDOW
-from neurophase.reset.neosynaptex_adapter import NeosynaptexResetAdapter
+from neurophase.reset.neosynaptex_adapter import KLRNeuronsAdapter, NeosynaptexResetAdapter
 
 # ``pytest.importorskip`` only catches ImportError. Some releases of
 # ``neosynaptex`` raise a domain-specific error during module initialisation
@@ -128,7 +128,7 @@ def test_adapter_state_projection() -> None:
 
     adapter = NeosynaptexResetAdapter()
     state = _state()
-    assert adapter.domain == "klr_reset"
+    assert adapter.domain == "klr_weights"
     assert adapter.state_keys == ["ntk_rank", "frozen_ratio", "usage_entropy"]
     assert not adapter.has_snapshot()
 
@@ -273,3 +273,88 @@ def test_adapter_update_never_mutates_state() -> None:
     after = _fingerprint(state)
     for key, pre in before.items():
         assert np.array_equal(pre, after[key]), f"adapter mutated state.{key}"
+
+
+# ---------------------------------------------------------------------------
+# Neurons-facet adapter (dual-domain witness)
+# ---------------------------------------------------------------------------
+def test_neurons_adapter_projection() -> None:
+    """KLRNeuronsAdapter produces a valid 3-key projection with orthogonal
+    topo/cost signals relative to the weights-facet adapter."""
+
+    adapter = KLRNeuronsAdapter()
+    state = _state()
+    assert adapter.domain == "klr_neurons"
+    assert adapter.state_keys == ["frozen_ratio", "usage_entropy", "confidence_mean"]
+    assert not adapter.has_snapshot()
+
+    adapter.update(state)
+    assert adapter.has_snapshot()
+
+    projected = adapter.state()
+    assert set(projected) == {"frozen_ratio", "usage_entropy", "confidence_mean"}
+    for value in projected.values():
+        assert np.isfinite(value)
+    assert adapter.topo() > 0.0
+    assert 0.0 < adapter.thermo_cost() <= 1.0
+
+
+def test_neurons_adapter_readonly() -> None:
+    """KLRNeuronsAdapter.update() never mutates SystemState (NEO-I1)."""
+
+    adapter = KLRNeuronsAdapter()
+    state = _state()
+    before = _fingerprint(state)
+    adapter.update(state)
+    after = _fingerprint(state)
+    for key, pre in before.items():
+        assert np.array_equal(pre, after[key]), f"neurons adapter mutated state.{key}"
+
+
+def test_dual_domain_distinct_signals() -> None:
+    """The two adapters produce distinct topo/cost signals from the same state,
+    which is the prerequisite for non-trivial cross_coherence."""
+
+    weights_adapter = NeosynaptexResetAdapter()
+    neurons_adapter = KLRNeuronsAdapter()
+    state = _state()
+    weights_adapter.update(state)
+    neurons_adapter.update(state)
+
+    assert weights_adapter.domain != neurons_adapter.domain
+    # topo and cost should differ: weights uses non_frozen_count and 1 - ntk_rank;
+    # neurons uses usage_mass and 1 - usage_entropy.
+    w_topo = weights_adapter.topo()
+    n_topo = neurons_adapter.topo()
+    w_cost = weights_adapter.thermo_cost()
+    n_cost = neurons_adapter.thermo_cost()
+
+    # With a 6-node uniform state these should be meaningfully different.
+    assert w_topo > 0.0 and n_topo > 0.0
+    assert w_cost > 0.0 and n_cost > 0.0
+    # Signals must differ for cross_coherence to be non-trivial.
+    assert w_topo != n_topo or w_cost != n_cost
+
+
+def test_witness_tick_latency_bounded() -> None:
+    """Hot-path contract: median per-tick overhead of the witness must stay
+    under 10 ms — the threshold stated in the integration protocol."""
+
+    import time
+
+    state = _state()
+    metrics = _metrics()
+    pipe = KLRPipeline(state)
+
+    # Warmup phase — let neosynaptex initialise.
+    for _ in range(DEFAULT_WINDOW + 5):
+        pipe.tick(metrics)
+
+    durations: list[float] = []
+    for _ in range(100):
+        t0 = time.perf_counter()
+        pipe.tick(metrics)
+        durations.append(time.perf_counter() - t0)
+
+    median_ms = float(np.median(durations)) * 1000.0
+    assert median_ms < 10.0, f"median tick latency {median_ms:.2f} ms exceeds 10 ms contract"

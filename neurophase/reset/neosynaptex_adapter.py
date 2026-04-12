@@ -39,19 +39,28 @@ from numpy.typing import NDArray
 from neurophase.reset.ntk_monitor import NTKMonitor
 from neurophase.reset.state import SystemState
 
-__all__ = ["NeosynaptexResetAdapter"]
+__all__ = ["KLRNeuronsAdapter", "NeosynaptexResetAdapter"]
 
-_STATE_KEYS: tuple[str, ...] = ("ntk_rank", "frozen_ratio", "usage_entropy")
+_WEIGHTS_KEYS: tuple[str, ...] = ("ntk_rank", "frozen_ratio", "usage_entropy")
+_NEURONS_KEYS: tuple[str, ...] = ("frozen_ratio", "usage_entropy", "confidence_mean")
 _TOPO_FLOOR: float = 0.01
 _COST_FLOOR: float = 0.01
 
 
 @dataclass(frozen=True)
-class _Snapshot:
+class _WeightsSnapshot:
     ntk_rank: float
     frozen_ratio: float
     usage_entropy: float
     non_frozen_count: float
+
+
+@dataclass(frozen=True)
+class _NeuronsSnapshot:
+    frozen_ratio: float
+    usage_entropy: float
+    confidence_mean: float
+    usage_mass: float
 
 
 def _normalized_entropy(values: NDArray[np.float64]) -> float:
@@ -83,19 +92,22 @@ def _normalized_entropy(values: NDArray[np.float64]) -> float:
 
 
 class NeosynaptexResetAdapter:
-    """``DomainAdapter`` that turns :class:`SystemState` snapshots into
-    neosynaptex-compatible state vectors.
+    """``DomainAdapter`` observing the **weights-facet** of the KLR state.
 
-    The adapter holds *only* cached scalars derived from the last observed
-    :class:`SystemState`. It never stores a reference to the state itself
-    and never mutates the state passed to :meth:`update`.
+    When the :class:`GammaWitness` registers *two* adapters — this one and
+    :class:`KLRNeuronsAdapter` — ``neosynaptex`` computes per-domain γ
+    independently and derives a non-trivial ``cross_coherence`` from their
+    spread. With a single adapter, coherence is structurally ``NaN``.
+
+    The adapter holds *only* cached scalars; it never stores a reference
+    to the :class:`SystemState` arrays and never mutates them.
     """
 
-    _DOMAIN: str = "klr_reset"
+    _DOMAIN: str = "klr_weights"
 
     def __init__(self) -> None:
         self._ntk = NTKMonitor()
-        self._snapshot: _Snapshot | None = None
+        self._snapshot: _WeightsSnapshot | None = None
 
     # ------------------------------------------------------------------
     # DomainAdapter protocol
@@ -106,12 +118,12 @@ class NeosynaptexResetAdapter:
 
     @property
     def state_keys(self) -> list[str]:
-        return list(_STATE_KEYS)
+        return list(_WEIGHTS_KEYS)
 
     def state(self) -> dict[str, float]:
         snap = self._snapshot
         if snap is None:
-            return {k: float("nan") for k in _STATE_KEYS}
+            return {k: float("nan") for k in _WEIGHTS_KEYS}
         return {
             "ntk_rank": snap.ntk_rank,
             "frozen_ratio": snap.frozen_ratio,
@@ -132,15 +144,14 @@ class NeosynaptexResetAdapter:
         return max(cost, _COST_FLOOR)
 
     # ------------------------------------------------------------------
-    # Observation entry point (the sole write path)
+    # Observation entry point (the sole write path — NEO-I1)
     # ------------------------------------------------------------------
     def update(self, state: SystemState) -> None:
         """Record a derived snapshot from ``state``.
 
         The function performs only read accesses; ``state`` and every
         array it exposes are left untouched. This is enforced by
-        invariant ``NEO-I1`` and validated by
-        ``tests/test_gamma_witness.py::test_witness_readonly``.
+        invariant ``NEO-I1``.
         """
 
         ntk_rank = float(self._ntk.rank_proxy(state.weights))
@@ -155,7 +166,7 @@ class NeosynaptexResetAdapter:
 
         usage_entropy = _normalized_entropy(state.usage)
 
-        self._snapshot = _Snapshot(
+        self._snapshot = _WeightsSnapshot(
             ntk_rank=ntk_rank,
             frozen_ratio=frozen_ratio,
             usage_entropy=usage_entropy,
@@ -165,4 +176,84 @@ class NeosynaptexResetAdapter:
     def has_snapshot(self) -> bool:
         """Return ``True`` once :meth:`update` has been called at least once."""
 
+        return self._snapshot is not None
+
+
+class KLRNeuronsAdapter:
+    """``DomainAdapter`` observing the **neurons-facet** of the KLR state.
+
+    Orthogonal to :class:`NeosynaptexResetAdapter` by design: it tracks
+    node-level health indicators (frozen ratio, usage entropy, confidence
+    mean) while using **usage mass** as the topology signal and
+    ``1 − usage_entropy`` as the thermodynamic cost. These signals diverge
+    from the weights-facet signals (non-frozen count / NTK rank) under
+    structural changes, enabling ``neosynaptex`` to compute a non-trivial
+    cross-domain coherence.
+
+    All contracts of ``NEO-I1`` apply identically.
+    """
+
+    _DOMAIN: str = "klr_neurons"
+
+    def __init__(self) -> None:
+        self._snapshot: _NeuronsSnapshot | None = None
+
+    # ------------------------------------------------------------------
+    # DomainAdapter protocol
+    # ------------------------------------------------------------------
+    @property
+    def domain(self) -> str:
+        return self._DOMAIN
+
+    @property
+    def state_keys(self) -> list[str]:
+        return list(_NEURONS_KEYS)
+
+    def state(self) -> dict[str, float]:
+        snap = self._snapshot
+        if snap is None:
+            return {k: float("nan") for k in _NEURONS_KEYS}
+        return {
+            "frozen_ratio": snap.frozen_ratio,
+            "usage_entropy": snap.usage_entropy,
+            "confidence_mean": snap.confidence_mean,
+        }
+
+    def topo(self) -> float:
+        snap = self._snapshot
+        if snap is None:
+            return _TOPO_FLOOR
+        return max(snap.usage_mass, _TOPO_FLOOR)
+
+    def thermo_cost(self) -> float:
+        snap = self._snapshot
+        if snap is None:
+            return _COST_FLOOR
+        return max(1.0 - snap.usage_entropy, _COST_FLOOR)
+
+    # ------------------------------------------------------------------
+    # Observation entry point (the sole write path — NEO-I1)
+    # ------------------------------------------------------------------
+    def update(self, state: SystemState) -> None:
+        """Record a derived snapshot from ``state``. Read-only (NEO-I1)."""
+
+        n = int(state.weights.shape[0])
+        frozen_count = 0 if state.frozen is None else int(np.count_nonzero(state.frozen))
+        frozen_ratio = float(frozen_count / n) if n > 0 else 0.0
+
+        usage_entropy = _normalized_entropy(state.usage)
+        usage_mass_raw = float(np.sum(np.clip(state.usage, 0.0, None)))
+        usage_mass = usage_mass_raw if np.isfinite(usage_mass_raw) else 0.0
+
+        conf_mean_raw = float(np.mean(state.confidence)) if state.confidence.size else 0.0
+        conf_mean = conf_mean_raw if np.isfinite(conf_mean_raw) else 0.0
+
+        self._snapshot = _NeuronsSnapshot(
+            frozen_ratio=frozen_ratio,
+            usage_entropy=usage_entropy,
+            confidence_mean=conf_mean,
+            usage_mass=usage_mass,
+        )
+
+    def has_snapshot(self) -> bool:
         return self._snapshot is not None

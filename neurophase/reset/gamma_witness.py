@@ -29,7 +29,7 @@ from typing import Any
 
 import numpy as np
 
-from neurophase.reset.neosynaptex_adapter import NeosynaptexResetAdapter
+from neurophase.reset.neosynaptex_adapter import KLRNeuronsAdapter, NeosynaptexResetAdapter
 from neurophase.reset.state import SystemState
 
 __all__ = [
@@ -113,7 +113,8 @@ class GammaWitness:
         if window < 8:
             raise ValueError(f"window must be >= 8, got {window}")
         self._window: int = window
-        self._adapter: NeosynaptexResetAdapter = NeosynaptexResetAdapter()
+        self._weights_adapter: NeosynaptexResetAdapter = NeosynaptexResetAdapter()
+        self._neurons_adapter: KLRNeuronsAdapter = KLRNeuronsAdapter()
         self._nx: Any | None = None
         self._disabled: bool = False
         self._init_attempted: bool = False
@@ -152,7 +153,8 @@ class GammaWitness:
             return _warmup_report()
 
         try:
-            self._adapter.update(state)
+            self._weights_adapter.update(state)
+            self._neurons_adapter.update(state)
         except Exception:
             return _warmup_report()
 
@@ -195,7 +197,8 @@ class GammaWitness:
 
         try:
             nx = neosynaptex.Neosynaptex(window=self._window)
-            nx.register(self._adapter)
+            nx.register(self._weights_adapter)
+            nx.register(self._neurons_adapter)
         except Exception:
             self._disabled = True
             self._nx = None
