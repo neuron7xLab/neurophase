@@ -32,7 +32,6 @@ from neurophase.bridges import (
 )
 from neurophase.policy.action import ActionIntent
 
-
 # ---------------------------------------------------------------------------
 # Behavioural: non-READY ticks never carry execution_allowed=True
 # ---------------------------------------------------------------------------
