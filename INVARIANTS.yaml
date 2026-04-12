@@ -331,6 +331,34 @@ invariants:
       - docs/theory/scientific_basis.md
     introduced_in: "PR #plv-alt-verification"
 
+  # ── ds003458 Real Data Protocol (DS-I1..I2) ──────────────────────────
+
+  - id: DS-I1
+    symbol: DS-I1
+    statement: "ds003458 pre-registration commit (results/ds003458_preregistration.md) exists in git history before any analysis code runs. The commit hash is the pre-registration timestamp."
+    severity: hard
+    enforced_in:
+      - path: neurophase/experiments/ds003458_analysis.py
+        symbol: run_analysis
+    tests:
+      - tests/test_ds003458.py::TestPreregistration::test_preregistration_frozen
+    docs:
+      - results/ds003458_preregistration.md
+    introduced_in: "PR #ds003458-real-data"
+
+  - id: DS-I2
+    symbol: DS-I2
+    statement: "Per-subject verdict JSON is saved to results/ before any group-level statistical test is computed."
+    severity: hard
+    enforced_in:
+      - path: neurophase/experiments/ds003458_analysis.py
+        symbol: save_results
+    tests:
+      - tests/test_ds003458.py::TestAnalysisStructure::test_results_saved
+    docs:
+      - results/ds003458_preregistration.md
+    introduced_in: "PR #ds003458-real-data"
+
 # Honest-naming contracts — these are not permission invariants but
 # they are load-bearing and must be enforced by tests so that future
 # refactors cannot weaken them silently.

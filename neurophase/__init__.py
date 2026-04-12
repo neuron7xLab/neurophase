@@ -91,6 +91,9 @@ from neurophase.data.temporal_validator import (
     TemporalValidator,
     TimeQuality,
 )
+from neurophase.experiments.ds003458_analysis import (
+    run_analysis as run_ds003458_analysis,
+)
 from neurophase.experiments.synthetic_plv_validation import (
     run_sweep as run_synthetic_plv_sweep,
 )
@@ -385,6 +388,7 @@ __all__ = [
     "renyi_entropy",
     "replay_ledger",
     "rolling_plv",
+    "run_ds003458_analysis",
     "run_synthetic_plv_sweep",
     "shannon_entropy",
     "size_position",

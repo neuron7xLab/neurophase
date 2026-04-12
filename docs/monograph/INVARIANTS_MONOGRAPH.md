@@ -3,7 +3,7 @@
 # neurophase — System Invariants Monograph
 
 **Schema version:** 1  
-**Hard invariants:** 15  
+**Hard invariants:** 17  
 **Advisory invariants:** 4  
 **Honest-naming contracts:** 38  
 **Gate states:** 5  
@@ -28,6 +28,8 @@
   - [PLV-S2 — PLV-S2](#plv-s2)
   - [PLV-V1 — PLV-V1](#plv-v1)
   - [PLV-V2 — PLV-V2](#plv-v2)
+  - [DS-I1 — DS-I1](#ds-i1)
+  - [DS-I2 — DS-I2](#ds-i2)
 - [Advisory invariants](#advisory-invariants)
   - [I4 — I₄](#i4)
   - [KLR-I4 — KLR-I₄](#klr-i4)
@@ -438,6 +440,46 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 **Documentation:**
 
 - `docs/theory/scientific_basis.md`
+
+### DS-I1 — DS-I1
+
+**Statement.** ds003458 pre-registration commit (results/ds003458_preregistration.md) exists in git history before any analysis code runs. The commit hash is the pre-registration timestamp.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #ds003458-real-data
+
+**Enforcement sites:**
+
+- `neurophase/experiments/ds003458_analysis.py::run_analysis`
+
+**Bound tests** (1):
+
+- `tests/test_ds003458.py::TestPreregistration::test_preregistration_frozen`
+
+**Documentation:**
+
+- `results/ds003458_preregistration.md`
+
+### DS-I2 — DS-I2
+
+**Statement.** Per-subject verdict JSON is saved to results/ before any group-level statistical test is computed.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #ds003458-real-data
+
+**Enforcement sites:**
+
+- `neurophase/experiments/ds003458_analysis.py::save_results`
+
+**Bound tests** (1):
+
+- `tests/test_ds003458.py::TestAnalysisStructure::test_results_saved`
+
+**Documentation:**
+
+- `results/ds003458_preregistration.md`
 
 ## Advisory invariants
 
