@@ -3,8 +3,8 @@
 # neurophase — System Invariants Monograph
 
 **Schema version:** 1  
-**Hard invariants:** 20  
-**Advisory invariants:** 4  
+**Hard invariants:** 21  
+**Advisory invariants:** 5  
 **Honest-naming contracts:** 38  
 **Gate states:** 5  
 **Gate transitions:** 8
@@ -28,6 +28,7 @@
   - [PLV-S2 — PLV-S2](#plv-s2)
   - [PLV-V1 — PLV-V1](#plv-v1)
   - [PLV-V2 — PLV-V2](#plv-v2)
+  - [SCP-I2 — SCP-I2](#scp-i2)
   - [DS-I1 — DS-I1](#ds-i1)
   - [DELTA-I1 — DELTA-I1](#delta-i1)
   - [DELTA-I2 — DELTA-I2](#delta-i2)
@@ -38,6 +39,7 @@
   - [KLR-I4 — KLR-I₄](#klr-i4)
   - [PLV-S3 — PLV-S3](#plv-s3)
   - [PLV-S4 — PLV-S4](#plv-s4)
+  - [SCP-I1 — SCP-I1](#scp-i1)
 - [Honest-naming contracts](#honest-naming-contracts)
   - [HN1](#hn1)
   - [HN2](#hn2)
@@ -444,6 +446,26 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 
 - `docs/theory/scientific_basis.md`
 
+### SCP-I2 — SCP-I2
+
+**Statement.** SCP analysis uses same phase_randomization surrogate method as delta analysis for direct comparison.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #scp-reward
+
+**Enforcement sites:**
+
+- `neurophase/metrics/delta_price_xcorr.py::compute_delta_price_xcorr`
+
+**Bound tests** (1):
+
+- `tests/test_scp.py::TestSCP::test_same_surrogate_method`
+
+**Documentation:**
+
+- `results/ds003458_preregistration.md`
+
 ### DS-I1 — DS-I1
 
 **Statement.** ds003458 pre-registration commit (results/ds003458_preregistration.md) exists in git history before any analysis code runs. The commit hash is the pre-registration timestamp.
@@ -636,6 +658,26 @@ Advisory invariants route execution to a non-permissive but semantically distinc
 **Documentation:**
 
 - `docs/theory/scientific_basis.md`
+
+### SCP-I1 — SCP-I1
+
+**Statement.** SCP band (0.01-0.1 Hz) contains the ds003458 reward oscillation frequency (~0.03 Hz). Classic delta (1-4 Hz) is 30-100x too fast.
+
+**Severity.** `advisory`
+
+**Introduced in.** PR #scp-reward
+
+**Enforcement sites:**
+
+- `neurophase/metrics/scp.py::extract_scp`
+
+**Bound tests** (1):
+
+- `tests/test_scp.py::TestSCP::test_band_matches_stimulus`
+
+**Documentation:**
+
+- `results/ds003458_preregistration.md`
 
 ## Honest-naming contracts
 

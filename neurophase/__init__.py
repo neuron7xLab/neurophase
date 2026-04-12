@@ -97,6 +97,9 @@ from neurophase.experiments.ds003458_analysis import (
 from neurophase.experiments.ds003458_delta_analysis import (
     run_delta_analysis as run_ds003458_delta_analysis,
 )
+from neurophase.experiments.ds003458_scp_analysis import (
+    run_scp_analysis as run_ds003458_scp_analysis,
+)
 from neurophase.experiments.synthetic_plv_validation import (
     run_sweep as run_synthetic_plv_sweep,
 )
@@ -184,6 +187,7 @@ from neurophase.metrics.plv_verdict import (
 )
 from neurophase.metrics.rayleigh import RayleighResult, rayleigh_test
 from neurophase.metrics.ricci import forman_ricci, mean_ricci, ollivier_ricci
+from neurophase.metrics.scp import SCPTrace, extract_scp
 from neurophase.oscillators.market import MarketOscillators, extract_market_phase
 from neurophase.oscillators.neural_protocol import (
     NeuralFrame,
@@ -315,6 +319,7 @@ __all__ = [
     "ResetReport",
     "ResetState",
     "RiskProfile",
+    "SCPTrace",
     "Scenario",
     "SemanticMemory",
     "SensorStatus",
@@ -369,6 +374,7 @@ __all__ = [
     "extract_delta_power",
     "extract_market_phase",
     "extract_market_phase_from_price",
+    "extract_scp",
     "fingerprint_parameters",
     "fit_gpd_pot",
     "forman_ricci",
@@ -402,6 +408,7 @@ __all__ = [
     "rolling_plv",
     "run_ds003458_analysis",
     "run_ds003458_delta_analysis",
+    "run_ds003458_scp_analysis",
     "run_synthetic_plv_sweep",
     "shannon_entropy",
     "size_position",

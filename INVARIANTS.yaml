@@ -333,6 +333,34 @@ invariants:
 
   # ── ds003458 Real Data Protocol (DS-I1..I2) ──────────────────────────
 
+  # ── SCP Analysis (SCP-I1..I2) ────────────────────────────────────────
+
+  - id: SCP-I1
+    symbol: SCP-I1
+    statement: "SCP band (0.01-0.1 Hz) contains the ds003458 reward oscillation frequency (~0.03 Hz). Classic delta (1-4 Hz) is 30-100x too fast."
+    severity: advisory
+    enforced_in:
+      - path: neurophase/metrics/scp.py
+        symbol: extract_scp
+    tests:
+      - tests/test_scp.py::TestSCP::test_band_matches_stimulus
+    docs:
+      - results/ds003458_preregistration.md
+    introduced_in: "PR #scp-reward"
+
+  - id: SCP-I2
+    symbol: SCP-I2
+    statement: "SCP analysis uses same phase_randomization surrogate method as delta analysis for direct comparison."
+    severity: hard
+    enforced_in:
+      - path: neurophase/metrics/delta_price_xcorr.py
+        symbol: compute_delta_price_xcorr
+    tests:
+      - tests/test_scp.py::TestSCP::test_same_surrogate_method
+    docs:
+      - results/ds003458_preregistration.md
+    introduced_in: "PR #scp-reward"
+
   - id: DS-I1
     symbol: DS-I1
     statement: "ds003458 pre-registration commit (results/ds003458_preregistration.md) exists in git history before any analysis code runs. The commit hash is the pre-registration timestamp."
