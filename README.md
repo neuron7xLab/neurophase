@@ -1,5 +1,11 @@
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/hero_kuramoto.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/assets/hero_kuramoto.svg">
+  <img alt="neurophase — Kuramoto phase synchronization animation" src="docs/assets/hero_kuramoto.svg" width="100%">
+</picture>
+
 # neurophase
 
 **Phase synchronization as execution gate: a Kuramoto model of the market–trader system.**
