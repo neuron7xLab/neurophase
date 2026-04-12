@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 from dataclasses import dataclass
 
 from neurophase.reset.config import KLRConfig
 from neurophase.reset.controller import KetamineLikeResetController, ResetReport
 from neurophase.reset.curriculum import Curriculum
 from neurophase.reset.metrics import SystemMetrics
-from neurophase.reset.state import SystemState
+from neurophase.reset.state import SystemState, clone_state
 
 
 @dataclass(frozen=True)
@@ -31,7 +30,7 @@ class KLREnsemble:
     def run(
         self, state: SystemState, metrics: SystemMetrics, curriculum: Curriculum
     ) -> tuple[SystemState, EnsembleDecision]:
-        outputs = [m.run(deepcopy(state), metrics, curriculum) for m in self.members]
+        outputs = [m.run(clone_state(state), metrics, curriculum) for m in self.members]
         reports = [r for _, r in outputs]
         states = [s for s, _ in outputs]
 

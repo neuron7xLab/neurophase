@@ -18,7 +18,7 @@ from neurophase.reset.ntk_monitor import NTKMonitor
 from neurophase.reset.plasticity_injector import PlasticityInjector
 from neurophase.reset.plasticity_monitor import PlasticityMonitor, PlasticityReport
 from neurophase.reset.refractory import RefractoryGate
-from neurophase.reset.state import SystemState
+from neurophase.reset.state import SystemState, clone_state
 from neurophase.reset.twin_state import TwinStateManager
 
 
@@ -50,7 +50,7 @@ class KLRPipeline:
         self.ntk_monitor = NTKMonitor()
         self.plasticity_injector = PlasticityInjector()
         self.plasticity_monitor = PlasticityMonitor()
-        self.twin_state = TwinStateManager(active=initial_state, passive=_clone(initial_state))
+        self.twin_state = TwinStateManager(active=initial_state, passive=clone_state(initial_state))
         self.gamma_witness: GammaWitness | None = GammaWitness() if enable_witness else None
         self.step_counter = 0
 
@@ -70,11 +70,10 @@ class KLRPipeline:
         active = self.twin_state.active
         _ = self.integrity.checksum_state(active)
         refractory_active = not self.refractory.can_intervene(float(self.step_counter))
-        ntk_rank = self.ntk_monitor.rank_proxy(active.weights)
+        rank_pre = self.ntk_monitor.rank_proxy(active.weights)
 
-        # Advisory γ-verification witness (NEO-I1 / NEO-I2). The observation
-        # is performed before any mutating component so the snapshot reflects
-        # the same pre-intervention state that drives the gate decision.
+        # Advisory γ-verification witness (NEO-I1 / NEO-I2). Observe before
+        # any mutating component so the snapshot is the pre-intervention state.
         witness_report: GammaWitnessReport | None = None
         if self.gamma_witness is not None:
             try:
@@ -86,13 +85,12 @@ class KLRPipeline:
         if not refractory_active:
             injection_triggered = self.plasticity_injector.maybe_inject(
                 active,
-                ntk_rank_normalized=ntk_rank,
+                ntk_rank_normalized=rank_pre,
                 config=self.config,
             )
 
         decision = "SKIPPED"
         report: ResetReport
-        rank_pre = self.ntk_monitor.rank_proxy(active.weights)
         try:
             if self.refractory.can_intervene(float(self.step_counter)):
                 self.adaptive_threshold.freeze()
@@ -144,17 +142,3 @@ class KLRPipeline:
             plasticity_report=plast_report,
             witness_report=witness_report,
         )
-
-
-def _clone(state: SystemState) -> SystemState:
-    return SystemState(
-        weights=np.copy(state.weights),
-        confidence=np.copy(state.confidence),
-        usage=np.copy(state.usage),
-        utility=np.copy(state.utility),
-        inhibition=np.copy(state.inhibition),
-        topology=np.copy(state.topology),
-        frozen=None if state.frozen is None else np.copy(state.frozen),
-        gamma=state.gamma,
-        metadata=state.metadata.copy(),
-    )

@@ -35,7 +35,7 @@ from neurophase.reset.pipeline import KLRFrame, KLRPipeline
 from neurophase.reset.plasticity_injector import PlasticityInjector
 from neurophase.reset.plasticity_monitor import PlasticityMonitor, PlasticityReport
 from neurophase.reset.refractory import RefractoryGate
-from neurophase.reset.state import SystemState
+from neurophase.reset.state import SystemState, clone_state
 from neurophase.reset.twin_state import TwinStateManager
 
 __all__ = [
@@ -76,6 +76,7 @@ __all__ = [
     "SystemMetrics",
     "SystemState",
     "TwinStateManager",
+    "clone_state",
     "confusion_matrix",
     "derive_seed",
     "detect_lockin",
