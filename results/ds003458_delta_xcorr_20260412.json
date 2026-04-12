@@ -1,0 +1,260 @@
+{
+  "experiment": "ds003458_delta_power_xcorr",
+  "timestamp": "2026-04-12T12:15:12.568541+00:00",
+  "dataset": "OpenNeuro ds003458 v1.1.0",
+  "preregistration": "results/ds003458_preregistration.md (amendment 2026-04-12)",
+  "primary_channel": "FC5",
+  "n_subjects_total": 23,
+  "n_subjects_valid": 23,
+  "n_significant": 2,
+  "group_xcorr": 0.01673438894145986,
+  "group_xcorr_ttest_p": 0.4463101607620102,
+  "binomial_p": 0.32057955555520995,
+  "mean_lag_ms": -61.30434782608695,
+  "evidence_status": "Tentative (upgraded)",
+  "per_subject": [
+    {
+      "subject": "sub-001",
+      "channel": "FC5",
+      "max_xcorr": 0.05694908603157272,
+      "lag_ms": 2000.0,
+      "p_value": 0.7902097902097902,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 220691
+    },
+    {
+      "subject": "sub-002",
+      "channel": "FC5",
+      "max_xcorr": -0.022669647297344313,
+      "lag_ms": -2000.0,
+      "p_value": 0.989010989010989,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 220691
+    },
+    {
+      "subject": "sub-003",
+      "channel": "FC5",
+      "max_xcorr": -0.09269579550635101,
+      "lag_ms": -802.0,
+      "p_value": 0.24475524475524477,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 201838
+    },
+    {
+      "subject": "sub-004",
+      "channel": "FC5",
+      "max_xcorr": 0.10614151979140526,
+      "lag_ms": -1288.0,
+      "p_value": 0.23176823176823177,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 228339
+    },
+    {
+      "subject": "sub-005",
+      "channel": "FC5",
+      "max_xcorr": 0.11131292689831919,
+      "lag_ms": 916.0,
+      "p_value": 0.24275724275724275,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 186374
+    },
+    {
+      "subject": "sub-006",
+      "channel": "FC5",
+      "max_xcorr": 0.09323717398961953,
+      "lag_ms": 2000.0,
+      "p_value": 0.34665334665334663,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 197228
+    },
+    {
+      "subject": "sub-007",
+      "channel": "FC5",
+      "max_xcorr": -0.07575835254754096,
+      "lag_ms": 936.0,
+      "p_value": 0.5644355644355644,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 221778
+    },
+    {
+      "subject": "sub-008",
+      "channel": "FC5",
+      "max_xcorr": 0.05301701052860251,
+      "lag_ms": -1344.0,
+      "p_value": 0.7512487512487512,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 220468
+    },
+    {
+      "subject": "sub-009",
+      "channel": "FC5",
+      "max_xcorr": -0.13065321637534386,
+      "lag_ms": -1054.0,
+      "p_value": 0.1108891108891109,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 229263
+    },
+    {
+      "subject": "sub-010",
+      "channel": "FC5",
+      "max_xcorr": 0.22865265814597238,
+      "lag_ms": -1176.0,
+      "p_value": 0.03696303696303696,
+      "significant": true,
+      "direction": "neural_leads",
+      "n_samples_held_out": 276149
+    },
+    {
+      "subject": "sub-011",
+      "channel": "FC5",
+      "max_xcorr": 0.08324628515951639,
+      "lag_ms": -444.0,
+      "p_value": 0.4875124875124875,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 218335
+    },
+    {
+      "subject": "sub-012",
+      "channel": "FC5",
+      "max_xcorr": -0.17067902581738423,
+      "lag_ms": 2000.0,
+      "p_value": 0.015984015984015984,
+      "significant": true,
+      "direction": "price_leads",
+      "n_samples_held_out": 206847
+    },
+    {
+      "subject": "sub-013",
+      "channel": "FC5",
+      "max_xcorr": -0.10724285284265234,
+      "lag_ms": -874.0,
+      "p_value": 0.3096903096903097,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 214366
+    },
+    {
+      "subject": "sub-014",
+      "channel": "FC5",
+      "max_xcorr": 0.08288390836049161,
+      "lag_ms": -1178.0,
+      "p_value": 0.4925074925074925,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 212267
+    },
+    {
+      "subject": "sub-015",
+      "channel": "FC5",
+      "max_xcorr": -0.05221690175480338,
+      "lag_ms": 2000.0,
+      "p_value": 0.7812187812187812,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 221170
+    },
+    {
+      "subject": "sub-016",
+      "channel": "FC5",
+      "max_xcorr": 0.11807051493316588,
+      "lag_ms": -1346.0,
+      "p_value": 0.14985014985014986,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 227940
+    },
+    {
+      "subject": "sub-017",
+      "channel": "FC5",
+      "max_xcorr": 0.1294242018332618,
+      "lag_ms": -1548.0,
+      "p_value": 0.13486513486513488,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 212699
+    },
+    {
+      "subject": "sub-018",
+      "channel": "FC5",
+      "max_xcorr": 0.055934111844194,
+      "lag_ms": -916.0,
+      "p_value": 0.8511488511488512,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 200245
+    },
+    {
+      "subject": "sub-019",
+      "channel": "FC5",
+      "max_xcorr": -0.11343618991558796,
+      "lag_ms": 2000.0,
+      "p_value": 0.15884115884115885,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 218065
+    },
+    {
+      "subject": "sub-020",
+      "channel": "FC5",
+      "max_xcorr": 0.04525411707793171,
+      "lag_ms": 2000.0,
+      "p_value": 0.8101898101898102,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 229783
+    },
+    {
+      "subject": "sub-021",
+      "channel": "FC5",
+      "max_xcorr": -0.08675400736505216,
+      "lag_ms": -1076.0,
+      "p_value": 0.3696303696303696,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 241562
+    },
+    {
+      "subject": "sub-022",
+      "channel": "FC5",
+      "max_xcorr": 0.03795468739163115,
+      "lag_ms": -868.0,
+      "p_value": 0.913086913086913,
+      "significant": false,
+      "direction": "neural_leads",
+      "n_samples_held_out": 209121
+    },
+    {
+      "subject": "sub-023",
+      "channel": "FC5",
+      "max_xcorr": 0.0318318986657609,
+      "lag_ms": 652.0,
+      "p_value": 0.9760239760239761,
+      "significant": false,
+      "direction": "price_leads",
+      "n_samples_held_out": 262203
+    }
+  ],
+  "analysis_params": {
+    "delta_band_hz": [
+      1.0,
+      4.0
+    ],
+    "channel": "FC5",
+    "smooth_ms": 500.0,
+    "max_lag_ms": 2000.0,
+    "n_surrogates": 1000,
+    "seed": 42,
+    "held_out_fraction": 0.3,
+    "edge_trim_fraction": 0.05
+  }
+}
