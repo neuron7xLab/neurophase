@@ -8,6 +8,15 @@ adheres to semantic versioning.
 
 First falsifiable PLV pipeline and first real-data confrontation.
 
+### 2026-04-12 — ds003458 delta power analysis (in progress)
+
+- Delta power envelope (1-4 Hz, FC5) x reward probability returns
+- 12/23 subjects processed so far
+- 2 significant: sub-010 (+0.229, neural_leads), sub-012 (-0.171, price_leads)
+- Mixed signs — no systematic effect yet
+- evidence_status: Tentative (unchanged)
+- Awaiting full 23-subject results
+
 ### Added
 
 - **Synthetic PLV bridge** — Kuramoto ODE neural phase generator with
