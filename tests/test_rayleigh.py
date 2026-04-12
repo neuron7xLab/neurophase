@@ -78,13 +78,15 @@ class TestRayleigh:
         phi_market = generate_synthetic_market_phase(n_samples=50000, fs=256.0, seed=42)
         for n in [1000, 5000, 10000, 50000]:
             trace = generate_neural_phase_trace(
-                phi_market, n_samples=n, fs=256.0, coupling_k=0.0, seed=42,
+                phi_market,
+                n_samples=n,
+                fs=256.0,
+                coupling_k=0.0,
+                seed=42,
             )
             delta_phi = trace.phi_neural - trace.phi_market
             result = rayleigh_test(delta_phi)
-            assert result.R < R_NEGLIGIBLE, (
-                f"N={n}: R={result.R} should be < {R_NEGLIGIBLE}"
-            )
+            assert result.R < R_NEGLIGIBLE, f"N={n}: R={result.R} should be < {R_NEGLIGIBLE}"
 
     def test_effect_size_classification(self) -> None:
         """Effect size labels match R thresholds."""

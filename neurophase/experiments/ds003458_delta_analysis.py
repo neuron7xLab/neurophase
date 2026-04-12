@@ -82,16 +82,22 @@ def run_delta_analysis(
             ch_data = raw_filt.get_data(picks=[ch])[0]  # (n_samples,)
 
             delta = extract_delta_power(
-                ch_data, fs=fs, band=(1.0, 4.0),
-                smooth_ms=500.0, channel_name=ch,
+                ch_data,
+                fs=fs,
+                band=(1.0, 4.0),
+                smooth_ms=500.0,
+                channel_name=ch,
             )
 
             # Build reward returns at EEG rate
             total_dur = float(raw.times[-1])
             n_eeg = len(ch_data)
             returns = _build_reward_returns(
-                sub.reward_prob_chosen, sub.trial_onsets_sec,
-                fs, total_dur, n_eeg,
+                sub.reward_prob_chosen,
+                sub.trial_onsets_sec,
+                fs,
+                total_dur,
+                n_eeg,
             )
 
             # Trim edges (5%)
@@ -106,9 +112,12 @@ def run_delta_analysis(
 
             # Cross-correlation
             xcorr = compute_delta_price_xcorr(
-                env_ho, ret_ho,
-                fs=fs, max_lag_ms=2000.0,
-                n_surrogates=n_surrogates, seed=seed,
+                env_ho,
+                ret_ho,
+                fs=fs,
+                max_lag_ms=2000.0,
+                n_surrogates=n_surrogates,
+                seed=seed,
             )
 
             row: dict[str, Any] = {
@@ -133,18 +142,24 @@ def run_delta_analysis(
 
         except Exception as e:
             print(f"FAILED: {e}")
-            per_subject.append({
-                "subject": sid,
-                "max_xcorr": None,
-                "error": str(e),
-            })
+            per_subject.append(
+                {
+                    "subject": sid,
+                    "max_xcorr": None,
+                    "error": str(e),
+                }
+            )
 
     # --- Group-level ---
     valid = [r for r in per_subject if r.get("max_xcorr") is not None]
     n_total = len(valid)
 
     if n_total == 0:
-        return {"experiment": "ds003458_delta", "error": "No valid subjects", "per_subject": per_subject}
+        return {
+            "experiment": "ds003458_delta",
+            "error": "No valid subjects",
+            "per_subject": per_subject,
+        }
 
     n_sig = sum(1 for r in valid if r.get("significant", False))
     binom = binomtest(n_sig, n=n_total, p=0.05, alternative="greater")

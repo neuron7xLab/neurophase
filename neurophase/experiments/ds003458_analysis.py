@@ -77,19 +77,18 @@ def run_analysis(
             }
             per_subject.append(row)
 
-            print(
-                f"PPC={verdict.ppc:.4f}  R={verdict.rayleigh_r:.4f}  "
-                f"verdict={verdict.verdict}"
-            )
+            print(f"PPC={verdict.ppc:.4f}  R={verdict.rayleigh_r:.4f}  verdict={verdict.verdict}")
 
         except Exception as e:
             print(f"FAILED: {e}")
-            per_subject.append({
-                "subject": sid,
-                "ppc": None,
-                "verdict": "ERROR",
-                "error": str(e),
-            })
+            per_subject.append(
+                {
+                    "subject": sid,
+                    "ppc": None,
+                    "verdict": "ERROR",
+                    "error": str(e),
+                }
+            )
 
     # --- Group-level analysis ---
     valid = [r for r in per_subject if r["verdict"] != "ERROR"]

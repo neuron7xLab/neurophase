@@ -80,7 +80,11 @@ def run_trial_lme_analysis(
 
             # Extract trial theta power (0-500ms post-feedback)
             trial_power = extract_trial_band_power(
-                ch_data, fb_onsets_samples, fs=fs, band=band, window_ms=(0.0, 500.0),
+                ch_data,
+                fb_onsets_samples,
+                fs=fs,
+                band=band,
+                window_ms=(0.0, 500.0),
             )
 
             # Reward signal: chosen arm probability per trial
@@ -92,8 +96,11 @@ def run_trial_lme_analysis(
             # Simpler proxy: just use reward_probability as the signal
             # (Toma used price changes, we use probability)
             result = compute_trial_theta_reward_correlation(
-                trial_power, reward,
-                subject_id=sid, channel=ch, band=band,
+                trial_power,
+                reward,
+                subject_id=sid,
+                channel=ch,
+                band=band,
             )
 
             row: dict[str, Any] = {

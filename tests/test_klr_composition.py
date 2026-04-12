@@ -213,9 +213,7 @@ def test_disinhibit_skips_frozen_nodes() -> None:
     # Verify that the dominant non-frozen mask itself excludes frozen indices.
     dominant = float(np.quantile(state.usage, ctrl.config.usage_quantile))
     mask = (state.usage >= dominant) & ~result.frozen  # type: ignore[operator]
-    assert not np.any(mask[:2]), (
-        "_disinhibit row-write mask must not include frozen node indices"
-    )
+    assert not np.any(mask[:2]), "_disinhibit row-write mask must not include frozen node indices"
 
 
 def test_plasticity_window_skips_frozen_weights() -> None:

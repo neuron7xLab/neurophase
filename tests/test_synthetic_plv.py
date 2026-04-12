@@ -95,21 +95,33 @@ class TestMarketPhase:
 class TestNeuralPhaseGenerator:
     def test_null_coupling_gives_low_plv(self, phi_market: np.ndarray) -> None:
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         plv_val = plv(trace.phi_neural, trace.phi_market)
         assert plv_val < 0.20, f"k=0 PLV={plv_val} should be small"
 
     def test_strong_coupling_gives_high_plv(self, phi_market: np.ndarray) -> None:
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=5.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=5.0,
+            seed=SEED,
         )
         plv_val = plv(trace.phi_neural, trace.phi_market)
         assert plv_val > 0.50, f"k=5 PLV={plv_val} should be high"
 
     def test_output_shapes(self, phi_market: np.ndarray) -> None:
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=1.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=1.0,
+            seed=SEED,
         )
         assert trace.signal.shape == (N_SAMPLES,)
         assert trace.phi_neural.shape == (N_SAMPLES,)
@@ -117,10 +129,18 @@ class TestNeuralPhaseGenerator:
 
     def test_deterministic(self, phi_market: np.ndarray) -> None:
         t1 = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=1.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=1.0,
+            seed=SEED,
         )
         t2 = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=1.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=1.0,
+            seed=SEED,
         )
         np.testing.assert_array_equal(t1.signal, t2.signal)
         np.testing.assert_array_equal(t1.phi_neural, t2.phi_neural)
@@ -204,13 +224,15 @@ class TestIPLV:
         """iPLV ≤ PLV for all k (mathematical property)."""
         for k in [0.0, 1.0, 3.0, 5.0]:
             trace = generate_neural_phase_trace(
-                phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=k, seed=SEED,
+                phi_market,
+                n_samples=N_SAMPLES,
+                fs=FS,
+                coupling_k=k,
+                seed=SEED,
             )
             plv_val = plv(trace.phi_neural, trace.phi_market)
             iplv_val = iplv(trace.phi_neural, trace.phi_market)
-            assert iplv_val <= plv_val + 1e-10, (
-                f"k={k}: iPLV={iplv_val} > PLV={plv_val}"
-            )
+            assert iplv_val <= plv_val + 1e-10, f"k={k}: iPLV={iplv_val} > PLV={plv_val}"
 
     def test_in_sample_raises(self) -> None:
         """HeldOutSplit enforcement: overlapping indices raise HeldOutViolation."""
@@ -229,20 +251,34 @@ class TestIPLV:
 
     def test_null_coupling_not_significant(self, phi_market: np.ndarray) -> None:
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         result = iplv_significance(
-            trace.phi_neural, trace.phi_market, n_surrogates=200, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert result.ppc < 0.02, f"k=0 PPC={result.ppc} should be near zero"
 
     def test_result_has_ppc_field(self, phi_market: np.ndarray) -> None:
         """iPLVResult includes ppc field."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         result = iplv_significance(
-            trace.phi_neural, trace.phi_market, n_surrogates=50, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=50,
+            seed=SEED,
         )
         assert hasattr(result, "ppc")
         assert isinstance(result.ppc, float)
@@ -258,10 +294,17 @@ class TestIPLV:
     def test_surrogate_runs_on_ppc(self, phi_market: np.ndarray) -> None:
         """Surrogate harness runs on PPC, not PLV."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         result = iplv_significance(
-            trace.phi_neural, trace.phi_market, n_surrogates=50, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=50,
+            seed=SEED,
         )
         # At null coupling, PPC-based p-value should be non-significant
         # If the surrogate ran on biased PLV, it might still reject
@@ -277,11 +320,17 @@ class TestIPLV:
 
 class TestSyntheticPLVSweep:
     def test_null_ppc_below_threshold(
-        self, phi_market: np.ndarray, held_out_split: HeldOutSplit,
+        self,
+        phi_market: np.ndarray,
+        held_out_split: HeldOutSplit,
     ) -> None:
         """PLV-S1: k=0 → PPC < 0.02 on held-out split (bias-free null)."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         test_neural = held_out_split.test_slice(trace.phi_neural)
         test_market = held_out_split.test_slice(trace.phi_market)
@@ -289,11 +338,17 @@ class TestSyntheticPLVSweep:
         assert ppc_val < 0.03, f"PLV-S1 violated: PPC={ppc_val}"
 
     def test_coupled_ppc_above_threshold(
-        self, phi_market: np.ndarray, held_out_split: HeldOutSplit,
+        self,
+        phi_market: np.ndarray,
+        held_out_split: HeldOutSplit,
     ) -> None:
         """k=5.0 → PPC > 0.50 on held-out split."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=5.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=5.0,
+            seed=SEED,
         )
         test_neural = held_out_split.test_slice(trace.phi_neural)
         test_market = held_out_split.test_slice(trace.phi_market)
@@ -301,14 +356,20 @@ class TestSyntheticPLVSweep:
         assert ppc_val > 0.50, f"PPC={ppc_val} should be > 0.50 at k=5"
 
     def test_monotonic_ppc_vs_k(
-        self, phi_market: np.ndarray, held_out_split: HeldOutSplit,
+        self,
+        phi_market: np.ndarray,
+        held_out_split: HeldOutSplit,
     ) -> None:
         """PPC increases monotonically with k across sweep."""
         coupling_values = [0.0, 1.0, 3.0, 5.0]
         ppc_values: list[float] = []
         for k in coupling_values:
             trace = generate_neural_phase_trace(
-                phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=k, seed=SEED,
+                phi_market,
+                n_samples=N_SAMPLES,
+                fs=FS,
+                coupling_k=k,
+                seed=SEED,
             )
             test_neural = held_out_split.test_slice(trace.phi_neural)
             test_market = held_out_split.test_slice(trace.phi_market)
@@ -322,31 +383,49 @@ class TestSyntheticPLVSweep:
             )
 
     def test_null_not_significant(
-        self, phi_market: np.ndarray, held_out_split: HeldOutSplit,
+        self,
+        phi_market: np.ndarray,
+        held_out_split: HeldOutSplit,
     ) -> None:
         """k=0.0 → p_value > 0.05 (PPC surrogate test)."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         test_neural = held_out_split.test_slice(trace.phi_neural)
         test_market = held_out_split.test_slice(trace.phi_market)
         result = iplv_significance(
-            test_neural, test_market, n_surrogates=200, seed=SEED,
+            test_neural,
+            test_market,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert result.p_value > 0.05, f"k=0 p={result.p_value} should be > 0.05"
         assert not result.significant
 
     def test_coupled_significant(
-        self, phi_market: np.ndarray, held_out_split: HeldOutSplit,
+        self,
+        phi_market: np.ndarray,
+        held_out_split: HeldOutSplit,
     ) -> None:
         """k=3.0 → p_value < 0.05 (PPC surrogate test)."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=3.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=3.0,
+            seed=SEED,
         )
         test_neural = held_out_split.test_slice(trace.phi_neural)
         test_market = held_out_split.test_slice(trace.phi_market)
         result = iplv_significance(
-            test_neural, test_market, n_surrogates=200, seed=SEED,
+            test_neural,
+            test_market,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert result.p_value < 0.05, f"k=3 p={result.p_value} should be < 0.05"
         assert result.significant
@@ -374,14 +453,20 @@ class TestSyntheticPLVSweep:
         assert data["primary_metric"] == "ppc"
 
     def test_deterministic(
-        self, phi_market: np.ndarray, held_out_split: HeldOutSplit,
+        self,
+        phi_market: np.ndarray,
+        held_out_split: HeldOutSplit,
     ) -> None:
         """Two runs with seed=42 → identical PPC values."""
         ppc_values: list[list[float]] = [[], []]
         for run_idx in range(2):
             for k in [0.0, 2.0, 5.0]:
                 trace = generate_neural_phase_trace(
-                    phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=k, seed=SEED,
+                    phi_market,
+                    n_samples=N_SAMPLES,
+                    fs=FS,
+                    coupling_k=k,
+                    seed=SEED,
                 )
                 test_neural = held_out_split.test_slice(trace.phi_neural)
                 test_market = held_out_split.test_slice(trace.phi_market)

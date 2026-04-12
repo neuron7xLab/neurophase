@@ -23,7 +23,7 @@ from neurophase.data.ds003458_loader import SubjectData, interpolate_to_eeg_rate
 FloatArray = npt.NDArray[np.float64]
 
 # Pre-registered parameters (frozen in ds003458_preregistration.md)
-NEURAL_BAND: tuple[float, float] = (4.0, 8.0)   # FMθ
+NEURAL_BAND: tuple[float, float] = (4.0, 8.0)  # FMθ
 NEURAL_CHANNEL: str = "Fz"
 MARKET_BAND: tuple[float, float] = (0.005, 0.05)  # reward oscillation
 ARTIFACT_THRESHOLD_UV: float = 150.0
@@ -102,9 +102,7 @@ def extract_phases(
     elif "F2" in ch_names:
         pick_ch = "F2"
     else:
-        raise ValueError(
-            f"Channel {neural_channel} not found. Available: {ch_names[:10]}..."
-        )
+        raise ValueError(f"Channel {neural_channel} not found. Available: {ch_names[:10]}...")
 
     # Bandpass filter for FMθ
     raw_filt = raw.copy().filter(

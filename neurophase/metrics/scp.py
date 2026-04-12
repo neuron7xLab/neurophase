@@ -88,8 +88,7 @@ def extract_scp(
     if not np.all(np.isfinite(x)):
         bad_idx = int(np.argmax(~np.isfinite(x)))
         raise ValueError(
-            f"eeg_data contains non-finite value at sample {bad_idx} "
-            f"(channel {channel_name})"
+            f"eeg_data contains non-finite value at sample {bad_idx} (channel {channel_name})"
         )
     if smooth_s < 1.0:
         raise ValueError(f"smooth_s must be >= 1.0, got {smooth_s}")

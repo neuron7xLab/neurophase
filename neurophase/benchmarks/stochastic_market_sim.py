@@ -121,7 +121,9 @@ def generate_stochastic_scenario(
 
     # Market
     prices, returns = generate_stochastic_market(
-        n_trials=n_trials, volatility=volatility, seed=seed,
+        n_trials=n_trials,
+        volatility=volatility,
+        seed=seed,
     )
 
     # Neural EMA prediction of price

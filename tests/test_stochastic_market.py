@@ -51,8 +51,10 @@ class TestStochasticScenario:
 
         sc = generate_stochastic_scenario(coupling_strength=2.0, seed=42)
         result = compute_trial_theta_reward_correlation(
-            sc.theta_power, sc.prediction_error,
-            subject_id="synthetic", channel="FC5",
+            sc.theta_power,
+            sc.prediction_error,
+            subject_id="synthetic",
+            channel="FC5",
         )
         assert result.r_pearson > 0.5
         assert result.p_pearson < 0.001

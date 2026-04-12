@@ -99,7 +99,8 @@ def dual_surrogate_test(
     # Cyclic-shift surrogate
     rng_cs = np.random.default_rng(seed)
     result_cs = harness.test(
-        x, y,
+        x,
+        y,
         statistic=_ppc_statistic,
         surrogate_fn=lambda arr: cyclic_shift(arr, rng=rng_cs),
         seed=seed,
@@ -108,7 +109,8 @@ def dual_surrogate_test(
     # Time-reversal surrogate (different seed for independence)
     rng_tr = np.random.default_rng(seed + 1)
     result_tr = harness.test(
-        x, y,
+        x,
+        y,
         statistic=_ppc_statistic,
         surrogate_fn=lambda arr: time_reversal(arr, rng=rng_tr),
         seed=seed + 1,
@@ -204,7 +206,8 @@ def compute_verdict(
 
     # Gate 2: Dual surrogate test
     dual = dual_surrogate_test(
-        x, y,
+        x,
+        y,
         n_surrogates=n_surrogates,
         alpha=alpha,
         seed=seed,
@@ -214,7 +217,9 @@ def compute_verdict(
     theory_delta: float | None = None
     if coupling_k is not None:
         predicted = calibrated_ppc(
-            coupling_k, f_neural=f_neural, f_market=f_market,
+            coupling_k,
+            f_neural=f_neural,
+            f_market=f_market,
             model="empirical",
         )
         theory_delta = abs(ppc_val - predicted)

@@ -141,9 +141,7 @@ def generate_neural_phase_trace(
     if T < 4:
         raise ValueError(f"n_samples must be ≥ 4, got {T}")
     if phi_mkt.size < T:
-        raise ValueError(
-            f"n_samples={T} exceeds phi_market length={phi_mkt.size}"
-        )
+        raise ValueError(f"n_samples={T} exceeds phi_market length={phi_mkt.size}")
     phi_mkt = phi_mkt[:T]
 
     rng = np.random.default_rng(seed)

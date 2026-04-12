@@ -52,10 +52,17 @@ class TestDualSurrogate:
     def test_null_both_not_significant(self, phi_market: np.ndarray) -> None:
         """k=0 → both surrogates give p > 0.05."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         result = dual_surrogate_test(
-            trace.phi_neural, trace.phi_market, n_surrogates=200, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert not result.both_significant, (
             f"k=0 should not be significant: "
@@ -65,10 +72,17 @@ class TestDualSurrogate:
     def test_coupled_both_significant(self, phi_market: np.ndarray) -> None:
         """k=5 → both surrogates give p < 0.05."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=5.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=5.0,
+            seed=SEED,
         )
         result = dual_surrogate_test(
-            trace.phi_neural, trace.phi_market, n_surrogates=200, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert result.both_significant, (
             f"k=5 should be significant: "
@@ -77,10 +91,17 @@ class TestDualSurrogate:
 
     def test_result_has_both_p_values(self, phi_market: np.ndarray) -> None:
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=1.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=1.0,
+            seed=SEED,
         )
         result = dual_surrogate_test(
-            trace.phi_neural, trace.phi_market, n_surrogates=50, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=50,
+            seed=SEED,
         )
         assert 0.0 <= result.p_cyclic_shift <= 1.0
         assert 0.0 <= result.p_time_reversal <= 1.0
@@ -89,10 +110,17 @@ class TestDualSurrogate:
     def test_reversal_independent_of_cyclic(self, phi_market: np.ndarray) -> None:
         """Two surrogate distributions should differ."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=1.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=1.0,
+            seed=SEED,
         )
         result = dual_surrogate_test(
-            trace.phi_neural, trace.phi_market, n_surrogates=200, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=200,
+            seed=SEED,
         )
         # p-values from different surrogate strategies should not be identical
         # (they CAN be close, but exact equality is astronomically unlikely)
