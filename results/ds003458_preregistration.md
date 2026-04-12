@@ -1,0 +1,72 @@
+# ds003458 Pre-Registration — Frozen Analysis Plan
+
+**Dataset:** OpenNeuro ds003458 v1.1.0 (Cavanagh, 2021)
+**Task:** Three-armed bandit with oscillating reward probabilities
+**N subjects:** 23 (sub-001 to sub-023)
+**EEG:** 64-ch Brain Vision ActiChamp, 500 Hz, CPz reference
+
+## Experimental Design
+
+Three stimuli (X, Y, Z) have reward probabilities that oscillate
+sinusoidally over trials:
+
+    P(reward|stim) = 0.6 + 0.4 · cos(2π · 0.33π · 0.025 · trial)
+
+Stimuli are phase-shifted by 40 and 80 trials, creating three
+overlapping sinusoids with period ≈ 240 trials (≈ 800 seconds).
+
+## Pre-Registered Analysis Parameters
+
+### Market proxy (φ_market)
+- **Signal:** Reward probability of the CHOSEN arm on each trial
+- **Interpolation:** Linear interpolation from trial-level (≈3.4s/trial)
+  to EEG sampling rate (500 Hz)
+- **Smoothing:** None beyond interpolation (raw oscillation is smooth)
+- **Phase extraction:** Hilbert transform on bandpass [0.005, 0.05] Hz
+  (matching the ≈0.0012 Hz reward oscillation with headroom)
+- **Justification:** The chosen arm's probability is what the brain
+  actually tracks for reward prediction error computation
+
+### Neural signal (φ_neural)
+- **EEG band:** Frontal midline theta (FMθ), **4–8 Hz**
+- **Channel:** **Fz** (frontal midline — canonical FMθ site)
+- **Justification:** FMθ is the established neural correlate of reward
+  prediction error (Cavanagh et al., 2010; Cohen et al., 2007).
+  The α/β band is NOT appropriate because the reward oscillation
+  period (≈800s) is far below α/β frequencies. FMθ power modulates
+  with reward prediction error magnitude, and its envelope may
+  track the slow reward probability changes.
+- **Phase extraction:** Hilbert transform of FMθ-filtered EEG
+- **Note:** We compute PLV between the FMθ phase and the reward
+  probability phase. This is a cross-frequency coupling measure:
+  slow reward oscillation phase × fast neural oscillation phase.
+
+### Alternative analysis (if primary fails)
+- **Band:** Delta, 1–4 Hz (slower neural tracking)
+- **Channel:** Cz (vertex — strongest slow oscillation)
+- **Documented as exploratory, not confirmatory**
+
+### Artifact rejection
+- **Threshold:** Peak-to-peak > 150 μV → reject epoch
+- **Edge trim:** First and last 5% of continuous data trimmed
+  (Hilbert edge artifacts)
+- **Bad channel:** If Fz is bad, use F1 or F2 (nearest neighbor)
+
+### Statistical analysis
+- **Primary metric:** PPC (Pairwise Phase Consistency, Vinck et al. 2010)
+- **Significance:** p < 0.05, N = 1000 cyclic-shift surrogates
+- **Held-out:** Last 30% of trials per subject
+- **Three-gate verdict:** Rayleigh (R ≥ 0.10) + Dual surrogate + Theory
+  - Theory gate: auto-pass (coupling_k unknown for real data)
+- **Group test:** Binomial test on N_CONFIRMED vs chance (5%)
+- **Effect size:** Group-mean PPC via Fisher z-transform
+
+### Interpretation rules
+- ≥60% subjects CONFIRMED → evidence_status: Strongly Plausible
+- 30–60% CONFIRMED → evidence_status: Tentative (upgraded)
+- <30% CONFIRMED → evidence_status: Tentative (unchanged)
+
+## Commit Hash
+
+This file is frozen at the commit that adds it.
+No analysis code runs before this commit exists.
