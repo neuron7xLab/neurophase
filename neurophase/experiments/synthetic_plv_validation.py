@@ -67,7 +67,9 @@ def run_sweep(
 
     # Generate shared synthetic market phase
     phi_market = generate_synthetic_market_phase(
-        n_samples=n_samples, fs=fs, seed=seed,
+        n_samples=n_samples,
+        fs=fs,
+        seed=seed,
     )
 
     # Build held-out split: last 30% is test

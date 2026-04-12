@@ -67,11 +67,13 @@ def _compute_reward_probabilities(n_trials: int = 480) -> FloatArray:
     hi_shift = lo
 
     # Phase-shifted versions (offsets from MATLAB code: 0, 40, 80)
-    probs = np.stack([
-        lo[:n_trials],
-        mid_shift[40:40 + n_trials],
-        hi_shift[80:80 + n_trials],
-    ])
+    probs = np.stack(
+        [
+            lo[:n_trials],
+            mid_shift[40 : 40 + n_trials],
+            hi_shift[80 : 80 + n_trials],
+        ]
+    )
     return probs.astype(np.float64)
 
 
@@ -94,9 +96,9 @@ def _parse_chosen_arm(events_df: pd.DataFrame) -> FloatArray:
         events_df["trial_type"].str.startswith("Response", na=False)
     ].reset_index(drop=True)
 
-    fb_events = events_df[
-        events_df["trial_type"].str.startswith("Feedback", na=False)
-    ].reset_index(drop=True)
+    fb_events = events_df[events_df["trial_type"].str.startswith("Feedback", na=False)].reset_index(
+        drop=True
+    )
 
     actual_trials = min(len(stim_events), len(resp_events), len(fb_events), n_trials)
 
@@ -160,8 +162,7 @@ class DS003458Loader:
     def list_subjects(self) -> list[str]:
         """List available subject IDs."""
         subs = sorted(
-            d.name for d in self.data_root.iterdir()
-            if d.is_dir() and d.name.startswith("sub-")
+            d.name for d in self.data_root.iterdir() if d.is_dir() and d.name.startswith("sub-")
         )
         return subs
 
@@ -197,11 +198,10 @@ class DS003458Loader:
         reward_prob = _parse_chosen_arm(events_df)
 
         # Trial onset times (from stimulus events)
-        stim_events = events_df[
-            events_df["trial_type"].str.startswith("Stimulus", na=False)
-        ]
+        stim_events = events_df[events_df["trial_type"].str.startswith("Stimulus", na=False)]
         trial_onsets = np.asarray(
-            stim_events["onset"].values[:len(reward_prob)], dtype=np.float64,
+            stim_events["onset"].values[: len(reward_prob)],
+            dtype=np.float64,
         )
 
         return SubjectData(

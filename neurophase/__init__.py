@@ -52,6 +52,8 @@ from neurophase.benchmarks.phase_coupling import (
 )
 from neurophase.benchmarks.ppc_analytical import (
     calibrated_ppc,
+    ott_antonsen_order_parameter,
+    ott_antonsen_ppc,
     theoretical_plv,
     theoretical_ppc,
 )
@@ -152,6 +154,15 @@ from neurophase.metrics.delta_power import DeltaPowerTrace, extract_delta_power
 from neurophase.metrics.delta_price_xcorr import (
     DeltaPriceXCorrResult,
     compute_delta_price_xcorr,
+)
+from neurophase.metrics.effect_size import (
+    EffectSizeReport,
+    cohens_d,
+    cohens_d_one_sample,
+    confidence_interval_d,
+    effect_size_report,
+    hedges_g,
+    statistical_power,
 )
 from neurophase.metrics.entropy import (
     delta_entropy,
@@ -270,6 +281,7 @@ __all__ = [
     "DirectionIndexWeights",
     "DualSurrogateResult",
     "EVTFit",
+    "EffectSizeReport",
     "EmergentPhaseCriteria",
     "EmergentPhaseDecision",
     "ExecutionGate",
@@ -354,6 +366,8 @@ __all__ = [
     "calibrate_gate_threshold",
     "calibrate_stillness_parameters",
     "calibrated_ppc",
+    "cohens_d",
+    "cohens_d_one_sample",
     "compute_cvar",
     "compute_delta_price_xcorr",
     "compute_fmn",
@@ -364,11 +378,13 @@ __all__ = [
     "compute_topological_energy",
     "compute_var",
     "compute_verdict",
+    "confidence_interval_d",
     "cyclic_shift",
     "delta_entropy",
     "detect_emergent_phase",
     "direction_index",
     "dual_surrogate_test",
+    "effect_size_report",
     "explain_decision",
     "explain_gate",
     "extract_delta_power",
@@ -384,6 +400,7 @@ __all__ = [
     "generate_neural_phase_trace",
     "generate_phase_coupling",
     "generate_synthetic_market_phase",
+    "hedges_g",
     "hurst_dfa",
     "hurst_rs",
     "iPLVResult",
@@ -397,6 +414,8 @@ __all__ = [
     "multifractal_instability",
     "ollivier_ricci",
     "order_parameter",
+    "ott_antonsen_order_parameter",
+    "ott_antonsen_ppc",
     "phase_shuffle",
     "plv",
     "plv_on_held_out",
@@ -413,6 +432,7 @@ __all__ = [
     "shannon_entropy",
     "size_position",
     "skewness",
+    "statistical_power",
     "theoretical_plv",
     "theoretical_ppc",
     "time_reversal",

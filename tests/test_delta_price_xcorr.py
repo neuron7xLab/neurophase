@@ -18,7 +18,11 @@ class TestDeltaPriceXCorr:
         x = rng.standard_normal(10000)
         y = rng.standard_normal(10000)
         result = compute_delta_price_xcorr(
-            x, y, fs=500.0, n_surrogates=200, seed=42,
+            x,
+            y,
+            fs=500.0,
+            n_surrogates=200,
+            seed=42,
         )
         assert not result.significant, f"p={result.p_value} should be > 0.05"
 
@@ -29,7 +33,11 @@ class TestDeltaPriceXCorr:
         # y = smoothed, delayed copy of x + noise
         y = 0.5 * x + 0.5 * rng.standard_normal(10000)
         result = compute_delta_price_xcorr(
-            x, y, fs=500.0, n_surrogates=200, seed=42,
+            x,
+            y,
+            fs=500.0,
+            n_surrogates=200,
+            seed=42,
         )
         assert result.significant, f"p={result.p_value} should be < 0.05"
         assert result.max_xcorr > 0.3
@@ -53,7 +61,12 @@ class TestDeltaPriceXCorr:
         y = np.zeros(n)
         y[lag:] = x[:-lag]
         result = compute_delta_price_xcorr(
-            x, y, fs=500.0, max_lag_ms=2000.0, n_surrogates=200, seed=42,
+            x,
+            y,
+            fs=500.0,
+            max_lag_ms=2000.0,
+            n_surrogates=200,
+            seed=42,
         )
         # x is delta_envelope, y is price_returns
         # positive lag means x leads y → "neural_leads" or "simultaneous"
@@ -65,22 +78,30 @@ class TestDeltaPriceXCorr:
         x = rng.standard_normal(10000)
         y = -0.5 * x + 0.5 * rng.standard_normal(10000)
         result = compute_delta_price_xcorr(
-            x, y, fs=500.0, n_surrogates=200, seed=42,
+            x,
+            y,
+            fs=500.0,
+            n_surrogates=200,
+            seed=42,
         )
         assert result.max_xcorr < 0, f"xcorr={result.max_xcorr} should be < 0"
 
     def test_max_lag_limit(self) -> None:
         with pytest.raises(ValueError, match="5000"):
             compute_delta_price_xcorr(
-                np.ones(1000), np.ones(1000),
-                fs=500.0, max_lag_ms=6000.0,
+                np.ones(1000),
+                np.ones(1000),
+                fs=500.0,
+                max_lag_ms=6000.0,
             )
 
     def test_min_surrogates(self) -> None:
         with pytest.raises(ValueError, match="200"):
             compute_delta_price_xcorr(
-                np.ones(1000), np.ones(1000),
-                fs=500.0, n_surrogates=50,
+                np.ones(1000),
+                np.ones(1000),
+                fs=500.0,
+                n_surrogates=50,
             )
 
     def test_result_fields(self) -> None:

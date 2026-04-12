@@ -47,26 +47,22 @@ class TestPreregistration:
             check=False,
         )
         assert result.returncode == 0
-        assert len(result.stdout.strip()) > 0, (
-            "Pre-registration not committed to git"
-        )
+        assert len(result.stdout.strip()) > 0, "Pre-registration not committed to git"
 
     def test_preregistration_contains_required_fields(self) -> None:
         """Pre-registration has all required analysis parameters."""
         prereg = Path("results/ds003458_preregistration.md")
         text = prereg.read_text()
         required = [
-            "8 Hz",         # FMθ band upper bound
-            "Fz",           # channel
-            "PPC",          # primary metric
-            "0.05",         # significance
-            "Held-out",     # held-out discipline
-            "three-gate",   # verdict
+            "8 Hz",  # FMθ band upper bound
+            "Fz",  # channel
+            "PPC",  # primary metric
+            "0.05",  # significance
+            "Held-out",  # held-out discipline
+            "three-gate",  # verdict
         ]
         for field in required:
-            assert field.lower() in text.lower(), (
-                f"Pre-registration missing: {field}"
-            )
+            assert field.lower() in text.lower(), f"Pre-registration missing: {field}"
 
 
 class TestRewardProbabilities:

@@ -21,7 +21,8 @@ class TestSCP:
         """SCP-I1: 0.01-0.1 Hz contains the ~0.03 Hz reward oscillation."""
         result = extract_scp(
             np.random.default_rng(42).standard_normal(50000),
-            fs=500.0, band=(0.01, 0.1),
+            fs=500.0,
+            band=(0.01, 0.1),
         )
         stimulus_freq = 0.03  # Hz, approximate reward oscillation
         assert result.band_hz[0] <= stimulus_freq <= result.band_hz[1]

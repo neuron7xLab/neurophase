@@ -25,11 +25,18 @@ class TestPLVVerdict:
     def test_null_rejected(self, phi_market: np.ndarray) -> None:
         """k=0 → verdict REJECTED (R < 0.10, surrogates not significant)."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=0.0,
+            seed=SEED,
         )
         verdict = compute_verdict(
-            trace.phi_neural, trace.phi_market,
-            coupling_k=0.0, n_surrogates=200, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            coupling_k=0.0,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert verdict.verdict == "REJECTED", (
             f"k=0 should be REJECTED, got {verdict.verdict} "
@@ -40,11 +47,18 @@ class TestPLVVerdict:
     def test_strong_coupling_confirmed(self, phi_market: np.ndarray) -> None:
         """k=5 → verdict CONFIRMED."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=5.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=5.0,
+            seed=SEED,
         )
         verdict = compute_verdict(
-            trace.phi_neural, trace.phi_market,
-            coupling_k=5.0, n_surrogates=200, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            coupling_k=5.0,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert verdict.verdict == "CONFIRMED", (
             f"k=5 should be CONFIRMED, got {verdict.verdict} "
@@ -55,11 +69,18 @@ class TestPLVVerdict:
     def test_all_gates_required(self, phi_market: np.ndarray) -> None:
         """PLV-V1: CONFIRMED requires all three gates."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=5.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=5.0,
+            seed=SEED,
         )
         verdict = compute_verdict(
-            trace.phi_neural, trace.phi_market,
-            coupling_k=5.0, n_surrogates=200, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            coupling_k=5.0,
+            n_surrogates=200,
+            seed=SEED,
         )
         if verdict.verdict == "CONFIRMED":
             assert verdict.gates_passed == 3
@@ -68,33 +89,52 @@ class TestPLVVerdict:
         """gates_passed ∈ {0, 1, 2, 3}."""
         for k in [0.0, 1.0, 5.0]:
             trace = generate_neural_phase_trace(
-                phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=k, seed=SEED,
+                phi_market,
+                n_samples=N_SAMPLES,
+                fs=FS,
+                coupling_k=k,
+                seed=SEED,
             )
             verdict = compute_verdict(
-                trace.phi_neural, trace.phi_market,
-                coupling_k=k, n_surrogates=50, seed=SEED,
+                trace.phi_neural,
+                trace.phi_market,
+                coupling_k=k,
+                n_surrogates=50,
+                seed=SEED,
             )
             assert 0 <= verdict.gates_passed <= 3
 
     def test_real_data_mode_no_theory(self, phi_market: np.ndarray) -> None:
         """Without coupling_k, theory gate auto-passes, theory_delta is None."""
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=5.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=5.0,
+            seed=SEED,
         )
         verdict = compute_verdict(
-            trace.phi_neural, trace.phi_market,
+            trace.phi_neural,
+            trace.phi_market,
             coupling_k=None,
-            n_surrogates=200, seed=SEED,
+            n_surrogates=200,
+            seed=SEED,
         )
         assert verdict.theory_delta is None
 
     def test_verdict_has_rayleigh_r(self, phi_market: np.ndarray) -> None:
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=1.0, seed=SEED,
+            phi_market,
+            n_samples=N_SAMPLES,
+            fs=FS,
+            coupling_k=1.0,
+            seed=SEED,
         )
         verdict = compute_verdict(
-            trace.phi_neural, trace.phi_market,
-            n_surrogates=50, seed=SEED,
+            trace.phi_neural,
+            trace.phi_market,
+            n_surrogates=50,
+            seed=SEED,
         )
         assert 0.0 <= verdict.rayleigh_r <= 1.0
         assert verdict.rayleigh_effect in {"negligible", "small", "medium", "large"}
@@ -103,10 +143,17 @@ class TestPLVVerdict:
         """verdict is one of the three allowed strings."""
         for k in [0.0, 1.0, 3.0, 5.0]:
             trace = generate_neural_phase_trace(
-                phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=k, seed=SEED,
+                phi_market,
+                n_samples=N_SAMPLES,
+                fs=FS,
+                coupling_k=k,
+                seed=SEED,
             )
             verdict = compute_verdict(
-                trace.phi_neural, trace.phi_market,
-                coupling_k=k, n_surrogates=50, seed=SEED,
+                trace.phi_neural,
+                trace.phi_market,
+                coupling_k=k,
+                n_surrogates=50,
+                seed=SEED,
             )
             assert verdict.verdict in {"CONFIRMED", "MARGINAL", "REJECTED"}

@@ -92,9 +92,7 @@ def extract_market_phase_from_price(
     if band_hz[0] >= band_hz[1]:
         raise ValueError(f"band_hz[0] must be < band_hz[1], got {band_hz}")
     if band_hz[1] >= fs / 2:
-        raise ValueError(
-            f"band_hz[1]={band_hz[1]} must be below Nyquist={fs / 2}"
-        )
+        raise ValueError(f"band_hz[1]={band_hz[1]} must be below Nyquist={fs / 2}")
 
     # Standardize before filtering for numerical stability
     mean = float(np.mean(arr))

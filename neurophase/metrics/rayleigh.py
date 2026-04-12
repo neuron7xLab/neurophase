@@ -138,9 +138,7 @@ def rayleigh_test(
 
     # p-value with second-order correction (Mardia & Jupp 2000)
     term1 = (2.0 * z_val - z_val**2) / (4.0 * n)
-    term2 = (
-        24.0 * z_val - 132.0 * z_val**2 + 76.0 * z_val**3 - 9.0 * z_val**4
-    ) / (288.0 * n**2)
+    term2 = (24.0 * z_val - 132.0 * z_val**2 + 76.0 * z_val**3 - 9.0 * z_val**4) / (288.0 * n**2)
     p_val = float(np.exp(-z_val) * (1.0 + term1 - term2))
     p_val = float(np.clip(p_val, 0.0, 1.0))
 

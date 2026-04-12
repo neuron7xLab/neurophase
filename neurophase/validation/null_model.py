@@ -19,6 +19,15 @@ Contract
 This module provides only the mechanism. Individual consumers (PLV
 significance, regime tests, …) live in higher-level modules that
 import :class:`NullModelHarness` and bind it to a specific statistic.
+
+Reproducibility
+---------------
+
+Use :meth:`NullModelHarness.test_seeded` for guaranteed bit-identical
+replay. It takes a generator matching the ``surrogates.py`` protocol
+``(y, *, rng) -> ndarray`` and creates the RNG internally from the
+supplied seed via :func:`numpy.random.default_rng`, spawning one child
+RNG per surrogate iteration for fully independent draws (HN_SEED).
 """
 
 from __future__ import annotations
@@ -44,6 +53,24 @@ SurrogateFn = Callable[
     [NDArray[np.float64]],
     NDArray[np.float64],
 ]
+
+# Type alias for the surrogates.py protocol: (y, *, rng) -> ndarray.
+SurrogateGenerator = Callable[
+    [NDArray[np.float64]],
+    NDArray[np.float64],
+]
+
+
+class ReproducibilityWarning(UserWarning):
+    """Issued when a surrogate_fn passed to :meth:`NullModelHarness.test`
+    cannot be verified to be seeded.
+
+    The :meth:`NullModelHarness.test` API delegates RNG control to the
+    caller via ``surrogate_fn``. If the caller forgets to capture an
+    ``rng`` in the closure, two calls with the same ``seed`` will produce
+    different null distributions. Use :meth:`NullModelHarness.test_seeded`
+    to obtain HN_SEED-compliant determinism by construction.
+    """
 
 
 @dataclass(frozen=True, repr=False)
@@ -175,6 +202,86 @@ class NullModelHarness:
             null[i] = float(statistic(x_arr, y_surr))
 
         # Discrete one-sided p-value with +1 smoothing (Phipson & Smyth 2010).
+        p_value = float((1 + np.sum(null >= observed)) / (1 + self.n_surrogates))
+        return NullModelResult(
+            observed=observed,
+            null_distribution=null,
+            p_value=p_value,
+            n_surrogates=self.n_surrogates,
+            seed=seed,
+            rejected=p_value < effective_alpha,
+            alpha=effective_alpha,
+        )
+
+    def test_seeded(
+        self,
+        x: NDArray[np.float64] | np.ndarray,
+        y: NDArray[np.float64] | np.ndarray,
+        *,
+        statistic: Statistic,
+        generator: Callable[[NDArray[np.float64]], NDArray[np.float64]],
+        seed: int,
+        alpha: float | None = None,
+    ) -> NullModelResult:
+        """HN_SEED-compliant significance test with guaranteed bit-identical replay.
+
+        Unlike :meth:`test`, this method owns the RNG. It creates
+        ``np.random.default_rng(seed)`` internally and spawns one child
+        RNG per surrogate iteration via ``rng.spawn(1)[0]``, so every draw
+        is independent and the full null distribution is reproducible with
+        the same ``seed``.
+
+        Parameters
+        ----------
+        x, y
+            1-D input arrays (same convention as :meth:`test`).
+        statistic
+            A pure function ``(x, y) -> float``.
+        generator
+            A callable matching the surrogates.py protocol:
+            ``(y, *, rng: np.random.Generator) -> ndarray``. The harness
+            injects the child RNG — the caller must NOT capture an
+            external RNG in the closure.
+        seed
+            Integer seed. Identical seeds produce byte-identical results.
+        alpha
+            Optional override of the harness's default significance level.
+
+        Returns
+        -------
+        NullModelResult
+            ``result.seed`` equals the supplied ``seed``.
+        """
+        # Runtime import avoids a circular-import risk; surrogates is a
+        # sibling module with no dependency on null_model.
+        rng = np.random.default_rng(seed)
+        child_rngs = rng.spawn(self.n_surrogates)
+
+        def _wrapped(
+            y_arr: NDArray[np.float64], *, _rng: np.random.Generator
+        ) -> NDArray[np.float64]:
+            return generator(y_arr, rng=_rng)  # type: ignore[call-arg]
+
+        def _make_surrogate_fn(child: np.random.Generator) -> SurrogateFn:
+            def _fn(y_arr: NDArray[np.float64]) -> NDArray[np.float64]:
+                return _wrapped(y_arr, _rng=child)
+
+            return _fn
+
+        # Build the null distribution without re-entering test() to avoid
+        # the overhead of a second input validation pass.
+        x_arr = _to_1d(x, name="x")
+        y_arr = _to_1d(y, name="y")
+        if x_arr.size != y_arr.size:
+            raise ValueError(f"x and y must have the same length, got {x_arr.size} vs {y_arr.size}")
+
+        effective_alpha = alpha if alpha is not None else self.alpha
+        observed = float(statistic(x_arr, y_arr))
+        null = np.empty(self.n_surrogates, dtype=np.float64)
+        for i in range(self.n_surrogates):
+            fn = _make_surrogate_fn(child_rngs[i])
+            null[i] = float(statistic(x_arr, fn(y_arr)))
+
         p_value = float((1 + np.sum(null >= observed)) / (1 + self.n_surrogates))
         return NullModelResult(
             observed=observed,

@@ -90,7 +90,11 @@ def run_scp_analysis(
             total_dur = float(raw.times[-1])
             n_eeg = len(ch_data)
             reward_slow = _build_reward_slow(
-                sub.reward_prob_chosen, sub.trial_onsets_sec, fs, total_dur, n_eeg,
+                sub.reward_prob_chosen,
+                sub.trial_onsets_sec,
+                fs,
+                total_dur,
+                n_eeg,
             )
 
             # Trim edges (5%)
@@ -105,9 +109,12 @@ def run_scp_analysis(
 
             # Cross-correlation (reuse delta_price_xcorr with wider lag)
             xcorr = compute_delta_price_xcorr(
-                scp_ho, rew_ho,
-                fs=fs, max_lag_ms=5000.0,
-                n_surrogates=n_surrogates, seed=seed,
+                scp_ho,
+                rew_ho,
+                fs=fs,
+                max_lag_ms=5000.0,
+                n_surrogates=n_surrogates,
+                seed=seed,
             )
 
             row: dict[str, Any] = {
@@ -140,7 +147,11 @@ def run_scp_analysis(
     n_total = len(valid)
 
     if n_total == 0:
-        return {"experiment": "ds003458_scp", "error": "No valid subjects", "per_subject": per_subject}
+        return {
+            "experiment": "ds003458_scp",
+            "error": "No valid subjects",
+            "per_subject": per_subject,
+        }
 
     n_sig = sum(1 for r in valid if r.get("significant", False))
     binom = binomtest(n_sig, n=n_total, p=0.05, alternative="greater")

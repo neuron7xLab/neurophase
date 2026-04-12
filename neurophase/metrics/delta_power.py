@@ -88,8 +88,7 @@ def extract_delta_power(
     if not np.all(np.isfinite(x)):
         bad_idx = int(np.argmax(~np.isfinite(x)))
         raise ValueError(
-            f"eeg_data contains non-finite value at sample {bad_idx} "
-            f"(channel {channel_name})"
+            f"eeg_data contains non-finite value at sample {bad_idx} (channel {channel_name})"
         )
     if smooth_ms < 100.0:
         raise ValueError(f"smooth_ms must be ≥ 100, got {smooth_ms}")
