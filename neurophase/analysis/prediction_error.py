@@ -46,10 +46,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Final, TypedDict
+from typing import TYPE_CHECKING, Final, TypedDict
 
 import numpy as np
-import pandas as pd
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 class PredictionErrorResult(TypedDict):
@@ -195,6 +197,8 @@ class PredictionErrorMonitor:
         ``t``, ``psi_brain``, ``psi_market``, ``delta``, ``R_proxy``,
         ``cognitive_state``.
         """
+        import pandas as pd  # lazy — pandas stays off the kernel import surface
+
         if not self._history:
             return pd.DataFrame(
                 columns=[
