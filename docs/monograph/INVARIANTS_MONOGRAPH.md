@@ -4,7 +4,7 @@
 
 **Schema version:** 1  
 **Hard invariants:** 13  
-**Advisory invariants:** 3  
+**Advisory invariants:** 4  
 **Honest-naming contracts:** 38  
 **Gate states:** 5  
 **Gate transitions:** 8
@@ -30,6 +30,7 @@
   - [I4 — I₄](#i4)
   - [KLR-I4 — KLR-I₄](#klr-i4)
   - [PLV-S3 — PLV-S3](#plv-s3)
+  - [PLV-S4 — PLV-S4](#plv-s4)
 - [Honest-naming contracts](#honest-naming-contracts)
   - [HN1](#hn1)
   - [HN2](#hn2)
@@ -352,7 +353,7 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 
 ### PLV-S1 — PLV-S1
 
-**Statement.** Synthetic PLV pipeline produces PLV < 0.20 at k=0 (null coupling) on held-out split and is NOT statistically significant (p > 0.05).
+**Statement.** k=0 (null coupling) → PPC < 0.03 on held-out split. Standard PLV may be > 0 due to finite-sample bias — PPC is the bias-free primary metric (Vinck et al. 2010, doi:10.1016/j.neuroimage.2010.01.073).
 
 **Severity.** `hard`
 
@@ -360,13 +361,15 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 
 **Enforcement sites:**
 
+- `neurophase/metrics/iplv.py::compute_ppc`
 - `neurophase/experiments/synthetic_plv_validation.py::run_sweep`
-- `neurophase/benchmarks/neural_phase_generator.py::generate_neural_phase_trace`
 
-**Bound tests** (2):
+**Bound tests** (4):
 
-- `tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_plv_below_threshold`
+- `tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_ppc_below_threshold`
 - `tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_not_significant`
+- `tests/test_synthetic_plv.py::TestPPC::test_null_ppc_near_zero`
+- `tests/test_synthetic_plv.py::TestPPC::test_ppc_unbiased_vs_plv`
 
 **Documentation:**
 
@@ -460,6 +463,26 @@ Advisory invariants route execution to a non-permissive but semantically distinc
 **Bound tests** (1):
 
 - `tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_results_saved`
+
+**Documentation:**
+
+- `docs/theory/scientific_basis.md`
+
+### PLV-S4 — PLV-S4
+
+**Statement.** PLV field in iPLVResult is labelled biased in the docstring and never used as primary inference metric — PPC is the primary metric.
+
+**Severity.** `advisory`
+
+**Introduced in.** PR #plv-bias-ppc
+
+**Enforcement sites:**
+
+- `neurophase/metrics/iplv.py::iPLVResult`
+
+**Bound tests** (1):
+
+- `tests/test_synthetic_plv.py::TestIPLV::test_plv_docstring_bias_warning`
 
 **Documentation:**
 

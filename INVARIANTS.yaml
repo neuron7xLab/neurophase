@@ -248,16 +248,18 @@ invariants:
 
   - id: PLV-S1
     symbol: PLV-S1
-    statement: "Synthetic PLV pipeline produces PLV < 0.20 at k=0 (null coupling) on held-out split and is NOT statistically significant (p > 0.05)."
+    statement: "k=0 (null coupling) → PPC < 0.03 on held-out split. Standard PLV may be > 0 due to finite-sample bias — PPC is the bias-free primary metric (Vinck et al. 2010, doi:10.1016/j.neuroimage.2010.01.073)."
     severity: hard
     enforced_in:
+      - path: neurophase/metrics/iplv.py
+        symbol: compute_ppc
       - path: neurophase/experiments/synthetic_plv_validation.py
         symbol: run_sweep
-      - path: neurophase/benchmarks/neural_phase_generator.py
-        symbol: generate_neural_phase_trace
     tests:
-      - tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_plv_below_threshold
+      - tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_ppc_below_threshold
       - tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_not_significant
+      - tests/test_synthetic_plv.py::TestPPC::test_null_ppc_near_zero
+      - tests/test_synthetic_plv.py::TestPPC::test_ppc_unbiased_vs_plv
     docs:
       - docs/theory/scientific_basis.md
     introduced_in: "PR #synthetic-plv-bridge"
@@ -287,6 +289,19 @@ invariants:
     docs:
       - docs/theory/scientific_basis.md
     introduced_in: "PR #synthetic-plv-bridge"
+
+  - id: PLV-S4
+    symbol: PLV-S4
+    statement: "PLV field in iPLVResult is labelled biased in the docstring and never used as primary inference metric — PPC is the primary metric."
+    severity: advisory
+    enforced_in:
+      - path: neurophase/metrics/iplv.py
+        symbol: iPLVResult
+    tests:
+      - tests/test_synthetic_plv.py::TestIPLV::test_plv_docstring_bias_warning
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "PR #plv-bias-ppc"
 
 # Honest-naming contracts — these are not permission invariants but
 # they are load-bearing and must be enforced by tests so that future

@@ -143,6 +143,7 @@ from neurophase.metrics.entropy import (
 )
 from neurophase.metrics.hurst import hurst_dfa, hurst_rs
 from neurophase.metrics.iplv import (
+    compute_ppc,
     iplv,
     iplv_on_held_out,
     iplv_significance,
@@ -322,6 +323,7 @@ __all__ = [
     "compute_fmn",
     "compute_ism",
     "compute_phase",
+    "compute_ppc",
     "compute_qilm",
     "compute_topological_energy",
     "compute_var",

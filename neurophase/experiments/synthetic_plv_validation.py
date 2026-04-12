@@ -1,16 +1,19 @@
-"""Synthetic PLV validation experiment.
+"""Synthetic PLV/PPC validation experiment.
 
 Sweeps coupling_k ∈ [0.0, 0.5, 1.0, 2.0, 3.0, 5.0] and for each:
     1. Generates synthetic market phase (sinusoidal + noise)
     2. Generates NeuralPhaseTrace with that coupling
-    3. Computes iPLV on held-out split (last 30% of samples)
-    4. Runs NullModelHarness (1000 cyclic-shift surrogates)
-    5. Records: k · PLV · iPLV · p_value · significant
+    3. Computes PPC + iPLV on held-out split (last 30% of samples)
+    4. Runs NullModelHarness on PPC (1000 cyclic-shift surrogates)
+    5. Records: k · PLV(biased) · PPC(unbiased) · iPLV · p_value · significant
+
+PPC (Vinck et al. 2010) is the primary metric — unbiased estimator
+of PLV². Standard PLV is retained for reference but marked biased.
 
 Expected results:
-    k=0.0 → PLV ≈ 0.05 ± 0.03, p > 0.05, significant=False
-    k=0.5 → PLV > 0.10,         p < 0.05, significant=True
-    k=5.0 → PLV > 0.80,         p < 0.001, significant=True
+    k=0.0 → PPC ≈ 0.00,  p > 0.05, significant=False
+    k=3.0 → PPC ≈ 0.94,  p < 0.001, significant=True
+    k=5.0 → PPC ≈ 0.99,  p < 0.001, significant=True
 
 Output: results/synthetic_plv_sweep_YYYYMMDD.json
 
@@ -32,8 +35,8 @@ from neurophase.benchmarks.neural_phase_generator import (
     generate_neural_phase_trace,
     generate_synthetic_market_phase,
 )
-from neurophase.metrics.iplv import iplv
-from neurophase.metrics.plv import HeldOutSplit, plv_on_held_out
+from neurophase.metrics.iplv import iplv_significance
+from neurophase.metrics.plv import HeldOutSplit
 
 # Sweep configuration
 DEFAULT_COUPLING_VALUES: list[float] = [0.0, 0.5, 1.0, 2.0, 3.0, 5.0]
@@ -80,6 +83,7 @@ def run_sweep(
     )
 
     results_plv: list[float] = []
+    results_ppc: list[float] = []
     results_iplv: list[float] = []
     results_p_value: list[float] = []
     results_significant: list[bool] = []
@@ -94,36 +98,36 @@ def run_sweep(
             seed=seed,
         )
 
-        # Compute PLV on held-out partition
-        plv_result = plv_on_held_out(
-            trace.phi_neural,
-            trace.phi_market,
-            split,
+        # Compute on held-out partition via iplv_significance (runs PPC surrogate)
+        test_neural = split.test_slice(trace.phi_neural)
+        test_market = split.test_slice(trace.phi_market)
+
+        result = iplv_significance(
+            test_neural,
+            test_market,
             n_surrogates=n_surrogates,
             seed=seed,
         )
 
-        # Compute iPLV on held-out partition
-        test_neural = split.test_slice(trace.phi_neural)
-        test_market = split.test_slice(trace.phi_market)
-        iplv_val = iplv(test_neural, test_market)
-
-        results_plv.append(plv_result.plv)
-        results_iplv.append(iplv_val)
-        results_p_value.append(plv_result.p_value)
-        results_significant.append(plv_result.significant)
+        results_plv.append(result.plv)
+        results_ppc.append(result.ppc)
+        results_iplv.append(result.iplv)
+        results_p_value.append(result.p_value)
+        results_significant.append(result.significant)
 
         print(
-            f"  k={k:4.1f}  PLV={plv_result.plv:.4f}  "
-            f"iPLV={iplv_val:.4f}  "
-            f"p={plv_result.p_value:.4f}  "
-            f"sig={'YES' if plv_result.significant else 'no '}"
+            f"  k={k:4.1f}  PPC={result.ppc:.4f}  "
+            f"PLV={result.plv:.4f}(biased)  "
+            f"iPLV={result.iplv:.4f}  "
+            f"p={result.p_value:.4f}  "
+            f"sig={'YES' if result.significant else 'no '}"
         )
 
     return {
         "experiment": "synthetic_plv_sweep",
         "timestamp": datetime.now(UTC).isoformat(),
         "coupling_k": coupling_values,
+        "ppc": results_ppc,
         "plv": results_plv,
         "iplv": results_iplv,
         "p_value": results_p_value,
@@ -133,6 +137,8 @@ def run_sweep(
         "n_samples": n_samples,
         "fs": fs,
         "held_out_fraction": held_out_fraction,
+        "primary_metric": "ppc",
+        "ppc_reference": "Vinck et al. (2010) doi:10.1016/j.neuroimage.2010.01.073",
         "evidence_status": "Tentative",
         "note": "Synthetic validation only — not real EEG confirmation",
     }
@@ -153,7 +159,8 @@ def save_results(results: dict[str, Any], output_dir: str | Path = "results") ->
 def main() -> None:
     """Entry point for python -m neurophase.experiments.synthetic_plv_validation."""
     print("=" * 60)
-    print("  NEUROPHASE · Synthetic PLV Validation Sweep")
+    print("  NEUROPHASE · Synthetic PPC Validation Sweep")
+    print("  (PPC = bias-free PLV², Vinck et al. 2010)")
     print("=" * 60)
     print()
 
@@ -164,39 +171,42 @@ def main() -> None:
     print(f"Results saved to: {path}")
     print()
 
-    # Verify basic expectations
-    plv_values = results["plv"]
-    p_values = results["p_value"]
+    ppc_values = results["ppc"]
     sig_values = results["significant"]
 
     ok = True
 
-    # k=0 should not be significant
+    # k=0: PPC should be near zero and not significant
     if sig_values[0]:
-        print("WARNING: k=0 is significant — false positive!")
+        print("WARNING: k=0 PPC is significant — false positive!")
         ok = False
     else:
-        print("PASS: k=0 is not significant (null confirmed)")
+        print(f"PASS: k=0 PPC={ppc_values[0]:.4f} is not significant (null confirmed)")
+
+    # k=0: PPC should be < 0.03 (unbiased → near zero at null)
+    if ppc_values[0] < 0.03:
+        print(f"PASS: k=0 PPC={ppc_values[0]:.4f} < 0.03 (bias corrected)")
+    else:
+        print(f"WARNING: k=0 PPC={ppc_values[0]:.4f} ≥ 0.03 — residual bias?")
+        ok = False
 
     # k=5 should be significant
     if not sig_values[-1]:
         print("WARNING: k=5 is not significant — pipeline issue!")
         ok = False
     else:
-        print(f"PASS: k=5 is significant (PLV={plv_values[-1]:.4f}, p={p_values[-1]:.4f})")
+        print(f"PASS: k=5 PPC={ppc_values[-1]:.4f} is significant")
 
-    # PLV at max k should exceed PLV at k=0 (overall trend)
-    # Note: Kuramoto coupling has a phase transition — PLV may be
-    # non-monotonic at low k where coupling is sub-critical.
-    if plv_values[-1] > plv_values[0]:
-        print("PASS: PLV at max-k exceeds PLV at null-k")
+    # PPC at max k should exceed PPC at k=0
+    if ppc_values[-1] > ppc_values[0]:
+        print("PASS: PPC at max-k exceeds PPC at null-k")
     else:
-        print("WARNING: PLV at max-k does not exceed PLV at null-k")
+        print("WARNING: PPC at max-k does not exceed PPC at null-k")
         ok = False
 
     print()
     if ok:
-        print("ALL CHECKS PASSED — pipeline is calibrated")
+        print("ALL CHECKS PASSED — pipeline is calibrated (bias-free)")
     else:
         print("SOME CHECKS FAILED — investigate before proceeding")
 

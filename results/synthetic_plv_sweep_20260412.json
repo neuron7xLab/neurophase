@@ -1,6 +1,6 @@
 {
   "experiment": "synthetic_plv_sweep",
-  "timestamp": "2026-04-12T08:28:47.120727+00:00",
+  "timestamp": "2026-04-12T08:54:21.864651+00:00",
   "coupling_k": [
     0.0,
     0.5,
@@ -8,6 +8,14 @@
     2.0,
     3.0,
     5.0
+  ],
+  "ppc": [
+    0.02266776240454844,
+    0.004693432070193165,
+    0.04493082637648934,
+    0.11364071911185854,
+    0.9417485896446867,
+    0.994374782112143
   ],
   "plv": [
     0.15317844352975865,
@@ -46,6 +54,8 @@
   "n_samples": 4096,
   "fs": 256.0,
   "held_out_fraction": 0.3,
+  "primary_metric": "ppc",
+  "ppc_reference": "Vinck et al. (2010) doi:10.1016/j.neuroimage.2010.01.073",
   "evidence_status": "Tentative",
   "note": "Synthetic validation only \u2014 not real EEG confirmation"
 }
