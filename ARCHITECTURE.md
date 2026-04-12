@@ -198,11 +198,106 @@ tip hash matching across two replays of the same configuration.
 
 ---
 
-## 8. Current state (v0.4.0)
+## 8. Kernelization v1 — closure-ready cognition kernel
 
-- **573 tests green**, `mypy --strict` clean on 94 source files, `ruff` clean.
-- **5 invariants + 14 honest-naming contracts** enforced by CI meta-tests.
+Shipped on `feat/kernelization-v1`, the repository now exposes a
+canonical fail-closed cognition kernel with a closure-ready bridge
+architecture. The additions are structural, not another research layer.
+
+### 8.1 New subpackages
+
+| Path | Role | Doc |
+|---|---|---|
+| `neurophase/contracts/` | Versioned on-wire schema for the runtime frame. `CANONICAL_FRAME_SCHEMA_VERSION = "1.0.0"`. | `docs/RUNTIME_CANONICAL_FRAME.md` |
+| `neurophase/bridges/` | Typed, fail-closed ingress + egress: `EegIngress`, `MarketIngress`, `ClockSync`, `FrameMux`, `DownstreamAdapter`. | `docs/BRIDGE_CONTRACTS.md` |
+| `neurophase/observatory/` | Outbound witness / event export for an external collector. `OBSERVATORY_SCHEMA_VERSION = "1.0.0"`. | `docs/OBSERVATORY_EXPORT.md` |
+
+### 8.2 Import surface
+
+* `import neurophase` no longer pulls the scientific stack. The root
+  package now exposes only `__version__` plus a PEP 562 lazy
+  accessor (`KLRConfig` backward-compat). Heavy modules load only when
+  their subpackage is reached directly.
+* `neurophase.api` is the blessed public façade — 32 load-bearing
+  runtime symbols, pinned by `tests/test_public_api.py`,
+  documented at `docs/PUBLIC_API.md`.
+* `pyproject.toml` is split:
+  `pip install neurophase` → kernel-only (`numpy + scipy + PyYAML`);
+  `pip install neurophase[research]` → full scientific stack;
+  `pip install neurophase[dev]` → research + pytest/mypy/ruff.
+  Enforced by `tests/test_pyproject_boundary.py`.
+
+### 8.3 Canonical envelope
+
+`OrchestratedFrame` is the single canonical **typed** runtime envelope.
+`contracts.as_canonical_dict` is its single canonical **on-wire**
+projection (22-key flat schema, all primitives).
+`DecisionFrame`, `NeuralFrame`, `KLRFrame` are adjacent shapes: inner
+pipeline record, ingress payload, and advisory-subsystem record
+respectively — not runtime frames. Formalised in
+`docs/RUNTIME_CANONICAL_FRAME.md` §5.
+
+### 8.4 Gate-first execution law
+
+`docs/GATE_FIRST_EXECUTION.md`: no downstream action derives from
+anything other than a gate-approved `OrchestratedFrame`. Four
+structural enforcements (runtime, `ActionPolicy`, `DownstreamAdapter`,
+`FrameMux`) plus `tests/test_gate_first_execution.py`.
+
+### 8.5 Closure-ready causal path
+
+```
+FrameMux → RuntimeOrchestrator → OrchestratedFrame
+         → as_canonical_dict → DownstreamAdapter
+```
+
+Runs end-to-end in `tests/test_closure_path.py`; byte-identical under
+replay. Honest name: **closure-ready causal path**, not "closed loop".
+A true closed loop would need a live write-back channel from the
+transport into the policy — **not** implemented and the documentation
+does not claim otherwise. See `docs/CLOSURE_PATH.md` §"Future full
+closed-loop target".
+
+### 8.6 Closure blockers — status
+
+| # | Blocker | Status |
+|---|---|---|
+| C1 | No `bridges/` layer | ✅ closed in phase 6 |
+| C2 | No canonical `RuntimeFrame` | ✅ closed in phase 4 |
+| C3 | `neosynaptex_adapter` is advisory | acknowledged; kept advisory by design |
+| C4 | `import neurophase` not clean-env-safe | ✅ closed in phase 2 |
+| C5 | Research deps treated as core | ✅ closed in phase 5 |
+| C6 | Action intent not ledger-bound | partial: canonical frame carries `action_intent` + `ledger_record_hash`; deeper co-signing is a future phase |
+| C7 | Reset substack is parallel runtime | accepted scope; documented in `RUNTIME_RESEARCH_SEPARATION.md` |
+| C8 | No observatory export boundary | ✅ closed in phase 9 |
+
+### 8.7 Test suite contracts
+
+| Suite | Assertions | Role |
+|---|---|---|
+| `tests/test_import_surface.py` | 18 (subprocess-isolated) | kernel stays lean |
+| `tests/test_public_api.py` | 34 | public façade is frozen |
+| `tests/test_canonical_frame.py` | 14 | canonical envelope contract |
+| `tests/test_pyproject_boundary.py` | 5 | dep split is honest |
+| `tests/test_bridge_layer.py` | 28 | ingress + egress fail-closed |
+| `tests/test_gate_first_execution.py` | 8 | no bypass |
+| `tests/test_closure_path.py` | 4 | full chain + replay |
+| `tests/test_observatory_export.py` | 10 | outbound contract |
+
+---
+
+## 9. Prior state (v0.4.0, pre-kernelization)
+
+- **1354+ tests green** when v0.4.0 was tagged, `mypy --strict` clean,
+  `ruff` clean.
+- **5 invariants + 14 honest-naming contracts** enforced by CI
+  meta-tests.
 - **8 state-machine transitions** in the formal spec, each test-bound.
-- **13 merged PRs** from v0.3.0 through v0.4.0 covering: StillnessDetector (I₄), TemporalValidator (B1), Invariant registry (A1), NullModelHarness (C1+C2), Decision ledger (F1), PLV significance retrofit (C3), Determinism certification (F3), State-machine spec (A2), H1 synthetic ground truth, D1 calibration, Stream detector (B2+B6), Runtime pipeline (E1+E2).
+- **13 merged PRs** from v0.3.0 through v0.4.0 covering:
+  StillnessDetector (I₄), TemporalValidator (B1), Invariant registry
+  (A1), NullModelHarness (C1+C2), Decision ledger (F1), PLV
+  significance retrofit (C3), Determinism certification (F3),
+  State-machine spec (A2), H1 synthetic ground truth, D1 calibration,
+  Stream detector (B2+B6), Runtime pipeline (E1+E2).
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the ordered release history.

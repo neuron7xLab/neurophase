@@ -26,7 +26,6 @@ from typing import Any
 
 import numpy as np
 import numpy.typing as npt
-import pywt
 from scipy.signal import hilbert
 
 FloatArray = npt.NDArray[np.float64]
@@ -60,6 +59,12 @@ def preprocess_signal(
     ValueError
         If the input is not 1-D or has fewer than 2 samples.
     """
+    # pywt is imported lazily: it is a research-heavy dep, while the rest of
+    # core.phase (std-lib + numpy + scipy.signal.hilbert) is kernel-lightweight.
+    # Deferring the import keeps ``import neurophase`` safe in environments that
+    # only install the runtime deps.
+    import pywt
+
     x_arr = np.asarray(x, dtype=np.float64)
     if x_arr.ndim != 1:
         raise ValueError(f"x must be 1-D, got shape {x_arr.shape}")
