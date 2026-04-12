@@ -1,0 +1,289 @@
+{
+  "experiment": "ds003458_analysis",
+  "timestamp": "2026-04-12T09:55:28.454840+00:00",
+  "dataset": "OpenNeuro ds003458 v1.1.0",
+  "preregistration": "results/ds003458_preregistration.md",
+  "n_subjects_total": 23,
+  "n_subjects_valid": 17,
+  "n_confirmed": 0,
+  "n_marginal": 0,
+  "n_rejected": 17,
+  "confirmed_fraction": 0.0,
+  "group_p_value": 1.0,
+  "group_ppc": 9.72817003264778e-05,
+  "evidence_status": "Tentative (unchanged)",
+  "per_subject": [
+    {
+      "subject": "sub-001",
+      "ppc": 1.213809341751957e-06,
+      "rayleigh_R": 0.0016041109513588226,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 735638,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-002",
+      "ppc": 0.0002668015470915249,
+      "rayleigh_R": 0.01637560834483915,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 735638,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-003",
+      "ppc": 0.0003051164373211514,
+      "rayleigh_R": 0.01751006341118922,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 672795,
+      "n_artifacts": 250
+    },
+    {
+      "subject": "sub-004",
+      "ppc": 0.0,
+      "rayleigh_R": 0.0002212946237155235,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 761131,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-005",
+      "ppc": 3.5750937366908914e-05,
+      "rayleigh_R": 0.006112327130450676,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 621248,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-006",
+      "ppc": null,
+      "verdict": "ERROR",
+      "error": "File /home/neuro7/neuron7xLab/neurophase/data/ds003458/sub-006/eeg/sub-006_task-ThreeArmedBandit_eeg.fdt not found."
+    },
+    {
+      "subject": "sub-007",
+      "ppc": 3.4351401258876024e-05,
+      "rayleigh_R": 0.005975287191195086,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 739261,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-008",
+      "ppc": 0.00016406330714546275,
+      "rayleigh_R": 0.01286171926715489,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 734895,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-009",
+      "ppc": 0.00016052570979879232,
+      "rayleigh_R": 0.012721400754887298,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 764212,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-010",
+      "ppc": 0.00012839995488750437,
+      "rayleigh_R": 0.011379199614366892,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 920498,
+      "n_artifacts": 1066
+    },
+    {
+      "subject": "sub-011",
+      "ppc": 0.0001033490643071976,
+      "rayleigh_R": 0.010233423399251686,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 727785,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-012",
+      "ppc": 1.9172845689409525e-05,
+      "rayleigh_R": 0.004541273294666556,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 689491,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-013",
+      "ppc": 0.0002094102619843553,
+      "rayleigh_R": 0.014519278264410363,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 714555,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-014",
+      "ppc": 0.0,
+      "rayleigh_R": 0.0003967599226871896,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 707558,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-015",
+      "ppc": 5.973634509496198e-05,
+      "rayleigh_R": 0.007816180887252446,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 737235,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-016",
+      "ppc": 3.1760414357137185e-05,
+      "rayleigh_R": 0.005751217689935525,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 759802,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-017",
+      "ppc": null,
+      "verdict": "ERROR",
+      "error": "Incorrect number of samples (18014862 != 24999942), please report this error to MNE-Python developers"
+    },
+    {
+      "subject": "sub-018",
+      "ppc": 5.9015753415788473e-05,
+      "rayleigh_R": 0.0077790633117394885,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 667485,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-019",
+      "ppc": 7.512089859919191e-05,
+      "rayleigh_R": 0.00874622939847503,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 726885,
+      "n_artifacts": 0
+    },
+    {
+      "subject": "sub-020",
+      "ppc": null,
+      "verdict": "ERROR",
+      "error": "Incorrect number of samples (12046222 != 24999942), please report this error to MNE-Python developers"
+    },
+    {
+      "subject": "sub-021",
+      "ppc": null,
+      "verdict": "ERROR",
+      "error": "Incorrect number of samples (10254217 != 24999942), please report this error to MNE-Python developers"
+    },
+    {
+      "subject": "sub-022",
+      "ppc": null,
+      "verdict": "ERROR",
+      "error": "Incorrect number of samples (14870415 != 24999942), please report this error to MNE-Python developers"
+    },
+    {
+      "subject": "sub-023",
+      "ppc": null,
+      "verdict": "ERROR",
+      "error": "could not read bytes"
+    }
+  ],
+  "analysis_params": {
+    "neural_band_hz": [
+      4.0,
+      8.0
+    ],
+    "neural_channel": "Fz",
+    "market_band_hz": [
+      0.005,
+      0.05
+    ],
+    "n_surrogates": 1000,
+    "seed": 42,
+    "edge_trim_fraction": 0.05,
+    "artifact_threshold_uv": 150.0
+  }
+}
