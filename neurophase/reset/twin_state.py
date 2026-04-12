@@ -4,26 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import numpy as np
-
 from neurophase.reset.ledger import LedgerEntry
 from neurophase.reset.ntk_monitor import NTKMonitor
 from neurophase.reset.passive_learner import PassiveLearner
-from neurophase.reset.state import SystemState
-
-
-def _clone_state(state: SystemState) -> SystemState:
-    return SystemState(
-        weights=np.copy(state.weights),
-        confidence=np.copy(state.confidence),
-        usage=np.copy(state.usage),
-        utility=np.copy(state.utility),
-        inhibition=np.copy(state.inhibition),
-        topology=np.copy(state.topology),
-        frozen=None if state.frozen is None else np.copy(state.frozen),
-        gamma=state.gamma,
-        metadata=state.metadata.copy(),
-    )
+from neurophase.reset.state import SystemState, clone_state
 
 
 @dataclass
@@ -47,8 +31,8 @@ class TwinStateManager:
         active_rank = self._ntk.rank_proxy(self.active.weights)
         passive_rank = self._ntk.rank_proxy(self.passive.weights)
         if passive_rank > active_rank:
-            prev_active = _clone_state(self.active)
-            self.active = _clone_state(self.passive)
+            prev_active = clone_state(self.active)
+            self.active = clone_state(self.passive)
             self.passive = prev_active
             return True
         return False

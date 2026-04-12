@@ -63,3 +63,24 @@ class SystemState:
             raise ValueError("weights rows must have positive sum for row-stochastic semantics")
         if not np.allclose(row_sums, 1.0, atol=1e-6):
             raise ValueError("weights must be row-stochastic (each row sum ≈ 1.0)")
+
+
+def clone_state(state: SystemState) -> SystemState:
+    """Return a deep copy of ``state`` via array copies — no ``deepcopy``.
+
+    This is the **single canonical clone path** for the reset subsystem.
+    Every consumer that needs a state snapshot must use this function rather
+    than inlining ``np.copy`` calls or reaching for ``copy.deepcopy``.
+    """
+
+    return SystemState(
+        weights=np.copy(state.weights),
+        confidence=np.copy(state.confidence),
+        usage=np.copy(state.usage),
+        utility=np.copy(state.utility),
+        inhibition=np.copy(state.inhibition),
+        topology=np.copy(state.topology),
+        frozen=None if state.frozen is None else np.copy(state.frozen),
+        gamma=state.gamma,
+        metadata=state.metadata.copy(),
+    )
