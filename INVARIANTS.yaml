@@ -312,7 +312,7 @@ invariants:
         symbol: compute_verdict
     tests:
       - tests/test_plv_verdict.py::TestPLVVerdict::test_all_gates_required
-      - tests/test_plv_verdict.py::TestPLVVerdict::test_null_not_confirmed
+      - tests/test_plv_verdict.py::TestPLVVerdict::test_null_rejected
       - tests/test_plv_verdict.py::TestPLVVerdict::test_strong_coupling_confirmed
     docs:
       - docs/theory/scientific_basis.md

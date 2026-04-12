@@ -22,13 +22,8 @@ def phi_market() -> np.ndarray:
 
 
 class TestPLVVerdict:
-    def test_null_not_confirmed(self, phi_market: np.ndarray) -> None:
-        """k=0 → verdict is NOT CONFIRMED (REJECTED or MARGINAL).
-
-        MARGINAL is acceptable at k=0 because shared spectral structure
-        between neural and market frequencies can trigger the Rayleigh
-        gate even without coupling. The key: it must never be CONFIRMED.
-        """
+    def test_null_rejected(self, phi_market: np.ndarray) -> None:
+        """k=0 → verdict REJECTED (R < 0.10, surrogates not significant)."""
         trace = generate_neural_phase_trace(
             phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=0.0, seed=SEED,
         )
@@ -36,24 +31,24 @@ class TestPLVVerdict:
             trace.phi_neural, trace.phi_market,
             coupling_k=0.0, n_surrogates=200, seed=SEED,
         )
-        assert verdict.verdict != "CONFIRMED", (
-            f"k=0 should never be CONFIRMED, got {verdict.verdict}"
+        assert verdict.verdict == "REJECTED", (
+            f"k=0 should be REJECTED, got {verdict.verdict} "
+            f"(gates={verdict.gates_passed}, R={verdict.rayleigh_r:.4f}, "
+            f"effect={verdict.rayleigh_effect})"
         )
 
     def test_strong_coupling_confirmed(self, phi_market: np.ndarray) -> None:
-        """k=5 → verdict CONFIRMED (with wider theory tolerance for 1/f noise)."""
+        """k=5 → verdict CONFIRMED."""
         trace = generate_neural_phase_trace(
             phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=5.0, seed=SEED,
         )
         verdict = compute_verdict(
             trace.phi_neural, trace.phi_market,
-            coupling_k=5.0, noise_sigma=1.0,
-            theory_tolerance=0.25,  # wider: Bessel assumes white, we use 1/f
-            n_surrogates=200, seed=SEED,
+            coupling_k=5.0, n_surrogates=200, seed=SEED,
         )
         assert verdict.verdict == "CONFIRMED", (
             f"k=5 should be CONFIRMED, got {verdict.verdict} "
-            f"(gates={verdict.gates_passed}, rayleigh_p={verdict.rayleigh_p}, "
+            f"(gates={verdict.gates_passed}, R={verdict.rayleigh_r:.4f}, "
             f"theory_delta={verdict.theory_delta})"
         )
 
@@ -64,8 +59,7 @@ class TestPLVVerdict:
         )
         verdict = compute_verdict(
             trace.phi_neural, trace.phi_market,
-            coupling_k=5.0, noise_sigma=1.0,
-            n_surrogates=200, seed=SEED,
+            coupling_k=5.0, n_surrogates=200, seed=SEED,
         )
         if verdict.verdict == "CONFIRMED":
             assert verdict.gates_passed == 3
@@ -89,12 +83,12 @@ class TestPLVVerdict:
         )
         verdict = compute_verdict(
             trace.phi_neural, trace.phi_market,
-            coupling_k=None,  # real data mode
+            coupling_k=None,
             n_surrogates=200, seed=SEED,
         )
         assert verdict.theory_delta is None
 
-    def test_verdict_has_rayleigh_p(self, phi_market: np.ndarray) -> None:
+    def test_verdict_has_rayleigh_r(self, phi_market: np.ndarray) -> None:
         trace = generate_neural_phase_trace(
             phi_market, n_samples=N_SAMPLES, fs=FS, coupling_k=1.0, seed=SEED,
         )
@@ -102,7 +96,8 @@ class TestPLVVerdict:
             trace.phi_neural, trace.phi_market,
             n_surrogates=50, seed=SEED,
         )
-        assert 0.0 <= verdict.rayleigh_p <= 1.0
+        assert 0.0 <= verdict.rayleigh_r <= 1.0
+        assert verdict.rayleigh_effect in {"negligible", "small", "medium", "large"}
 
     def test_verdict_values(self, phi_market: np.ndarray) -> None:
         """verdict is one of the three allowed strings."""

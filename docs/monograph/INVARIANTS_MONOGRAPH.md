@@ -412,7 +412,7 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 **Bound tests** (3):
 
 - `tests/test_plv_verdict.py::TestPLVVerdict::test_all_gates_required`
-- `tests/test_plv_verdict.py::TestPLVVerdict::test_null_not_confirmed`
+- `tests/test_plv_verdict.py::TestPLVVerdict::test_null_rejected`
 - `tests/test_plv_verdict.py::TestPLVVerdict::test_strong_coupling_confirmed`
 
 **Documentation:**

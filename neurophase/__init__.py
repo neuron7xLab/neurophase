@@ -51,6 +51,7 @@ from neurophase.benchmarks.phase_coupling import (
     generate_phase_coupling,
 )
 from neurophase.benchmarks.ppc_analytical import (
+    calibrated_ppc,
     theoretical_plv,
     theoretical_ppc,
 )
@@ -334,6 +335,7 @@ __all__ = [
     "build_signal_scan_payload",
     "calibrate_gate_threshold",
     "calibrate_stillness_parameters",
+    "calibrated_ppc",
     "compute_cvar",
     "compute_fmn",
     "compute_ism",

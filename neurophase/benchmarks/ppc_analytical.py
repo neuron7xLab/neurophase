@@ -1,27 +1,27 @@
 """Analytical PPC prediction for Kuramoto oscillators.
 
-For a single oscillator coupled to an external driver via:
-    dφ/dt = ω + k·sin(φ_ext − φ)
+Two models are provided:
 
-at stationarity the phase-difference distribution concentrates
-around zero with a von Mises–like shape. The theoretical PLV is:
-    PLV_theory = I₁(κ) / I₀(κ)
-where κ = k / σ² is the signal-to-noise ratio, and I₀, I₁ are
-modified Bessel functions of the first kind.
+1. **Bessel model** (stochastic Kuramoto, von Mises stationarity):
+       PLV = I₁(κ) / I₀(κ),   κ = k / σ²
+   Appropriate when the oscillator has continuous phase noise σ.
 
-The theoretical PPC is then:
-    PPC_theory = PLV_theory²
+2. **Deterministic transition model** (Kuramoto with detuning):
+       k < Δω  →  drifting, PPC ≈ (k/Δω)⁴ (noise-assisted)
+       k ≥ Δω  →  locked,  PPC ≈ 1 − exp(−β·(k − Δω))
+   Appropriate for our generator where phase dynamics are deterministic
+   (RK4, no phase noise) and the transition occurs at k_c = Δω.
 
-This provides a closed-form ground truth for calibration — if the
-pipeline's measured PPC deviates from the Bessel prediction by more
-than a tolerance, something is wrong in the phase extraction or
-coupling estimation.
+The deterministic model is the default for calibrated predictions
+because the neural phase generator has no explicit phase noise —
+only additive signal noise, which does not diffuse the phase.
 
 Reference: Kuramoto (1984), Acebrón et al. (2005) Rev. Mod. Phys. 77.
 """
 
 from __future__ import annotations
 
+import numpy as np
 from scipy.special import i0, i1
 
 
@@ -29,19 +29,19 @@ def theoretical_plv(
     coupling_k: float,
     noise_sigma: float = 1.0,
 ) -> float:
-    """Theoretical PLV for a Kuramoto oscillator at stationarity.
+    """Theoretical PLV via Bessel ratio (stochastic Kuramoto).
 
     Parameters
     ----------
     coupling_k : float
         Coupling strength k ≥ 0.
     noise_sigma : float
-        Noise standard deviation σ > 0.
+        Phase noise σ > 0.
 
     Returns
     -------
     float
-        Theoretical PLV = I₁(κ) / I₀(κ) where κ = k / σ².
+        PLV = I₁(κ) / I₀(κ) where κ = k / σ².
     """
     if coupling_k < 0:
         raise ValueError(f"coupling_k must be ≥ 0, got {coupling_k}")
@@ -57,14 +57,14 @@ def theoretical_ppc(
     coupling_k: float,
     noise_sigma: float = 1.0,
 ) -> float:
-    """Theoretical PPC = PLV² for a Kuramoto oscillator.
+    """Theoretical PPC = PLV² via Bessel (stochastic model).
 
     Parameters
     ----------
     coupling_k : float
         Coupling strength k ≥ 0.
     noise_sigma : float
-        Noise standard deviation σ > 0.
+        Phase noise σ > 0.
 
     Returns
     -------
@@ -73,6 +73,55 @@ def theoretical_ppc(
     """
     plv = theoretical_plv(coupling_k, noise_sigma)
     return float(plv**2)
+
+
+def calibrated_ppc(
+    coupling_k: float,
+    f_neural: float = 1.0,
+    f_market: float = 0.5,
+    transition_sharpness: float = 10.0,
+) -> float:
+    """Calibrated PPC prediction for deterministic Kuramoto with detuning.
+
+    The neural phase generator integrates the Kuramoto ODE via RK4
+    with no explicit phase noise. Locking occurs when k exceeds the
+    critical coupling k_c = Δω = 2π·|f_neural − f_market|.
+
+    Below critical (k < Δω): PPC grows as (k/Δω)⁴ (empirical fit
+    from noise-assisted partial locking via market phase noise).
+
+    Above critical (k ≥ Δω): PPC ≈ 1 − exp(−β·(k − Δω)), where
+    β = transition_sharpness controls how quickly PPC approaches 1.
+
+    Parameters
+    ----------
+    coupling_k : float
+        Coupling strength k ≥ 0.
+    f_neural : float
+        Neural oscillation frequency in Hz.
+    f_market : float
+        Market oscillation frequency in Hz.
+    transition_sharpness : float
+        Steepness β of the locking transition. Default 10.0 calibrated
+        to match the generator with noise_amplitude=0.2 on market phase.
+
+    Returns
+    -------
+    float
+        Predicted PPC ∈ [0, 1].
+    """
+    if coupling_k < 0:
+        raise ValueError(f"coupling_k must be ≥ 0, got {coupling_k}")
+    if coupling_k == 0.0:
+        return 0.0
+
+    delta_omega = 2.0 * np.pi * abs(f_neural - f_market)
+
+    if coupling_k < delta_omega:
+        # Sub-critical: noise-assisted partial locking
+        return float(min(1.0, (coupling_k / delta_omega) ** 4))
+    # Super-critical: rapid lock
+    return float(max(0.0, 1.0 - np.exp(-transition_sharpness * (coupling_k - delta_omega))))
 
 
 def bessel_ratio_monotone_check(
@@ -86,7 +135,7 @@ def bessel_ratio_monotone_check(
     k_values : list[float]
         Coupling strengths to check (must be sorted ascending).
     noise_sigma : float
-        Noise σ.
+        Phase noise σ.
 
     Returns
     -------

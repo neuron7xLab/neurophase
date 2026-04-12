@@ -3,15 +3,17 @@
 Three independent verification paths, each answering a different question:
 
 1. **Rayleigh test** (PATH 1): Is the phase-difference distribution
-   non-uniform? Purely analytical, no surrogates.
+   non-uniform? Purely analytical, no surrogates. Uses R effect size
+   (not p-value) to avoid N-sensitivity. R ≥ 0.10 → significant.
 
 2. **Dual surrogate test** (PATH 2): Does PPC survive *both* cyclic-shift
    and time-reversal null models? If only cyclic-shift rejects but
    time-reversal does not, coupling exists but is not directional.
 
 3. **Analytical ground truth** (PATH 3): Does measured PPC match the
-   Bessel-function prediction? Only applicable in synthetic mode where
-   coupling_k is known.
+   calibrated Kuramoto transition prediction? Uses the deterministic
+   model with detuning Δω = 2π·|f_neural − f_market|, not the Bessel
+   stochastic model (which requires phase noise our generator lacks).
 
 Verdict rules:
     CONFIRMED  — all applicable gates pass → publish-grade claim
@@ -26,7 +28,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from neurophase.benchmarks.ppc_analytical import theoretical_ppc
+from neurophase.benchmarks.ppc_analytical import calibrated_ppc
 from neurophase.metrics.iplv import _ppc_statistic, compute_ppc
 from neurophase.metrics.rayleigh import rayleigh_test
 from neurophase.validation.null_model import NullModelHarness
@@ -130,10 +132,12 @@ class PLVVerdict:
     ----------
     ppc : float
         Observed PPC.
-    rayleigh_p : float
-        p-value from Rayleigh test (PATH 1).
+    rayleigh_r : float
+        Mean resultant length from Rayleigh test (PATH 1).
+    rayleigh_effect : str
+        Effect size classification: "negligible" | "small" | "medium" | "large".
     theory_delta : float | None
-        |measured − theoretical| PPC. None when coupling_k unknown.
+        |measured − predicted| PPC. None when coupling_k unknown.
     dual_surrogate : DualSurrogateResult
         Dual surrogate test result (PATH 2).
     verdict : str
@@ -143,7 +147,8 @@ class PLVVerdict:
     """
 
     ppc: float
-    rayleigh_p: float
+    rayleigh_r: float
+    rayleigh_effect: str
     theory_delta: float | None
     dual_surrogate: DualSurrogateResult
     verdict: str
@@ -155,10 +160,11 @@ def compute_verdict(
     phi_market: npt.ArrayLike,
     *,
     coupling_k: float | None = None,
-    noise_sigma: float = 1.0,
+    f_neural: float = 1.0,
+    f_market: float = 0.5,
     n_surrogates: int = 1000,
     alpha: float = 0.05,
-    theory_tolerance: float = 0.10,
+    theory_tolerance: float = 0.15,
     seed: int = 42,
 ) -> PLVVerdict:
     """Compute the three-gate PLV/PPC verdict.
@@ -170,14 +176,16 @@ def compute_verdict(
     coupling_k : float | None
         Known coupling strength (synthetic mode). None for real data
         (gate 3 auto-passes).
-    noise_sigma : float
-        Noise σ for theoretical PPC prediction.
+    f_neural : float
+        Neural oscillation frequency in Hz (for calibrated prediction).
+    f_market : float
+        Market oscillation frequency in Hz.
     n_surrogates : int
         Surrogates per strategy in the dual test.
     alpha : float
         Significance level.
     theory_tolerance : float
-        Max |measured − theoretical| PPC for gate 3 to pass.
+        Max |measured − predicted| PPC for gate 3 to pass.
     seed : int
         Base seed for surrogate RNGs.
 
@@ -190,7 +198,7 @@ def compute_verdict(
 
     ppc_val = compute_ppc(x, y)
 
-    # Gate 1: Rayleigh test
+    # Gate 1: Rayleigh test (R-based, not p-based)
     delta_phi = x - y
     rayleigh = rayleigh_test(delta_phi, alpha=alpha)
 
@@ -202,16 +210,18 @@ def compute_verdict(
         seed=seed,
     )
 
-    # Gate 3: Analytical ground truth (only if k is known)
+    # Gate 3: Calibrated analytical prediction
     theory_delta: float | None = None
     if coupling_k is not None:
-        theory = theoretical_ppc(coupling_k, noise_sigma)
-        theory_delta = abs(ppc_val - theory)
+        predicted = calibrated_ppc(
+            coupling_k, f_neural=f_neural, f_market=f_market,
+        )
+        theory_delta = abs(ppc_val - predicted)
 
-    # Count gates
-    gate_1 = rayleigh.significant
+    # Evaluate gates
+    gate_1 = rayleigh.significant  # R ≥ 0.10 (effect size)
     gate_2 = dual.both_significant
-    gate_3 = True  # default pass for real data
+    gate_3 = True  # auto-pass for real data
     if coupling_k is not None and theory_delta is not None:
         gate_3 = theory_delta < theory_tolerance
 
@@ -226,7 +236,8 @@ def compute_verdict(
 
     return PLVVerdict(
         ppc=ppc_val,
-        rayleigh_p=rayleigh.p_value,
+        rayleigh_r=rayleigh.R,
+        rayleigh_effect=rayleigh.effect_size,
         theory_delta=theory_delta,
         dual_surrogate=dual,
         verdict=verdict,

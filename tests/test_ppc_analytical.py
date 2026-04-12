@@ -1,4 +1,4 @@
-"""Tests for analytical PPC prediction via Bessel functions (PATH 3)."""
+"""Tests for analytical PPC prediction — Bessel + calibrated models (PATH 3)."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from neurophase.benchmarks.neural_phase_generator import (
 )
 from neurophase.benchmarks.ppc_analytical import (
     bessel_ratio_monotone_check,
+    calibrated_ppc,
     theoretical_plv,
     theoretical_ppc,
 )
@@ -22,7 +23,7 @@ class TestTheoreticalPPC:
         assert theoretical_ppc(0.0, 1.0) == 0.0
 
     def test_k5_theory_high(self) -> None:
-        """k=5 → theoretical PPC > 0.70 (Bessel converges slowly)."""
+        """k=5, σ=1 → theoretical PPC > 0.70 (Bessel converges slowly)."""
         ppc = theoretical_ppc(5.0, 1.0)
         assert ppc > 0.70, f"theoretical PPC(k=5)={ppc} should be > 0.70"
 
@@ -46,51 +47,64 @@ class TestTheoreticalPPC:
             theoretical_ppc(1.0, 0.0)
 
 
+class TestCalibratedPPC:
+    def test_k0_returns_zero(self) -> None:
+        assert calibrated_ppc(0.0) == 0.0
+
+    def test_monotone_with_k(self) -> None:
+        """Calibrated PPC increases monotonically."""
+        ks = [0.0, 0.5, 1.0, 2.0, 3.0, 3.5, 5.0]
+        ppcs = [calibrated_ppc(k) for k in ks]
+        for i in range(len(ppcs) - 1):
+            assert ppcs[i] <= ppcs[i + 1], (
+                f"Not monotone: k={ks[i]}→{ks[i + 1]}, PPC={ppcs[i]}→{ppcs[i + 1]}"
+            )
+
+    def test_high_k_near_one(self) -> None:
+        """k=5 (well above Δω≈3.14) → calibrated PPC > 0.95."""
+        ppc = calibrated_ppc(5.0)
+        assert ppc > 0.95, f"calibrated PPC(k=5)={ppc} should be > 0.95"
+
+    def test_sub_critical_small(self) -> None:
+        """k=1 (below Δω≈3.14) → calibrated PPC < 0.05."""
+        ppc = calibrated_ppc(1.0)
+        assert ppc < 0.05, f"calibrated PPC(k=1)={ppc} should be < 0.05"
+
+    def test_matches_measured_at_endpoints(self) -> None:
+        """Calibrated prediction matches measured PPC at k=0 and k=5 within 0.05."""
+        phi_market = generate_synthetic_market_phase(n_samples=20000, fs=256.0, seed=42)
+        for k in [0.0, 5.0]:
+            trace = generate_neural_phase_trace(
+                phi_market, n_samples=20000, fs=256.0, coupling_k=k, seed=42,
+            )
+            ppc_meas = compute_ppc(trace.phi_neural, trace.phi_market)
+            ppc_pred = calibrated_ppc(k)
+            delta = abs(ppc_meas - ppc_pred)
+            assert delta < 0.05, (
+                f"k={k}: measured={ppc_meas:.4f} predicted={ppc_pred:.4f} δ={delta:.4f}"
+            )
+
+
 class TestPipelineMatchesTheory:
-    """Verify pipeline PPC matches Bessel prediction within tolerance.
-
-    The neural phase generator uses a Kuramoto ODE with additive 1/f
-    noise (σ_noise ~ 0.3 by default). The theoretical prediction uses
-    von Mises concentration κ = k/σ². The match is approximate because:
-    1. Finite integration time (not true stationarity)
-    2. 1/f noise ≠ white noise (Bessel assumes white)
-    3. RK4 discretization error
-
-    We use a generous tolerance (0.15) to account for these factors.
-    The test's purpose is to catch gross errors (wrong band, wrong
-    signal, sign error) not to validate the Bessel formula itself.
-    """
-
     def test_pipeline_trend_matches_theory(self) -> None:
         """Measured PPC increases with k, same direction as theory."""
-        phi_market = generate_synthetic_market_phase(
-            n_samples=8192, fs=256.0, seed=42,
-        )
+        phi_market = generate_synthetic_market_phase(n_samples=8192, fs=256.0, seed=42)
         measured_ppc: list[float] = []
-        theory_ppc: list[float] = []
         for k in [0.0, 1.0, 3.0, 5.0]:
             trace = generate_neural_phase_trace(
                 phi_market, n_samples=8192, fs=256.0, coupling_k=k, seed=42,
             )
             measured_ppc.append(compute_ppc(trace.phi_neural, trace.phi_market))
-            theory_ppc.append(theoretical_ppc(k, noise_sigma=1.0))
 
-        # Both should be monotonically increasing
         for i in range(len(measured_ppc) - 1):
-            assert measured_ppc[i] <= measured_ppc[i + 1] + 0.05, (
-                f"Measured PPC not monotonic at k transition {i}→{i + 1}"
-            )
+            assert measured_ppc[i] <= measured_ppc[i + 1] + 0.05
 
     def test_null_matches_theory(self) -> None:
         """k=0: both measured and theoretical PPC near zero."""
-        phi_market = generate_synthetic_market_phase(
-            n_samples=8192, fs=256.0, seed=42,
-        )
+        phi_market = generate_synthetic_market_phase(n_samples=8192, fs=256.0, seed=42)
         trace = generate_neural_phase_trace(
             phi_market, n_samples=8192, fs=256.0, coupling_k=0.0, seed=42,
         )
         measured = compute_ppc(trace.phi_neural, trace.phi_market)
-        theory = theoretical_ppc(0.0, 1.0)
-        assert abs(measured - theory) < 0.05, (
-            f"k=0: measured={measured:.4f} theory={theory:.4f}"
-        )
+        theory = calibrated_ppc(0.0)
+        assert abs(measured - theory) < 0.05

@@ -5,24 +5,26 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from neurophase.metrics.rayleigh import rayleigh_test
+from neurophase.metrics.rayleigh import R_MEDIUM, R_NEGLIGIBLE, rayleigh_test
 
 
 class TestRayleigh:
     def test_uniform_phases_not_significant(self) -> None:
-        """Uniform Δφ ∈ [−π, π], N=10000 → p > 0.05."""
+        """Uniform Δφ ∈ [−π, π], N=10000 → R < 0.05, effect negligible."""
         rng = np.random.default_rng(42)
         delta_phi = rng.uniform(-np.pi, np.pi, 10000)
         result = rayleigh_test(delta_phi)
-        assert result.p_value > 0.05, f"p={result.p_value} should be > 0.05 for uniform"
+        assert result.R < R_NEGLIGIBLE, f"R={result.R} should be < {R_NEGLIGIBLE}"
+        assert result.effect_size == "negligible"
         assert not result.significant
 
     def test_locked_phases_significant(self) -> None:
-        """Δφ ≈ constant + small noise → p < 0.001."""
+        """Δφ ≈ constant + small noise → R large, significant."""
         rng = np.random.default_rng(42)
         delta_phi = 0.5 + rng.normal(0, 0.1, 1000)
         result = rayleigh_test(delta_phi)
-        assert result.p_value < 0.001, f"p={result.p_value} should be < 0.001 for locked"
+        assert result.R > R_MEDIUM, f"R={result.R} should be > {R_MEDIUM}"
+        assert result.effect_size == "large"
         assert result.significant
 
     def test_r_in_range(self) -> None:
@@ -41,16 +43,12 @@ class TestRayleigh:
         np.testing.assert_allclose(result.Z, expected_z, atol=1e-10)
 
     def test_finite_sample_correction_applied(self) -> None:
-        """Verify second-order correction term is present (not just exp(-Z))."""
+        """Verify second-order correction term is present."""
         rng = np.random.default_rng(42)
         delta_phi = rng.uniform(-np.pi, np.pi, 50)
         result = rayleigh_test(delta_phi)
-        # Naive p = exp(-Z). With correction, p ≠ exp(-Z) exactly.
         naive_p = float(np.exp(-result.Z))
-        # They should differ (correction terms are non-zero)
-        assert result.p_value != pytest.approx(naive_p, abs=1e-15), (
-            "p-value equals naive exp(-Z) — correction not applied"
-        )
+        assert result.p_value != pytest.approx(naive_p, abs=1e-15)
 
     def test_rejects_too_few_samples(self) -> None:
         with pytest.raises(ValueError, match="≥ 10"):
@@ -69,3 +67,30 @@ class TestRayleigh:
             delta_phi = rng.uniform(-np.pi, np.pi, 100)
             result = rayleigh_test(delta_phi)
             assert 0.0 <= result.p_value <= 1.0
+
+    def test_r_stable_across_n(self) -> None:
+        """k=0: R stays < 0.05 regardless of N (N-independent metric)."""
+        from neurophase.benchmarks.neural_phase_generator import (
+            generate_neural_phase_trace,
+            generate_synthetic_market_phase,
+        )
+
+        phi_market = generate_synthetic_market_phase(n_samples=50000, fs=256.0, seed=42)
+        for n in [1000, 5000, 10000, 50000]:
+            trace = generate_neural_phase_trace(
+                phi_market, n_samples=n, fs=256.0, coupling_k=0.0, seed=42,
+            )
+            delta_phi = trace.phi_neural - trace.phi_market
+            result = rayleigh_test(delta_phi)
+            assert result.R < R_NEGLIGIBLE, (
+                f"N={n}: R={result.R} should be < {R_NEGLIGIBLE}"
+            )
+
+    def test_effect_size_classification(self) -> None:
+        """Effect size labels match R thresholds."""
+        from neurophase.metrics.rayleigh import _classify_effect_size
+
+        assert _classify_effect_size(0.03) == "negligible"
+        assert _classify_effect_size(0.07) == "small"
+        assert _classify_effect_size(0.20) == "medium"
+        assert _classify_effect_size(0.40) == "large"
