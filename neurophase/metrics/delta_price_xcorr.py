@@ -63,8 +63,13 @@ def _normalized_xcorr(
 ) -> tuple[FloatArray, FloatArray]:
     """Normalized cross-correlation for lags in [-max_lag, max_lag].
 
+    Uses FFT-based correlation for O(N log N) instead of O(N * max_lag).
+    Results are mathematically identical to the direct method.
+
     Returns (lags, xcorr_values).
     """
+    from scipy.signal import fftconvolve
+
     n = min(len(x), len(y))
     x_z = x[:n].copy()
     y_z = y[:n].copy()
@@ -77,25 +82,21 @@ def _normalized_xcorr(
     if ys > 0:
         y_z = (y_z - ym) / ys
 
+    # FFT-based full cross-correlation: xcorr[k] = sum(x[m] * y[m+k]) / overlap
+    full_xcorr = fftconvolve(x_z, y_z[::-1], mode="full")
+    # full_xcorr has length 2*n - 1, centered at index n-1 (lag=0)
+    center = n - 1
+
     lags = np.arange(-max_lag, max_lag + 1)
     xcorr = np.empty(len(lags), dtype=np.float64)
 
     for i, lag in enumerate(lags):
-        if lag < 0:
-            # x leads y
-            a = x_z[:n + lag]
-            b = y_z[-lag:]
-        elif lag > 0:
-            # y leads x
-            a = x_z[lag:]
-            b = y_z[:n - lag]
+        idx = center + lag
+        if 0 <= idx < len(full_xcorr):
+            overlap = n - abs(lag)
+            xcorr[i] = full_xcorr[idx] / overlap if overlap > 0 else 0.0
         else:
-            a = x_z
-            b = y_z
-        if len(a) == 0:
             xcorr[i] = 0.0
-        else:
-            xcorr[i] = float(np.mean(a * b))
 
     return lags.astype(np.float64), xcorr
 

@@ -33,11 +33,17 @@ from neurophase.benchmarks.phase_coupling import (
     generate_anti_coupled,
     generate_phase_coupling,
 )
+from neurophase.benchmarks.stochastic_market_sim import (
+    StochasticMarketScenario,
+    generate_stochastic_market,
+    generate_stochastic_scenario,
+)
 
 __all__ = [
     "NeuralPhaseTrace",
     "PhaseCouplingConfig",
     "PhaseCouplingTrace",
+    "StochasticMarketScenario",
     "SweepCellResult",
     "SweepError",
     "SweepGrid",
@@ -45,6 +51,8 @@ __all__ = [
     "generate_anti_coupled",
     "generate_neural_phase_trace",
     "generate_phase_coupling",
+    "generate_stochastic_market",
+    "generate_stochastic_scenario",
     "generate_synthetic_market_phase",
     "sweep_parameters",
 ]

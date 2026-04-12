@@ -200,7 +200,9 @@ class DS003458Loader:
         stim_events = events_df[
             events_df["trial_type"].str.startswith("Stimulus", na=False)
         ]
-        trial_onsets = stim_events["onset"].values[:len(reward_prob)].astype(np.float64)
+        trial_onsets = np.asarray(
+            stim_events["onset"].values[:len(reward_prob)], dtype=np.float64,
+        )
 
         return SubjectData(
             subject_id=subject_id,

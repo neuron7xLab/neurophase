@@ -75,7 +75,7 @@ def run_trial_lme_analysis(
             events_df = sub.events_df
             fb_mask = events_df["trial_type"].str.contains("Feedback", na=False)
             fb_mask = fb_mask & ~events_df["trial_type"].str.contains("Null", na=False)
-            fb_onsets_sec = events_df.loc[fb_mask, "onset"].values.astype(float)
+            fb_onsets_sec = np.asarray(events_df.loc[fb_mask, "onset"].values, dtype=np.float64)
             fb_onsets_samples = (fb_onsets_sec * fs).astype(np.int64)
 
             # Extract trial theta power (0-500ms post-feedback)
