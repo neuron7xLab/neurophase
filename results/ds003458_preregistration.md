@@ -66,6 +66,39 @@ overlapping sinusoids with period ≈ 240 trials (≈ 800 seconds).
 - 30–60% CONFIRMED → evidence_status: Tentative (upgraded)
 - <30% CONFIRMED → evidence_status: Tentative (unchanged)
 
+---
+
+## Amendment 2026-04-12: Delta Power Analysis
+
+The PLV analysis (above) returned 17/17 REJECTED due to frequency
+mismatch (reward ~0.001 Hz vs FMθ 4–8 Hz). This amendment adds a
+delta-band power envelope analysis that operates at the correct
+timescale.
+
+### Rationale
+Delta power envelope (1–4 Hz amplitude²) varies trial-by-trial,
+matching the reward probability timescale. Cross-correlation measures
+amplitude coupling, not phase locking — no frequency matching required.
+Basis: Toma & Miyakoshi (2021) found delta EEG negatively correlates
+with trial-by-trial stock price changes.
+
+### Pre-registered parameters
+- **Primary metric:** xcorr(delta_power_envelope, reward_prob_returns)
+- **EEG band:** Delta, 1.0–4.0 Hz
+- **Primary channel:** FC5 (left frontal, per Toma & Miyakoshi 2021)
+- **Smoothing:** 500 ms Gaussian kernel on power envelope
+- **Lag range:** ±2000 ms
+- **Surrogate:** Phase randomization (Theiler et al. 1992), N=1000
+- **Significance:** p < 0.05
+- **Held-out:** Last 30% of trials
+- **Direction hypothesis:** Negative correlation, lag ≤ 0 ms
+  (neural anticipates or is simultaneous with reward change)
+
+### Interpretation rules
+- ≥5/N significant with group xcorr < −0.10 → Strongly Plausible
+- 2–4/N significant → Tentative (upgraded)
+- <2/N → Tentative (unchanged)
+
 ## Commit Hash
 
 This file is frozen at the commit that adds it.
