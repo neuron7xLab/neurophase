@@ -4,6 +4,43 @@ All notable changes to neurophase are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to semantic versioning.
 
+## [Unreleased] — Synthetic PLV Bridge + Real Data Protocol
+
+First falsifiable PLV pipeline and first real-data confrontation.
+
+### Added
+
+- **Synthetic PLV bridge** — Kuramoto ODE neural phase generator with
+  controlled coupling, iPLV volume-conduction guard, PPC bias-free
+  metric (Vinck et al. 2010), held-out sweep with JSON output.
+- **Three-gate independent verification** — Rayleigh analytical test
+  (R effect-size, not p-value), dual surrogate (cyclic-shift +
+  time-reversal), calibrated Kuramoto transition theory.
+- **ds003458 real-data protocol** — BIDS loader for OpenNeuro ds003458
+  (Cavanagh 2021, 23 subjects, 3-armed bandit), EEG preprocessor
+  (FMθ 4–8 Hz at Fz), pre-registered analysis plan, per-subject
+  PLVVerdict + group-level binomial test.
+
+### Results
+
+- **Synthetic sweep:** k=0 → PPC=0.023 REJECTED, k=5 → PPC=0.994
+  CONFIRMED. Pipeline correctly detects coupling when present and
+  rejects null when absent.
+- **ds003458 real data: 0/17 CONFIRMED, 17/17 REJECTED.**
+  Frequency mismatch: reward oscillation ~0.001 Hz vs FMθ 4–8 Hz
+  (4 orders of magnitude). Pipeline honestly rejects — this is the
+  correct scientific result. Hypothesis survives; dataset does not
+  confirm it.
+- **evidence_status: Tentative (unchanged).**
+
+### Invariants
+
+- PLV-S1..S4 (synthetic null, iPLV held-out, JSON saved, bias label)
+- PLV-V1..V2 (three-gate verdict, PSD preservation)
+- DS-I1..I2 (pre-registration frozen, JSON before group test)
+
+---
+
 ## [Unreleased] — External γ-verification witness (NEO-1)
 
 Wires the [`neosynaptex`](https://github.com/neuron7xLab/neosynaptex)
