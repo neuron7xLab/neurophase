@@ -119,9 +119,9 @@ flowchart LR
 
 | Colour | Meaning |
 |---|---|
-| 🟢 green | Permissive — `execution_allowed = True`. Only `READY`. |
-| 🟠 orange | Blocking but benign — upstream input is valid, system is self-reporting a non-actionable regime. `BLOCKED` (desync) or `UNNECESSARY` (still). |
-| 🔴 red | Fault — something upstream cannot be trusted. `SENSOR_ABSENT` (hardware) or `DEGRADED` (input/time invalid). |
+| green | Permissive — `execution_allowed = True`. Only `READY`. |
+| orange | Blocking but benign — upstream input is valid; the system is self-reporting a non-actionable regime. `BLOCKED` (desynchronized) or `UNNECESSARY` (stationary). |
+| red | Fault — an upstream component cannot be trusted. `SENSOR_ABSENT` (hardware) or `DEGRADED` (input / time invalid). |
 
 ## 5. Load-bearing properties (enforced by CI)
 

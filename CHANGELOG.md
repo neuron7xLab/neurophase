@@ -343,7 +343,7 @@ strongest tests of each layer. Enforced by the A1 CI meta-test.
   and bound to 18 strongest matrix tests. Enforced by the A1 CI
   meta-test.
 
-### Why A3 matters (Karpathy / Sutskever-mode)
+### Why A3 matters
 
 Every other test file in the suite probes one axis at a time. A
 future refactor of `ExecutionGate._classify_ready` that accidentally

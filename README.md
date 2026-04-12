@@ -1,49 +1,48 @@
 <div align="center">
 
-<a href="#the-hypothesis">
-  <img src="https://raw.githubusercontent.com/neuron7xLab/neurophase/main/.github/assets/neurophase-hero.svg" alt="neurophase — brain · physics · market causality animation" width="100%"/>
-</a>
+# neurophase
 
-<br>
+**Phase synchronization as execution gate: a Kuramoto model of the market–trader system.**
 
-<img src="https://readme-typing-svg.demolab.com/?lines=neuroscience+%C2%B7+physics+%C2%B7+first+cause+of+value;R(t)+%E2%89%A5+%CE%B8+%E2%87%92+trade;R(t)+%3C+%CE%B8+%E2%87%92+silence;PLV(%CF%86_neural%2C+%CF%86_market)+%3E+0&font=JetBrains+Mono&size=18&pause=1600&color=8B5CF6&center=true&vCenter=true&width=720&height=46" alt="neurophase tagline" />
+[![status](https://img.shields.io/badge/status-experimental-blueviolet?style=flat-square)](#status)
+[![invariants](https://img.shields.io/badge/invariants-4_hard_%2B_B%E2%82%81-critical?style=flat-square)](#invariants)
+[![tests](https://img.shields.io/badge/tests-1354-brightgreen?style=flat-square)](tests/)
+[![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=flat-square)](pyproject.toml)
+[![doctor](https://img.shields.io/badge/doctor-11%2F11-00C853?style=flat-square)](#governance)
+[![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
-<br>
-
-# `n e u r o p h a s e`
-
-***A market and a mind are both oscillating systems.***
-***When they fall out of phase, trading is not a decision — it is noise.***
-
-<br>
-
-[![status](https://img.shields.io/badge/status-experimental-blueviolet?style=for-the-badge)](#status)
-[![invariants](https://img.shields.io/badge/invariants-4_hard_%2B_B%E2%82%81-critical?style=for-the-badge)](#four-invariants)
-[![falsifiable](https://img.shields.io/badge/falsifiable-PLV_%3E_0-gold?style=for-the-badge)](#the-falsifiable-predicate)
-[![tests](https://img.shields.io/badge/tests-1238-brightgreen?style=for-the-badge)](tests/)
-[![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=for-the-badge)](pyproject.toml)
-[![doctor](https://img.shields.io/badge/doctor-11%2F11-00C853?style=for-the-badge)](#governance)
-[![license](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
-
-<br>
-
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat&logo=numpy&logoColor=white)](https://numpy.org/)
-[![SciPy](https://img.shields.io/badge/SciPy-8CAAE6?style=flat&logo=scipy&logoColor=white)](https://scipy.org/)
-[![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat&logo=pytest&logoColor=white)](https://pytest.org/)
-[![ruff](https://img.shields.io/badge/ruff-D7FF64?style=flat&logo=ruff&logoColor=black)](https://docs.astral.sh/ruff/)
-[![mypy](https://img.shields.io/badge/mypy--strict-1F5082?style=flat)](https://mypy-lang.org/)
-[![Ukraine](https://img.shields.io/badge/%F0%9F%87%BA%F0%9F%87%A6-Poltava-005BBB?style=flat)](#)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=flat)](https://www.python.org/)
+[![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat)](https://numpy.org/)
+[![SciPy](https://img.shields.io/badge/SciPy-8CAAE6?style=flat)](https://scipy.org/)
+[![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat)](https://pytest.org/)
+[![ruff](https://img.shields.io/badge/ruff-D7FF64?style=flat)](https://docs.astral.sh/ruff/)
 
 </div>
 
-<p align="center">
-  <code>One law. Two oscillators. One gate. Zero hallucinated edges.</code>
-</p>
+---
+
+## Abstract
+
+**neurophase** treats a biological trader and a financial market as coupled
+phase oscillators and computes a joint Kuramoto order parameter `R(t)` that
+quantifies the accumulated prediction error between them. When `R(t)` falls
+below a calibrated threshold, the system is desynchronized and execution is
+blocked at the type boundary. The predicate
+
+```
+PLV( φ_neural , φ_market ) > 0    on held-out intraday horizons
+```
+
+is binary and falsifiable on the first run against human-in-the-loop data.
+The library ships the complete measurement stack, a five-state execution
+gate whose invariants are enforced at construction time, an append-only
+audit ledger with byte-identical replay, and a governance layer of
+machine-readable contracts covering invariants, claims, and state
+transitions.
 
 ---
 
-## The Hypothesis
+## Hypothesis
 
 <table>
 <tr>
@@ -71,15 +70,25 @@
 </td>
 <td width="50%" valign="top">
 
-**NeuroPhase** models brain and market as **coupled Kuramoto oscillators sharing a single order parameter** `R(t)`.
+**neurophase** models the trader's nervous system and the financial market as
+coupled Kuramoto oscillators sharing a single order parameter `R(t)`.
 
-The brain (EEG α/β, HRV, pupil) generates predictions; the market generates reality. `R(t)` physically measures **accumulated prediction error** as phase desynchronization (Friston 2010; Clark 2013, 2016; Fioriti & Chinnici 2012).
+Biological channels (EEG α/β, HRV, pupil) supply predictions; the market
+supplies realised dynamics. `R(t)` measures the accumulated prediction error
+between the two populations as phase desynchronization
+(Friston 2010; Clark 2013, 2016; Fioriti & Chinnici 2012).
 
-When `R(t) < threshold`, the gate **blocks execution** — preserving the trader's executive function via structured anti-offloading friction (mechanism grounded in Miyake 2000 + Arnsten 2009; the specific LLM-mediated "cognitive surrender" claim is currently *Strongly Plausible*, not *Established* — see [`docs/validation/evidence_labeling_style_guide.md`](docs/validation/evidence_labeling_style_guide.md)).
+When `R(t) < threshold` the gate blocks execution. When `R(t)` is sufficient
+but the joint dynamics are still — `|dR/dt| < ε`, `|dF_proxy/dt| < ε`,
+`δ < δ_min` over a rolling window — execution is marked `UNNECESSARY`:
+no new information justifies action (invariant I₄,
+see [`docs/theory/stillness_invariant.md`](docs/theory/stillness_invariant.md)).
 
-When `R(t)` is sufficient but the joint dynamics are still — `|dR/dt| < ε`, `|dF_proxy/dt| < ε`, `δ < δ_min` over a rolling window — execution is marked **`UNNECESSARY`**: no new information justifies action (invariant **I₄**, see [`docs/theory/stillness_invariant.md`](docs/theory/stillness_invariant.md)).
-
-A neuro-symbolic trading agent grounded in **predictive-processing brain theory**. Falsifiable: `PLV(EEG_β, market_phase) > 0`.
+The falsification predicate is `PLV(EEG_β, market_phase) > 0` on held-out
+intraday horizons. The "cognitive surrender" product claim (structured
+anti-offloading friction, Miyake 2000 + Arnsten 2009) is currently graded
+*Strongly Plausible* rather than *Established*; see
+[`docs/validation/evidence_labeling_style_guide.md`](docs/validation/evidence_labeling_style_guide.md).
 
 ```
               1   N
@@ -91,7 +100,7 @@ R(t)·e^{iΨ} = ─  Σ  e^{iθ_k(t)}
 </tr>
 </table>
 
-### Citations (real, DOI-anchored)
+### Evidence base (DOI-anchored)
 
 | Claim | Status | Source |
 |-------|--------|--------|
@@ -114,46 +123,40 @@ System-scale evidence chain: [`docs/theory/scientific_basis.md`](docs/theory/sci
 
 ---
 
-## The Falsifiable Predicate
+## Falsification predicate
 
-<div align="center">
-
-**`PLV( φ_neural , φ_market ) > 0`   on held-out intraday horizons.**
-
-</div>
-
-<table>
-<tr>
-<td width="50%" valign="top">
+The system admits a single, binary, pre-registered predicate:
 
 ```
-        |mean[ exp(i·(φ_x − φ_y)) ]|
-PLV  =  ─────────────────────────────
-                    ∈ [0, 1]
-
-0  →  random phase difference
-1  →  perfect phase locking
+PLV( φ_neural , φ_market ) > 0    on held-out intraday horizons
 ```
 
-</td>
-<td width="50%" valign="top">
+where
 
-The predicate is **binary and honest**:
+```
+         | mean[ exp(i·(φ_x − φ_y)) ] |
+PLV  =   ─────────────────────────────     ∈ [0, 1]
 
-- `PLV ≈ 0`  →  hypothesis dies, publicly, in one commit.
-- `PLV > 0`  →  *Physical Review E* material **and** a structural trading edge.
+    PLV = 0   random phase difference
+    PLV = 1   perfect phase locking
+```
 
-Significance is assessed by a **surrogate test** over `N = 1000` random cyclic shifts of `φ_y`, which preserves autocorrelation while destroying cross-signal phase locking.
-
-</td>
-</tr>
-</table>
+Significance is assessed with `N = 1000` random cyclic shifts of `φ_y`,
+which preserves the autocorrelation of the second signal while destroying
+its cross-signal phase relationship (Lachaux et al. 1999). A PLV held-out
+split prevents in-sample leakage (enforced by `HeldOutViolation`). A
+rejection disconfirms the hypothesis on the public record in a single
+commit; a confirmation is a falsifiable structural result.
 
 ---
 
-## Four Invariants
+## Invariants
 
-> *Invariants are not rules. They are laws that cannot be overridden — enforced at construction time.*
+The gate enforces four hard invariants and one temporal precondition.
+All five are checked at construction time inside
+`GateDecision.__post_init__`; constructing a decision with
+`execution_allowed = True` while the resolved state is anything other
+than `READY` raises `ValueError`.
 
 <table>
 <tr><th width="4%">#</th><th width="36%">Invariant</th><th width="60%">Mechanism</th></tr>
@@ -165,7 +168,7 @@ Significance is assessed by a **surrogate test** over `N = 1000` random cyclic s
 <tr>
 <td align="center"><code>I₂</code></td>
 <td>bio-sensor absent ⇒ <code>execution_allowed = False</code></td>
-<td>No synthetic fallback. No "graceful degradation to random." Silence is the only honest default — gate returns <code>SENSOR_ABSENT</code>.</td>
+<td>No synthetic fallback is substituted for missing hardware. Gate returns <code>SENSOR_ABSENT</code>; the silent default is the only non-permissive option.</td>
 </tr>
 <tr>
 <td align="center"><code>I₃</code></td>
@@ -185,8 +188,8 @@ Significance is assessed by a **surrogate test** over `N = 1000` random cyclic s
 
 ```
                     ┌──────────────────────────────────────────────────────────────┐
-                    │                    N E U R O P H A S E                       │
-                    │         physics-first neuro-symbolic execution engine        │
+                    │                       neurophase                             │
+                    │       Kuramoto-gated execution engine (25 modules)           │
                     └───────────────────────────┬──────────────────────────────────┘
                                                 │
         ┌──────────────┬────────────┬───────────┴──────────┬──────────────┐
@@ -268,89 +271,89 @@ Significance is assessed by a **surrogate test** over `N = 1000` random cyclic s
 </tr>
 
 <tr><td colspan="4" align="center"><b>— PHYSICS KERNEL —</b></td></tr>
-<tr><td rowspan="3"><code>core</code></td><td><code>phase.py</code></td><td>🟢</td><td>Hilbert + Daubechies D4 wavelet denoising + adaptive R_thr</td></tr>
-<tr><td><code>kuramoto.py</code></td><td>🟢</td><td>RK4 integrator · delays τ<sub>ij</sub> · noise ξ<sub>i</sub> · liquidity K(t)</td></tr>
-<tr><td><code>order_parameter.py</code></td><td>🟢</td><td>R(t)·e<sup>iΨ</sup> = (1/N)·Σ e<sup>iθ<sub>k</sub></sup></td></tr>
-<tr><td rowspan="2"><code>sync</code></td><td><code>coupled_brain_market.py</code></td><td>🟢</td><td>Coupled Kuramoto system — brain × market phase locking</td></tr>
-<tr><td><code>market_phase.py</code></td><td>🟢</td><td>Market oscillator extraction from price series</td></tr>
-<tr><td rowspan="2"><code>oscillators</code></td><td><code>market.py</code></td><td>🟢</td><td>Price · log-volume · realized volatility → φ<sub>market</sub></td></tr>
-<tr><td><code>neural_protocol.py</code></td><td>🟢</td><td>Tobii / OpenBCI / Polar bridge Protocol — invariant <b>I₂</b></td></tr>
+<tr><td rowspan="3"><code>core</code></td><td><code>phase.py</code></td><td>implemented</td><td>Hilbert + Daubechies D4 wavelet denoising + adaptive R_thr</td></tr>
+<tr><td><code>kuramoto.py</code></td><td>implemented</td><td>RK4 integrator · delays τ<sub>ij</sub> · noise ξ<sub>i</sub> · liquidity K(t)</td></tr>
+<tr><td><code>order_parameter.py</code></td><td>implemented</td><td>R(t)·e<sup>iΨ</sup> = (1/N)·Σ e<sup>iθ<sub>k</sub></sup></td></tr>
+<tr><td rowspan="2"><code>sync</code></td><td><code>coupled_brain_market.py</code></td><td>implemented</td><td>Coupled Kuramoto system — brain × market phase locking</td></tr>
+<tr><td><code>market_phase.py</code></td><td>implemented</td><td>Market oscillator extraction from price series</td></tr>
+<tr><td rowspan="2"><code>oscillators</code></td><td><code>market.py</code></td><td>implemented</td><td>Price · log-volume · realized volatility → φ<sub>market</sub></td></tr>
+<tr><td><code>neural_protocol.py</code></td><td>implemented</td><td>Tobii / OpenBCI / Polar bridge Protocol — invariant <b>I₂</b></td></tr>
 
 <tr><td colspan="4" align="center"><b>— EXECUTION GATE —</b></td></tr>
-<tr><td rowspan="4"><code>gate</code></td><td><code>execution_gate.py</code></td><td>🟢</td><td>5-state gate · invariants I₁–I₃ + B₁ enforced at <code>__post_init__</code></td></tr>
-<tr><td><code>stillness_detector.py</code></td><td>🟢</td><td>Rolling-window stillness (I₄) — |dR/dt| < ε ∧ |dF/dt| < ε ∧ δ < δ<sub>min</sub></td></tr>
-<tr><td><code>emergent_phase.py</code></td><td>🟢</td><td>4-condition criterion: R ∧ ΔH ∧ κ̄ ∧ ISM</td></tr>
-<tr><td><code>direction_index.py</code></td><td>🟢</td><td>DI = w<sub>s</sub>·Skew + w<sub>c</sub>·Δ<sub>curv</sub> + w<sub>b</sub>·Bias</td></tr>
+<tr><td rowspan="4"><code>gate</code></td><td><code>execution_gate.py</code></td><td>implemented</td><td>5-state gate · invariants I₁–I₃ + B₁ enforced at <code>__post_init__</code></td></tr>
+<tr><td><code>stillness_detector.py</code></td><td>implemented</td><td>Rolling-window stillness (I₄) — |dR/dt| < ε ∧ |dF/dt| < ε ∧ δ < δ<sub>min</sub></td></tr>
+<tr><td><code>emergent_phase.py</code></td><td>implemented</td><td>4-condition criterion: R ∧ ΔH ∧ κ̄ ∧ ISM</td></tr>
+<tr><td><code>direction_index.py</code></td><td>implemented</td><td>DI = w<sub>s</sub>·Skew + w<sub>c</sub>·Δ<sub>curv</sub> + w<sub>b</sub>·Bias</td></tr>
 
 <tr><td colspan="4" align="center"><b>— TEMPORAL INTEGRITY —</b></td></tr>
-<tr><td rowspan="4"><code>data</code></td><td><code>temporal_validator.py</code></td><td>🟢</td><td>B₁ precondition — GAPPED / STALE / REVERSED / DUPLICATE detection</td></tr>
-<tr><td><code>stream_detector.py</code></td><td>🟢</td><td>B₂/B₆ — regime classification: HEALTHY / WARMUP / STALE</td></tr>
-<tr><td><code>ds003458_loader.py</code></td><td>🟢</td><td>OpenNeuro BIDS loader (Cavanagh 2021)</td></tr>
-<tr><td><code>eeg_preprocessor.py</code></td><td>🟢</td><td>FMθ extraction, D4 denoising pipeline</td></tr>
+<tr><td rowspan="4"><code>data</code></td><td><code>temporal_validator.py</code></td><td>implemented</td><td>B₁ precondition — GAPPED / STALE / REVERSED / DUPLICATE detection</td></tr>
+<tr><td><code>stream_detector.py</code></td><td>implemented</td><td>B₂/B₆ — regime classification: HEALTHY / WARMUP / STALE</td></tr>
+<tr><td><code>ds003458_loader.py</code></td><td>implemented</td><td>OpenNeuro BIDS loader (Cavanagh 2021)</td></tr>
+<tr><td><code>eeg_preprocessor.py</code></td><td>implemented</td><td>FMθ extraction, D4 denoising pipeline</td></tr>
 
 <tr><td colspan="4" align="center"><b>— METRICS STACK —</b></td></tr>
-<tr><td rowspan="14"><code>metrics</code></td><td><code>plv.py</code></td><td>🟢</td><td>Phase Locking Value + held-out surrogate test</td></tr>
-<tr><td><code>iplv.py</code></td><td>🟢</td><td>Imaginary PLV — volume-conduction guard + PPC (Vinck 2010)</td></tr>
-<tr><td><code>entropy.py</code></td><td>🟢</td><td>Shannon · Tsallis · Rényi + Freedman–Diaconis + ΔH</td></tr>
-<tr><td><code>ricci.py</code></td><td>🟢</td><td>Ollivier (Wasserstein-1) + Forman + weighted mean κ̄</td></tr>
-<tr><td><code>hurst.py</code></td><td>🟢</td><td>R/S + DFA with Huber regression</td></tr>
-<tr><td><code>ism.py</code></td><td>🟢</td><td>ISM = η·H'(t) / ⟨κ̄²⟩<sub>T</sub> — information-to-curvature ratio</td></tr>
-<tr><td><code>asymmetry.py</code></td><td>🟢</td><td>Skewness · kurtosis · topological Δ<sub>curv</sub></td></tr>
-<tr><td><code>delta_power.py</code></td><td>🟢</td><td>Delta envelope extraction (1–4 Hz)</td></tr>
-<tr><td><code>delta_price_xcorr.py</code></td><td>🟢</td><td>Cross-correlation: δ-power × price change</td></tr>
-<tr><td><code>scp.py</code></td><td>🟢</td><td>Slow Cortical Potential (0.01–0.1 Hz)</td></tr>
-<tr><td><code>trial_theta_lme.py</code></td><td>🟢</td><td>Trial-LME theta power (Toma method replication)</td></tr>
-<tr><td><code>rayleigh.py</code></td><td>🟢</td><td>Rayleigh test — effect-size gate for phase uniformity</td></tr>
-<tr><td><code>plv_verdict.py</code></td><td>🟢</td><td>Dual-surrogate verdict: Rayleigh + Bessel + held-out</td></tr>
+<tr><td rowspan="14"><code>metrics</code></td><td><code>plv.py</code></td><td>implemented</td><td>Phase Locking Value + held-out surrogate test</td></tr>
+<tr><td><code>iplv.py</code></td><td>implemented</td><td>Imaginary PLV — volume-conduction guard + PPC (Vinck 2010)</td></tr>
+<tr><td><code>entropy.py</code></td><td>implemented</td><td>Shannon · Tsallis · Rényi + Freedman–Diaconis + ΔH</td></tr>
+<tr><td><code>ricci.py</code></td><td>implemented</td><td>Ollivier (Wasserstein-1) + Forman + weighted mean κ̄</td></tr>
+<tr><td><code>hurst.py</code></td><td>implemented</td><td>R/S + DFA with Huber regression</td></tr>
+<tr><td><code>ism.py</code></td><td>implemented</td><td>ISM = η·H'(t) / ⟨κ̄²⟩<sub>T</sub> — information-to-curvature ratio</td></tr>
+<tr><td><code>asymmetry.py</code></td><td>implemented</td><td>Skewness · kurtosis · topological Δ<sub>curv</sub></td></tr>
+<tr><td><code>delta_power.py</code></td><td>implemented</td><td>Delta envelope extraction (1–4 Hz)</td></tr>
+<tr><td><code>delta_price_xcorr.py</code></td><td>implemented</td><td>Cross-correlation: δ-power × price change</td></tr>
+<tr><td><code>scp.py</code></td><td>implemented</td><td>Slow Cortical Potential (0.01–0.1 Hz)</td></tr>
+<tr><td><code>trial_theta_lme.py</code></td><td>implemented</td><td>Trial-LME theta power (Toma method replication)</td></tr>
+<tr><td><code>rayleigh.py</code></td><td>implemented</td><td>Rayleigh test — effect-size gate for phase uniformity</td></tr>
+<tr><td><code>plv_verdict.py</code></td><td>implemented</td><td>Dual-surrogate verdict: Rayleigh + Bessel + held-out</td></tr>
 <tr><td colspan="3" align="center"><i>(13 modules)</i></td></tr>
-<tr><td rowspan="2"><code>indicators</code></td><td><code>qilm.py</code></td><td>🟢</td><td>Quantum Integrated Liquidity Metric (Neuron7X)</td></tr>
-<tr><td><code>fmn.py</code></td><td>🟢</td><td>Flow Momentum Network — tanh(w₁·OB + w₂·CVD/N)</td></tr>
+<tr><td rowspan="2"><code>indicators</code></td><td><code>qilm.py</code></td><td>implemented</td><td>Quantum Integrated Liquidity Metric (Neuron7X)</td></tr>
+<tr><td><code>fmn.py</code></td><td>implemented</td><td>Flow Momentum Network — tanh(w₁·OB + w₂·CVD/N)</td></tr>
 
 <tr><td colspan="4" align="center"><b>— RISK & SIZING —</b></td></tr>
-<tr><td rowspan="3"><code>risk</code></td><td><code>evt.py</code></td><td>🟢</td><td>POT/GPD fit + closed-form VaR / CVaR</td></tr>
-<tr><td><code>mfdfa.py</code></td><td>🟢</td><td>Multifractal DFA + instability index</td></tr>
-<tr><td><code>sizer.py</code></td><td>🟢</td><td>Composite position sizer — CVaR cap · scale<sub>R</sub> · scale<sub>m</sub></td></tr>
+<tr><td rowspan="3"><code>risk</code></td><td><code>evt.py</code></td><td>implemented</td><td>POT/GPD fit + closed-form VaR / CVaR</td></tr>
+<tr><td><code>mfdfa.py</code></td><td>implemented</td><td>Multifractal DFA + instability index</td></tr>
+<tr><td><code>sizer.py</code></td><td>implemented</td><td>Composite position sizer — CVaR cap · scale<sub>R</sub> · scale<sub>m</sub></td></tr>
 
 <tr><td colspan="4" align="center"><b>— RUNTIME & AUDIT —</b></td></tr>
-<tr><td rowspan="3"><code>runtime</code></td><td><code>pipeline.py</code></td><td>🟢</td><td>StreamingPipeline + DecisionFrame — tick-by-tick execution</td></tr>
-<tr><td><code>orchestrator.py</code></td><td>🟢</td><td>Tick orchestration — data → physics → gate → action</td></tr>
-<tr><td><code>memory_audit.py</code></td><td>🟢</td><td>Memory tracking + bounds enforcement</td></tr>
-<tr><td rowspan="3"><code>audit</code></td><td><code>decision_ledger.py</code></td><td>🟢</td><td>Append-only SHA-256 chained decision trace</td></tr>
-<tr><td><code>replay.py</code></td><td>🟢</td><td>Bit-deterministic replay engine (F₃ certification)</td></tr>
-<tr><td><code>session_manifest.py</code></td><td>🟢</td><td>Session metadata + integrity verification</td></tr>
+<tr><td rowspan="3"><code>runtime</code></td><td><code>pipeline.py</code></td><td>implemented</td><td>StreamingPipeline + DecisionFrame — tick-by-tick execution</td></tr>
+<tr><td><code>orchestrator.py</code></td><td>implemented</td><td>Tick orchestration — data → physics → gate → action</td></tr>
+<tr><td><code>memory_audit.py</code></td><td>implemented</td><td>Memory tracking + bounds enforcement</td></tr>
+<tr><td rowspan="3"><code>audit</code></td><td><code>decision_ledger.py</code></td><td>implemented</td><td>Append-only SHA-256 chained decision trace</td></tr>
+<tr><td><code>replay.py</code></td><td>implemented</td><td>Bit-deterministic replay engine (F₃ certification)</td></tr>
+<tr><td><code>session_manifest.py</code></td><td>implemented</td><td>Session metadata + integrity verification</td></tr>
 
 <tr><td colspan="4" align="center"><b>— KLR RESET SYSTEM —</b></td></tr>
-<tr><td rowspan="6"><code>reset</code></td><td><code>pipeline.py</code></td><td>🟢</td><td>KLR full reset orchestration — state transitions + metrics</td></tr>
-<tr><td><code>controller.py</code></td><td>🟢</td><td>Ketamine-Like Reset: plasticity injection + refractory</td></tr>
-<tr><td><code>gamma_witness.py</code></td><td>🟢</td><td>External γ-verification (neosynaptex adapter, NEO-I₁/I₂)</td></tr>
-<tr><td><code>ensemble.py</code></td><td>🟢</td><td>Multi-model ensemble averaging + passive learner</td></tr>
-<tr><td><code>ntk_monitor.py</code></td><td>🟢</td><td>Neural Tangent Kernel rank monitor — loss landscape</td></tr>
+<tr><td rowspan="6"><code>reset</code></td><td><code>pipeline.py</code></td><td>implemented</td><td>KLR full reset orchestration — state transitions + metrics</td></tr>
+<tr><td><code>controller.py</code></td><td>implemented</td><td>Ketamine-Like Reset: plasticity injection + refractory</td></tr>
+<tr><td><code>gamma_witness.py</code></td><td>implemented</td><td>External γ-verification (neosynaptex adapter, NEO-I₁/I₂)</td></tr>
+<tr><td><code>ensemble.py</code></td><td>implemented</td><td>Multi-model ensemble averaging + passive learner</td></tr>
+<tr><td><code>ntk_monitor.py</code></td><td>implemented</td><td>Neural Tangent Kernel rank monitor — loss landscape</td></tr>
 <tr><td colspan="3" align="center"><i>(21 modules in reset/)</i></td></tr>
 
 <tr><td colspan="4" align="center"><b>— VALIDATION & CALIBRATION —</b></td></tr>
-<tr><td rowspan="2"><code>validation</code></td><td><code>null_model.py</code></td><td>🟢</td><td>NullModelHarness — Phipson–Smyth p = (1+k)/(1+n)</td></tr>
-<tr><td><code>surrogates.py</code></td><td>🟢</td><td>cyclic_shift · phase_shuffle · time_reversal · block_bootstrap</td></tr>
-<tr><td rowspan="2"><code>calibration</code></td><td><code>threshold.py</code></td><td>🟢</td><td>Youden-J calibration with explicit train/test split</td></tr>
-<tr><td><code>stillness.py</code></td><td>🟢</td><td>Stillness parameter grid search (ε<sub>R</sub>, ε<sub>F</sub>, δ<sub>min</sub>)</td></tr>
-<tr><td rowspan="5"><code>benchmarks</code></td><td><code>phase_coupling.py</code></td><td>🟢</td><td>Controlled coupling with closed-form PLV at c ∈ {0, 1}</td></tr>
-<tr><td><code>neural_phase_generator.py</code></td><td>🟢</td><td>Kuramoto ODE for synthetic EEG phase</td></tr>
-<tr><td><code>stochastic_market_sim.py</code></td><td>🟢</td><td>GBM + neural EMA tracking</td></tr>
-<tr><td><code>ppc_analytical.py</code></td><td>🟢</td><td>Analytical PPC + theoretical PLV</td></tr>
-<tr><td><code>parameter_sweep.py</code></td><td>🟢</td><td>Grid search harness for coupling sweeps</td></tr>
+<tr><td rowspan="2"><code>validation</code></td><td><code>null_model.py</code></td><td>implemented</td><td>NullModelHarness — Phipson–Smyth p = (1+k)/(1+n)</td></tr>
+<tr><td><code>surrogates.py</code></td><td>implemented</td><td>cyclic_shift · phase_shuffle · time_reversal · block_bootstrap</td></tr>
+<tr><td rowspan="2"><code>calibration</code></td><td><code>threshold.py</code></td><td>implemented</td><td>Youden-J calibration with explicit train/test split</td></tr>
+<tr><td><code>stillness.py</code></td><td>implemented</td><td>Stillness parameter grid search (ε<sub>R</sub>, ε<sub>F</sub>, δ<sub>min</sub>)</td></tr>
+<tr><td rowspan="5"><code>benchmarks</code></td><td><code>phase_coupling.py</code></td><td>implemented</td><td>Controlled coupling with closed-form PLV at c ∈ {0, 1}</td></tr>
+<tr><td><code>neural_phase_generator.py</code></td><td>implemented</td><td>Kuramoto ODE for synthetic EEG phase</td></tr>
+<tr><td><code>stochastic_market_sim.py</code></td><td>implemented</td><td>GBM + neural EMA tracking</td></tr>
+<tr><td><code>ppc_analytical.py</code></td><td>implemented</td><td>Analytical PPC + theoretical PLV</td></tr>
+<tr><td><code>parameter_sweep.py</code></td><td>implemented</td><td>Grid search harness for coupling sweeps</td></tr>
 
 <tr><td colspan="4" align="center"><b>— GOVERNANCE & INTELLIGENCE —</b></td></tr>
-<tr><td rowspan="4"><code>governance</code></td><td><code>invariants.py</code></td><td>🟢</td><td>INVARIANTS.yaml loader — 26 machine-readable contracts</td></tr>
-<tr><td><code>claims.py</code></td><td>🟢</td><td>CLAIMS.yaml — hypothesis → theory → fact promotion rules</td></tr>
-<tr><td><code>state_machine.py</code></td><td>🟢</td><td>STATE_MACHINE.yaml — 8 transitions, CI-verified exhaustive</td></tr>
-<tr><td><code>doctor.py</code></td><td>🟢</td><td>11-axis completeness checker (reachability, resistance, determinism)</td></tr>
-<tr><td><code>agents</code></td><td><code>pi_agent.py</code></td><td>🟢</td><td>π-calculus: mutation / repair / clone / learn + semantic memory</td></tr>
-<tr><td><code>intel</code></td><td><code>btc_field_order.py</code></td><td>🟢</td><td>BTC Field Order v3.2 structured LLM payload (no network)</td></tr>
-<tr><td rowspan="3"><code>analysis</code></td><td><code>prediction_error.py</code></td><td>🟢</td><td>Friston/Clark prediction-error monitor</td></tr>
-<tr><td><code>regime.py</code></td><td>🟢</td><td>TRENDING / COMPRESSING / FLASH / FLASH-SUPPRESS taxonomy</td></tr>
-<tr><td><code>regime_transitions.py</code></td><td>🟢</td><td>Regime transition logic + hysteresis</td></tr>
-<tr><td rowspan="2"><code>state</code></td><td><code>executive_monitor.py</code></td><td>🟢</td><td>EEG β · HRV · error-burst detection → OverloadIndex</td></tr>
-<tr><td><code>klr_reset.py</code></td><td>🟢</td><td>Ketamine-Like Reset state machine</td></tr>
-<tr><td><code>explain</code></td><td><code>explain.py</code></td><td>🟢</td><td>Causal decision explanation engine — contracts → steps → verdict</td></tr>
+<tr><td rowspan="4"><code>governance</code></td><td><code>invariants.py</code></td><td>implemented</td><td>INVARIANTS.yaml loader — 26 machine-readable contracts</td></tr>
+<tr><td><code>claims.py</code></td><td>implemented</td><td>CLAIMS.yaml — hypothesis → theory → fact promotion rules</td></tr>
+<tr><td><code>state_machine.py</code></td><td>implemented</td><td>STATE_MACHINE.yaml — 8 transitions, CI-verified exhaustive</td></tr>
+<tr><td><code>doctor.py</code></td><td>implemented</td><td>11-axis completeness checker (reachability, resistance, determinism)</td></tr>
+<tr><td><code>agents</code></td><td><code>pi_agent.py</code></td><td>implemented</td><td>π-calculus: mutation / repair / clone / learn + semantic memory</td></tr>
+<tr><td><code>intel</code></td><td><code>btc_field_order.py</code></td><td>implemented</td><td>BTC Field Order v3.2 structured LLM payload (no network)</td></tr>
+<tr><td rowspan="3"><code>analysis</code></td><td><code>prediction_error.py</code></td><td>implemented</td><td>Friston/Clark prediction-error monitor</td></tr>
+<tr><td><code>regime.py</code></td><td>implemented</td><td>TRENDING / COMPRESSING / FLASH / FLASH-SUPPRESS taxonomy</td></tr>
+<tr><td><code>regime_transitions.py</code></td><td>implemented</td><td>Regime transition logic + hysteresis</td></tr>
+<tr><td rowspan="2"><code>state</code></td><td><code>executive_monitor.py</code></td><td>implemented</td><td>EEG β · HRV · error-burst detection → OverloadIndex</td></tr>
+<tr><td><code>klr_reset.py</code></td><td>implemented</td><td>Ketamine-Like Reset state machine</td></tr>
+<tr><td><code>explain</code></td><td><code>explain.py</code></td><td>implemented</td><td>Causal decision explanation engine — contracts → steps → verdict</td></tr>
 </table>
 
 ---
@@ -405,13 +408,13 @@ Significance is assessed by a **surrogate test** over `N = 1000` random cyclic s
 
 <div align="center">
 
-| State | `execution_allowed` | Invariant | Meaning |
+| State | `execution_allowed` | Invariant | Semantics |
 | :--- | :---: | :---: | :--- |
-| `READY` | **`True`** | — | R(t) ≥ θ, bio-sensor live, dynamics active — **execute** |
-| `BLOCKED` | `False` | I₁ | R(t) < θ — system desynchronized, acting is noise |
-| `SENSOR_ABSENT` | `False` | I₂ | No bio-sensor — silence is the only honest default |
-| `DEGRADED` | `False` | I₃ / B₁ | R(t) invalid or temporal quality failed — honest failure |
-| `UNNECESSARY` | `False` | I₄ | Dynamics are still — no new information justifies action |
+| `READY` | `True` | — | R(t) ≥ θ, bio-sensor present, dynamics active |
+| `BLOCKED` | `False` | I₁ | R(t) < θ; joint system desynchronized |
+| `SENSOR_ABSENT` | `False` | I₂ | Bio-sensor unavailable; execution suppressed |
+| `DEGRADED` | `False` | I₃ / B₁ | R(t) invalid or temporal quality failed |
+| `UNNECESSARY` | `False` | I₄ | Dynamics stationary; no new information |
 
 **Global invariant:** `execution_allowed = True  ⇒  state = READY` — enforced at `GateDecision.__post_init__`
 
@@ -542,8 +545,8 @@ pip install -e ".[dev]"
 pip install -e ".[dev,witness]"
 
 ruff check neurophase tests
-mypy neurophase        # --strict, 102 source files, 0 errors
-pytest -q              # 1238 collected, 1236 passed, 2 skipped
+mypy neurophase        # --strict, 122 source files, 0 errors
+pytest -q              # 1354 passed, 6 skipped
 python -m neurophase doctor  # 11/11 axes, exit 0
 ```
 
@@ -594,42 +597,51 @@ print(size.fraction, size.reason)
 
 | Metric | Value |
 | :--- | ---: |
-| Python source modules | **102** |
-| Test cases (collected) | **1,238** |
-| mypy --strict errors | **0** |
-| ruff violations | **0** |
-| Doctor axes passing | **11 / 11** |
-| Invariant contracts | **26** (INVARIANTS.yaml) |
-| Scientific claims | **5** (CLAIMS.yaml) |
-| State-machine transitions | **8** (CI-exhaustive) |
+| Python source modules | 122 |
+| Test cases | 1 354 |
+| mypy --strict errors | 0 |
+| ruff violations | 0 |
+| Doctor axes passing | 11 / 11 |
+| Invariant contracts (`INVARIANTS.yaml`) | 26 |
+| Scientific claims (`CLAIMS.yaml`) | 5 |
+| State-machine transitions (CI-exhaustive) | 8 |
 | Determinism certification | bit-identical across 6 pillars |
 
-### Research (ds003458 — Cavanagh 2021, 23 subjects)
+### Empirical results (ds003458 — Cavanagh 2021, 23 subjects)
 
 | Analysis | Metric | N | Significant | Verdict |
 | :--- | :--- | :---: | :---: | :--- |
-| FMθ (4–8 Hz) vs market | PLV held-out | 17 | **0 / 17** | NULL — freq mismatch (0.001 Hz vs 4–8 Hz) |
-| Delta (1–4 Hz) × price | xcorr | 23 | **2 / 23** | NULL — mixed signs, no systematic effect |
-| SCP (0.01–0.1 Hz) × reward | xcorr | 23 | **0 / 23** | NULL — no signal detected |
-| Trial theta power | LME (Toma) | 23 | **p = 0.935** | NULL — deterministic rewards |
-| Synthetic PLV bridge | PPC sweep | — | **confirmed** | Methodology validated at known c ∈ {0, 1} |
+| FMθ (4–8 Hz) vs market | PLV held-out | 17 | 0 / 17 | NULL — frequency mismatch (0.001 Hz vs 4–8 Hz) |
+| Delta (1–4 Hz) × price | xcorr | 23 | 2 / 23 | NULL — mixed signs, no systematic effect |
+| SCP (0.01–0.1 Hz) × reward | xcorr | 23 | 0 / 23 | NULL — no signal detected |
+| Trial theta power | LME (Toma) | 23 | p = 0.935 | NULL — deterministic rewards |
+| Synthetic PLV bridge | PPC sweep | — | confirmed | Methodology verified at known c ∈ {0, 1} |
 
-*Null results are committed, not hidden. Hypothesis survives; dataset does not confirm.*
-*Next: stochastic reward dataset (Torres or equivalent).*
+Null results are committed verbatim to `results/`. The hypothesis survives; the
+dataset does not confirm it. The next empirical target is a stochastic reward
+dataset (Torres et al. or equivalent).
 
 </div>
 
-### Missing Piece
+### Open hardware dependency
 
-Concrete bio-sensor adapters implementing `NeuralPhaseExtractor` (Tobii eye-tracker → pupil phase, OpenBCI → EEG phase, Polar → HRV). Scientific backing and bridge contracts are documented in [`docs/theory/sensory_basis.md`](docs/theory/sensory_basis.md).
+Bio-sensor adapters implementing `NeuralPhaseExtractor` are declared as a
+`Protocol` with a `NullNeuralExtractor` contract fixture; concrete
+implementations (Tobii → pupil phase, OpenBCI → EEG phase, Polar → HRV) are
+out of scope for this repository and gated by physical hardware availability.
+Scientific grounding and the bridge contract are documented in
+[`docs/theory/sensory_basis.md`](docs/theory/sensory_basis.md).
 
 ---
 
 ## KLR — Ketamine-Like Reset
 
-> *When the system's loss landscape degenerates, structured noise injection restores plasticity.*
-
-The KLR subsystem (21 modules, 4+ KLOC) implements a **controlled reset protocol** inspired by ketamine's neuroplasticity mechanism:
+The KLR subsystem (21 modules) implements a controlled reset protocol that
+dislodges pathological attractor lock-in by injecting structured noise into
+the coupling matrix and safely committing only validated improvements. The
+mechanism is inspired by ketamine's documented restoration of neural
+plasticity under established stress conditions; the biological reference
+motivates the architecture but does not enter any quantitative claim:
 
 ```
   NORMAL ──→ MONITORING ──→ TRIGGERED ──→ INJECTING ──→ REFRACTORY ──→ NORMAL
@@ -668,25 +680,15 @@ When installed with `pip install -e ".[witness]"`, the neosynaptex γ-witness pr
 
 <br>
 
+### Engineering summary
+
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                                                                          │
-│   Physics-first.  Falsifiable.  Silent by default.                       │
-│                                                                          │
-│   If the signal is not there, the system says nothing.                   │
-│   If the hypothesis dies, it dies publicly, in one commit.               │
-│                                                                          │
-│   102 source modules · 1238 tests · 26 invariant contracts              │
-│   4 hard laws · 11-axis doctor · bit-deterministic audit                 │
-│   0 synthetic edges · 0 hallucinated claims                              │
-│                                                                          │
-└──────────────────────────────────────────────────────────────────────────┘
+102 source modules · 1354 tests · 26 invariant contracts
+4 hard invariants + B₁ · 11-axis doctor certification
+bit-deterministic replay · Phipson–Smyth p-value estimator
 ```
 
-<br>
-
-**`neuron7xLab`** · Poltava, Ukraine 🇺🇦 · `2026`
-
-<sub>MIT licensed · built in full autonomy · no synthetic edges · zero tech debt</sub>
+**neuron7xLab** — Poltava, Ukraine — 2026.
+Released under the MIT License.
 
 </div>
