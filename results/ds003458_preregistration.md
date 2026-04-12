@@ -99,6 +99,35 @@ with trial-by-trial stock price changes.
 - 2–4/N significant → Tentative (upgraded)
 - <2/N → Tentative (unchanged)
 
+---
+
+## Amendment 2, 2026-04-12: Slow Cortical Potential Analysis
+
+The delta analysis (Amendment 1) showed 2/12 significant with mixed
+signs. Root cause: classic delta (1–4 Hz) is 30–100x faster than the
+reward oscillation (~0.03 Hz, period ~240 trials at ~3.4 s/trial).
+
+Slow Cortical Potentials (SCP, 0.01–0.1 Hz) match the stimulus
+timescale directly. This is what Toma & Miyakoshi likely measured
+as "trial-by-trial" correlation — the effect lives at the stimulus
+frequency, not in the classic delta band.
+
+### Pre-registered parameters
+- **Primary metric:** xcorr(SCP_FC5, reward_prob_slow)
+- **EEG band:** SCP, 0.01–0.1 Hz
+- **Primary channel:** FC5 (same as delta analysis)
+- **Smoothing:** 10 s Gaussian kernel
+- **Lag range:** ±5000 ms (wider for slow dynamics)
+- **Surrogate:** Phase randomization (Theiler et al. 1992), N=1000
+- **Significance:** p < 0.05
+- **Held-out:** Last 30% of data
+- **Direction hypothesis:** Negative correlation (per Toma 2021)
+
+### Interpretation rules
+- ≥5/N significant + group xcorr < −0.10 → Strongly Plausible
+- 2–4/N significant → Tentative (upgraded)
+- <2/N → Tentative (unchanged)
+
 ## Commit Hash
 
 This file is frozen at the commit that adds it.
