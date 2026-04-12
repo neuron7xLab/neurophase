@@ -31,7 +31,7 @@ class TestStochasticScenario:
     def test_null_coupling_no_correlation(self) -> None:
         """k=0 → θ-power independent of prediction error."""
         sc = generate_stochastic_scenario(coupling_strength=0.0, seed=42)
-        r, p = pearsonr(sc.theta_power, sc.prediction_error)
+        r, _p = pearsonr(sc.theta_power, sc.prediction_error)
         assert abs(r) < 0.15, f"k=0: r={r} should be near 0"
         assert not sc.has_coupling
 
