@@ -244,6 +244,50 @@ invariants:
       - docs/theory/klr_reset_contract.md
     introduced_in: "PR #KLR-runtime"
 
+  # ── Synthetic PLV Bridge (PLV-S1..S3) ────────────────────────────────
+
+  - id: PLV-S1
+    symbol: PLV-S1
+    statement: "Synthetic PLV pipeline produces PLV < 0.20 at k=0 (null coupling) on held-out split and is NOT statistically significant (p > 0.05)."
+    severity: hard
+    enforced_in:
+      - path: neurophase/experiments/synthetic_plv_validation.py
+        symbol: run_sweep
+      - path: neurophase/benchmarks/neural_phase_generator.py
+        symbol: generate_neural_phase_trace
+    tests:
+      - tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_plv_below_threshold
+      - tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_not_significant
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "PR #synthetic-plv-bridge"
+
+  - id: PLV-S2
+    symbol: PLV-S2
+    statement: "iPLV estimator uses HeldOutSplit at construction — in-sample iPLV raises HeldOutViolation before any statistic is computed."
+    severity: hard
+    enforced_in:
+      - path: neurophase/metrics/iplv.py
+        symbol: iplv_on_held_out
+    tests:
+      - tests/test_synthetic_plv.py::TestIPLV::test_in_sample_raises
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "PR #synthetic-plv-bridge"
+
+  - id: PLV-S3
+    symbol: PLV-S3
+    statement: "Synthetic PLV sweep results saved to results/synthetic_plv_sweep_*.json with evidence_status=Tentative before any real-data claim is made."
+    severity: advisory
+    enforced_in:
+      - path: neurophase/experiments/synthetic_plv_validation.py
+        symbol: save_results
+    tests:
+      - tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_results_saved
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "PR #synthetic-plv-bridge"
+
 # Honest-naming contracts — these are not permission invariants but
 # they are load-bearing and must be enforced by tests so that future
 # refactors cannot weaken them silently.

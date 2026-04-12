@@ -3,8 +3,8 @@
 # neurophase — System Invariants Monograph
 
 **Schema version:** 1  
-**Hard invariants:** 11  
-**Advisory invariants:** 2  
+**Hard invariants:** 13  
+**Advisory invariants:** 3  
 **Honest-naming contracts:** 38  
 **Gate states:** 5  
 **Gate transitions:** 8
@@ -24,9 +24,12 @@
   - [NEO-I1 — NEO-I₁](#neo-i1)
   - [NEO-I2 — NEO-I₂](#neo-i2)
   - [RT-KLR-I1 — RT-KLR-I₁](#rt-klr-i1)
+  - [PLV-S1 — PLV-S1](#plv-s1)
+  - [PLV-S2 — PLV-S2](#plv-s2)
 - [Advisory invariants](#advisory-invariants)
   - [I4 — I₄](#i4)
   - [KLR-I4 — KLR-I₄](#klr-i4)
+  - [PLV-S3 — PLV-S3](#plv-s3)
 - [Honest-naming contracts](#honest-naming-contracts)
   - [HN1](#hn1)
   - [HN2](#hn2)
@@ -347,6 +350,48 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 
 - `docs/theory/klr_reset_contract.md`
 
+### PLV-S1 — PLV-S1
+
+**Statement.** Synthetic PLV pipeline produces PLV < 0.20 at k=0 (null coupling) on held-out split and is NOT statistically significant (p > 0.05).
+
+**Severity.** `hard`
+
+**Introduced in.** PR #synthetic-plv-bridge
+
+**Enforcement sites:**
+
+- `neurophase/experiments/synthetic_plv_validation.py::run_sweep`
+- `neurophase/benchmarks/neural_phase_generator.py::generate_neural_phase_trace`
+
+**Bound tests** (2):
+
+- `tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_plv_below_threshold`
+- `tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_null_not_significant`
+
+**Documentation:**
+
+- `docs/theory/scientific_basis.md`
+
+### PLV-S2 — PLV-S2
+
+**Statement.** iPLV estimator uses HeldOutSplit at construction — in-sample iPLV raises HeldOutViolation before any statistic is computed.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #synthetic-plv-bridge
+
+**Enforcement sites:**
+
+- `neurophase/metrics/iplv.py::iplv_on_held_out`
+
+**Bound tests** (1):
+
+- `tests/test_synthetic_plv.py::TestIPLV::test_in_sample_raises`
+
+**Documentation:**
+
+- `docs/theory/scientific_basis.md`
+
 ## Advisory invariants
 
 Advisory invariants route execution to a non-permissive but semantically distinct state (e.g. UNNECESSARY) rather than blocking outright.
@@ -399,6 +444,26 @@ Advisory invariants route execution to a non-permissive but semantically distinc
 **Documentation:**
 
 - `docs/theory/klr_reset_contract.md`
+
+### PLV-S3 — PLV-S3
+
+**Statement.** Synthetic PLV sweep results saved to results/synthetic_plv_sweep_*.json with evidence_status=Tentative before any real-data claim is made.
+
+**Severity.** `advisory`
+
+**Introduced in.** PR #synthetic-plv-bridge
+
+**Enforcement sites:**
+
+- `neurophase/experiments/synthetic_plv_validation.py::save_results`
+
+**Bound tests** (1):
+
+- `tests/test_synthetic_plv.py::TestSyntheticPLVSweep::test_results_saved`
+
+**Documentation:**
+
+- `docs/theory/scientific_basis.md`
 
 ## Honest-naming contracts
 

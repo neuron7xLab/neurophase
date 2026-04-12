@@ -39,6 +39,11 @@ from neurophase.audit.decision_ledger import (
     verify_ledger,
 )
 from neurophase.audit.replay import ReplayInput, ReplayResult, replay_ledger
+from neurophase.benchmarks.neural_phase_generator import (
+    NeuralPhaseTrace,
+    generate_neural_phase_trace,
+    generate_synthetic_market_phase,
+)
 from neurophase.benchmarks.phase_coupling import (
     PhaseCouplingConfig,
     PhaseCouplingTrace,
@@ -80,6 +85,9 @@ from neurophase.data.temporal_validator import (
     TemporalQualityDecision,
     TemporalValidator,
     TimeQuality,
+)
+from neurophase.experiments.synthetic_plv_validation import (
+    run_sweep as run_synthetic_plv_sweep,
 )
 from neurophase.explain import (
     Contract,
@@ -134,6 +142,12 @@ from neurophase.metrics.entropy import (
     tsallis_entropy,
 )
 from neurophase.metrics.hurst import hurst_dfa, hurst_rs
+from neurophase.metrics.iplv import (
+    iplv,
+    iplv_on_held_out,
+    iplv_significance,
+    iPLVResult,
+)
 from neurophase.metrics.ism import compute_ism, compute_topological_energy, ism_derivative
 from neurophase.metrics.plv import (
     DEFAULT_PLV_N_SURROGATES,
@@ -182,6 +196,10 @@ from neurophase.state.executive_monitor import (
 from neurophase.sync.coupled_brain_market import (
     CoupledBrainMarketSystem,
     CoupledStep,
+)
+from neurophase.sync.market_phase import (
+    MarketPhaseResult,
+    extract_market_phase_from_price,
 )
 from neurophase.validation.null_model import (
     DEFAULT_N_SURROGATES,
@@ -241,8 +259,10 @@ __all__ = [
     "MFDFAResult",
     "MarketContext",
     "MarketOscillators",
+    "MarketPhaseResult",
     "NeuralFrame",
     "NeuralPhaseExtractor",
+    "NeuralPhaseTrace",
     "NullModelHarness",
     "NullModelResult",
     "NullNeuralExtractor",
@@ -312,15 +332,22 @@ __all__ = [
     "explain_decision",
     "explain_gate",
     "extract_market_phase",
+    "extract_market_phase_from_price",
     "fingerprint_parameters",
     "fit_gpd_pot",
     "forman_ricci",
     "free_energy_proxy",
     "freedman_diaconis_bins",
     "generate_anti_coupled",
+    "generate_neural_phase_trace",
     "generate_phase_coupling",
+    "generate_synthetic_market_phase",
     "hurst_dfa",
     "hurst_rs",
+    "iPLVResult",
+    "iplv",
+    "iplv_on_held_out",
+    "iplv_significance",
     "ism_derivative",
     "kurtosis",
     "mean_ricci",
@@ -336,6 +363,7 @@ __all__ = [
     "renyi_entropy",
     "replay_ledger",
     "rolling_plv",
+    "run_synthetic_plv_sweep",
     "shannon_entropy",
     "size_position",
     "skewness",

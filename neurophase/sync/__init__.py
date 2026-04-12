@@ -14,5 +14,14 @@ from neurophase.sync.coupled_brain_market import (
     CoupledBrainMarketSystem,
     CoupledStep,
 )
+from neurophase.sync.market_phase import (
+    MarketPhaseResult,
+    extract_market_phase_from_price,
+)
 
-__all__ = ["CoupledBrainMarketSystem", "CoupledStep"]
+__all__ = [
+    "CoupledBrainMarketSystem",
+    "CoupledStep",
+    "MarketPhaseResult",
+    "extract_market_phase_from_price",
+]
