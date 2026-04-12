@@ -1,16 +1,16 @@
 {
   "experiment": "ds003458_analysis",
-  "timestamp": "2026-04-12T09:55:28.454840+00:00",
+  "timestamp": "2026-04-12T20:07:41.191755+00:00",
   "dataset": "OpenNeuro ds003458 v1.1.0",
   "preregistration": "results/ds003458_preregistration.md",
   "n_subjects_total": 23,
-  "n_subjects_valid": 17,
+  "n_subjects_valid": 23,
   "n_confirmed": 0,
   "n_marginal": 0,
-  "n_rejected": 17,
+  "n_rejected": 23,
   "confirmed_fraction": 0.0,
   "group_p_value": 1.0,
-  "group_ppc": 9.72817003264778e-05,
+  "group_ppc": 0.00010562857718176735,
   "evidence_status": "Tentative (unchanged)",
   "per_subject": [
     {
@@ -80,9 +80,16 @@
     },
     {
       "subject": "sub-006",
-      "ppc": null,
-      "verdict": "ERROR",
-      "error": "File /home/neuro7/neuron7xLab/neurophase/data/ds003458/sub-006/eeg/sub-006_task-ThreeArmedBandit_eeg.fdt not found."
+      "ppc": 3.015836762338373e-05,
+      "rayleigh_R": 0.005628445688152948,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 657428,
+      "n_artifacts": 0
     },
     {
       "subject": "sub-007",
@@ -216,9 +223,16 @@
     },
     {
       "subject": "sub-017",
-      "ppc": null,
-      "verdict": "ERROR",
-      "error": "Incorrect number of samples (18014862 != 24999942), please report this error to MNE-Python developers"
+      "ppc": 1.1704581820417815e-05,
+      "rayleigh_R": 0.003621464693465042,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 708998,
+      "n_artifacts": 0
     },
     {
       "subject": "sub-018",
@@ -248,27 +262,55 @@
     },
     {
       "subject": "sub-020",
-      "ppc": null,
-      "verdict": "ERROR",
-      "error": "Incorrect number of samples (12046222 != 24999942), please report this error to MNE-Python developers"
+      "ppc": 3.3402934260496104e-05,
+      "rayleigh_R": 0.005891389260741403,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 765945,
+      "n_artifacts": 0
     },
     {
       "subject": "sub-021",
-      "ppc": null,
-      "verdict": "ERROR",
-      "error": "Incorrect number of samples (10254217 != 24999942), please report this error to MNE-Python developers"
+      "ppc": 0.0006405550998391643,
+      "rayleigh_R": 0.025333697311221277,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 805208,
+      "n_artifacts": 0
     },
     {
       "subject": "sub-022",
-      "ppc": null,
-      "verdict": "ERROR",
-      "error": "Incorrect number of samples (14870415 != 24999942), please report this error to MNE-Python developers"
+      "ppc": 1.245477602261247e-05,
+      "rayleigh_R": 0.0037268391692972915,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 697072,
+      "n_artifacts": 0
     },
     {
       "subject": "sub-023",
-      "ppc": null,
-      "verdict": "ERROR",
-      "error": "could not read bytes"
+      "ppc": 4.739252621577242e-05,
+      "rayleigh_R": 0.006966822880068336,
+      "rayleigh_effect": "negligible",
+      "p_cyclic": 1.0,
+      "p_reversal": 1.0,
+      "both_significant": false,
+      "directional": false,
+      "verdict": "REJECTED",
+      "n_samples": 874012,
+      "n_artifacts": 48
     }
   ],
   "analysis_params": {
