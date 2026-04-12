@@ -42,6 +42,7 @@ from neurophase.validation.surrogates import (
     block_bootstrap,
     cyclic_shift,
     phase_shuffle,
+    time_reversal,
 )
 
 __all__ = [
@@ -51,4 +52,5 @@ __all__ = [
     "block_bootstrap",
     "cyclic_shift",
     "phase_shuffle",
+    "time_reversal",
 ]

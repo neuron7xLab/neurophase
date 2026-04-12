@@ -50,6 +50,10 @@ from neurophase.benchmarks.phase_coupling import (
     generate_anti_coupled,
     generate_phase_coupling,
 )
+from neurophase.benchmarks.ppc_analytical import (
+    theoretical_plv,
+    theoretical_ppc,
+)
 from neurophase.calibration.stillness import (
     DEFAULT_DELTA_MIN_GRID,
     DEFAULT_EPS_F_GRID,
@@ -160,6 +164,13 @@ from neurophase.metrics.plv import (
     plv_significance,
     rolling_plv,
 )
+from neurophase.metrics.plv_verdict import (
+    DualSurrogateResult,
+    PLVVerdict,
+    compute_verdict,
+    dual_surrogate_test,
+)
+from neurophase.metrics.rayleigh import RayleighResult, rayleigh_test
 from neurophase.metrics.ricci import forman_ricci, mean_ricci, ollivier_ricci
 from neurophase.oscillators.market import MarketOscillators, extract_market_phase
 from neurophase.oscillators.neural_protocol import (
@@ -211,6 +222,7 @@ from neurophase.validation.surrogates import (
     block_bootstrap,
     cyclic_shift,
     phase_shuffle,
+    time_reversal,
 )
 
 __all__ = [
@@ -238,6 +250,7 @@ __all__ = [
     "Direction",
     "DirectionDecision",
     "DirectionIndexWeights",
+    "DualSurrogateResult",
     "EVTFit",
     "EmergentPhaseCriteria",
     "EmergentPhaseDecision",
@@ -272,6 +285,7 @@ __all__ = [
     "OrderParameterResult",
     "OverloadIndex",
     "PLVResult",
+    "PLVVerdict",
     "PacingDirective",
     "PhaseCouplingConfig",
     "PhaseCouplingTrace",
@@ -281,6 +295,7 @@ __all__ = [
     "PositionSize",
     "PredictionErrorMonitor",
     "PredictionErrorSample",
+    "RayleighResult",
     "ReplayInput",
     "ReplayResult",
     "ResetReport",
@@ -327,10 +342,12 @@ __all__ = [
     "compute_qilm",
     "compute_topological_energy",
     "compute_var",
+    "compute_verdict",
     "cyclic_shift",
     "delta_entropy",
     "detect_emergent_phase",
     "direction_index",
+    "dual_surrogate_test",
     "explain_decision",
     "explain_gate",
     "extract_market_phase",
@@ -362,6 +379,7 @@ __all__ = [
     "plv_on_held_out",
     "plv_significance",
     "preprocess_signal",
+    "rayleigh_test",
     "renyi_entropy",
     "replay_ledger",
     "rolling_plv",
@@ -369,6 +387,9 @@ __all__ = [
     "shannon_entropy",
     "size_position",
     "skewness",
+    "theoretical_plv",
+    "theoretical_ppc",
+    "time_reversal",
     "topological_asymmetry",
     "tsallis_entropy",
     "validate_request",

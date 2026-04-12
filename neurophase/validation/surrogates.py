@@ -112,6 +112,27 @@ def cyclic_shift(
     return np.roll(arr, k)
 
 
+def time_reversal(
+    y: NDArray[np.float64] | np.ndarray,
+    *,
+    rng: np.random.Generator,
+) -> NDArray[np.float64]:
+    """Reverse the time axis (destroys causality, preserves spectrum).
+
+    ``y_rev[i] = y[n - 1 - i]``. Time reversal exactly preserves the
+    power spectral density (PSD is even-symmetric) and the
+    autocorrelation function, but destroys any *directed* (causal)
+    phase relationship between two signals. The ``rng`` parameter is
+    accepted for API compatibility with the ``SurrogateFn`` protocol
+    but is never used — the reversal is deterministic.
+
+    Null hypothesis: directed (time-asymmetric) phase coupling is
+    destroyed; undirected coupling structure is preserved.
+    """
+    arr = _validate_1d(y, name="y")
+    return arr[::-1].copy()
+
+
 def block_bootstrap(
     y: NDArray[np.float64] | np.ndarray,
     *,

@@ -303,6 +303,34 @@ invariants:
       - docs/theory/scientific_basis.md
     introduced_in: "PR #plv-bias-ppc"
 
+  - id: PLV-V1
+    symbol: PLV-V1
+    statement: "PLVVerdict requires all three independent verification gates (Rayleigh analytical, dual surrogate, analytical ground truth) before evidence_status rises above Tentative. CONFIRMED requires 3/3 gates."
+    severity: hard
+    enforced_in:
+      - path: neurophase/metrics/plv_verdict.py
+        symbol: compute_verdict
+    tests:
+      - tests/test_plv_verdict.py::TestPLVVerdict::test_all_gates_required
+      - tests/test_plv_verdict.py::TestPLVVerdict::test_null_not_confirmed
+      - tests/test_plv_verdict.py::TestPLVVerdict::test_strong_coupling_confirmed
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "PR #plv-alt-verification"
+
+  - id: PLV-V2
+    symbol: PLV-V2
+    statement: "time_reversal surrogate preserves power spectral density to within 1e-10 tolerance — only directed (causal) phase coupling is destroyed."
+    severity: hard
+    enforced_in:
+      - path: neurophase/validation/surrogates.py
+        symbol: time_reversal
+    tests:
+      - tests/test_dual_surrogate.py::TestTimeReversal::test_preserves_spectrum
+    docs:
+      - docs/theory/scientific_basis.md
+    introduced_in: "PR #plv-alt-verification"
+
 # Honest-naming contracts — these are not permission invariants but
 # they are load-bearing and must be enforced by tests so that future
 # refactors cannot weaken them silently.

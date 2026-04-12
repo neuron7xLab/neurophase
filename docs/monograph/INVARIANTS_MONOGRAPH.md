@@ -3,7 +3,7 @@
 # neurophase — System Invariants Monograph
 
 **Schema version:** 1  
-**Hard invariants:** 13  
+**Hard invariants:** 15  
 **Advisory invariants:** 4  
 **Honest-naming contracts:** 38  
 **Gate states:** 5  
@@ -26,6 +26,8 @@
   - [RT-KLR-I1 — RT-KLR-I₁](#rt-klr-i1)
   - [PLV-S1 — PLV-S1](#plv-s1)
   - [PLV-S2 — PLV-S2](#plv-s2)
+  - [PLV-V1 — PLV-V1](#plv-v1)
+  - [PLV-V2 — PLV-V2](#plv-v2)
 - [Advisory invariants](#advisory-invariants)
   - [I4 — I₄](#i4)
   - [KLR-I4 — KLR-I₄](#klr-i4)
@@ -390,6 +392,48 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 **Bound tests** (1):
 
 - `tests/test_synthetic_plv.py::TestIPLV::test_in_sample_raises`
+
+**Documentation:**
+
+- `docs/theory/scientific_basis.md`
+
+### PLV-V1 — PLV-V1
+
+**Statement.** PLVVerdict requires all three independent verification gates (Rayleigh analytical, dual surrogate, analytical ground truth) before evidence_status rises above Tentative. CONFIRMED requires 3/3 gates.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #plv-alt-verification
+
+**Enforcement sites:**
+
+- `neurophase/metrics/plv_verdict.py::compute_verdict`
+
+**Bound tests** (3):
+
+- `tests/test_plv_verdict.py::TestPLVVerdict::test_all_gates_required`
+- `tests/test_plv_verdict.py::TestPLVVerdict::test_null_not_confirmed`
+- `tests/test_plv_verdict.py::TestPLVVerdict::test_strong_coupling_confirmed`
+
+**Documentation:**
+
+- `docs/theory/scientific_basis.md`
+
+### PLV-V2 — PLV-V2
+
+**Statement.** time_reversal surrogate preserves power spectral density to within 1e-10 tolerance — only directed (causal) phase coupling is destroyed.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #plv-alt-verification
+
+**Enforcement sites:**
+
+- `neurophase/validation/surrogates.py::time_reversal`
+
+**Bound tests** (1):
+
+- `tests/test_dual_surrogate.py::TestTimeReversal::test_preserves_spectrum`
 
 **Documentation:**
 
