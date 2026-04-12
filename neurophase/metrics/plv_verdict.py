@@ -215,6 +215,7 @@ def compute_verdict(
     if coupling_k is not None:
         predicted = calibrated_ppc(
             coupling_k, f_neural=f_neural, f_market=f_market,
+            model="empirical",
         )
         theory_delta = abs(ppc_val - predicted)
 

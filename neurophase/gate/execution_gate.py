@@ -52,6 +52,14 @@ from neurophase.gate.stillness_detector import (
 
 DEFAULT_THRESHOLD: Final[float] = 0.65
 
+# IEEE 754 float64 machine epsilon: eps ≈ 2.22e-16.
+# π computed in float64 has rounding error ≤ 0.5 ULP.  Numerical
+# operations (addition, subtraction of angles) may accumulate up to
+# a few ULP of drift.  We allow 4 ULP above π — tight enough to
+# reject obviously invalid deltas, loose enough to absorb
+# floating-point arithmetic on the unit circle.
+_DELTA_UPPER: Final[float] = float(np.pi * (1.0 + 4.0 * np.finfo(np.float64).eps))
+
 
 class GateState(Enum):
     """Gate state as a closed enumeration (5-state after ``I₄``)."""
@@ -239,7 +247,7 @@ class ExecutionGate:
                 reason=f"R(t) = {R:.4f} ≥ threshold = {self.threshold:.4f}. Synchronized.",
             )
 
-        if delta is None or not np.isfinite(delta) or not 0.0 <= delta <= np.pi + 1e-12:
+        if delta is None or not np.isfinite(delta) or not 0.0 <= delta <= _DELTA_UPPER:
             # Optional layer cannot run. Fall back to 4-state READY
             # without marking the gate DEGRADED — the hardware is fine.
             return GateDecision(

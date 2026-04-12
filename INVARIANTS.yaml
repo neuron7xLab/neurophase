@@ -1309,3 +1309,21 @@ honest_naming:
       - tests/test_invariant_matrix.py::TestPipelineReachability::test_sensor_absent_reachable_via_direct_gate_call
     docs:
       - docs/theory/invariant_matrix.md
+
+  - id: HN_SEED
+    statement: "Surrogate seed contract: NullModelHarness.test_seeded() guarantees bit-identical null distributions for the same seed by construction. The method creates np.random.default_rng(seed) internally and spawns one independent child RNG per surrogate iteration via rng.spawn(n)[i], so callers cannot accidentally break determinism by forgetting to capture an RNG. Two calls with the same (x, y, generator, seed, n_surrogates) must produce byte-identical null_distribution arrays. ReproducibilityWarning is defined for use by callers that use the lower-level test() API without a seeded surrogate_fn. Every surrogate generator in neurophase.validation.surrogates (cyclic_shift, phase_shuffle, block_bootstrap) must be bit-identical across two test_seeded calls with the same seed."
+    enforced_in:
+      - path: neurophase/validation/null_model.py
+        symbol: NullModelHarness.test_seeded
+      - path: neurophase/validation/null_model.py
+        symbol: ReproducibilityWarning
+    tests:
+      - tests/test_surrogate_seed_contract.py::test_seeded_same_seed_identical_results
+      - tests/test_surrogate_seed_contract.py::test_seeded_different_seed_different_results
+      - "tests/test_surrogate_seed_contract.py::test_seeded_result_records_seed[42]"
+      - tests/test_surrogate_seed_contract.py::test_seeded_cyclic_shift_deterministic
+      - tests/test_surrogate_seed_contract.py::test_seeded_phase_shuffle_deterministic
+      - tests/test_surrogate_seed_contract.py::test_seeded_block_bootstrap_deterministic
+      - tests/test_surrogate_seed_contract.py::test_reproducibility_warning_is_user_warning
+    docs:
+      - docs/monograph/INVARIANTS_MONOGRAPH.md

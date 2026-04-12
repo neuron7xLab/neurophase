@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 21  
 **Advisory invariants:** 5  
-**Honest-naming contracts:** 38  
+**Honest-naming contracts:** 39  
 **Gate states:** 5  
 **Gate transitions:** 8
 
@@ -79,6 +79,7 @@
   - [HN36](#hn36)
   - [HN37](#hn37)
   - [HN38](#hn38)
+  - [HN_SEED](#hn_seed)
 
 ## Gate state machine
 
@@ -1755,6 +1756,29 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
+
+### HN_SEED
+
+**Statement.** Surrogate seed contract: NullModelHarness.test_seeded() guarantees bit-identical null distributions for the same seed by construction. The method creates np.random.default_rng(seed) internally and spawns one independent child RNG per surrogate iteration via rng.spawn(n)[i], so callers cannot accidentally break determinism by forgetting to capture an RNG. Two calls with the same (x, y, generator, seed, n_surrogates) must produce byte-identical null_distribution arrays. ReproducibilityWarning is defined for use by callers that use the lower-level test() API without a seeded surrogate_fn. Every surrogate generator in neurophase.validation.surrogates (cyclic_shift, phase_shuffle, block_bootstrap) must be bit-identical across two test_seeded calls with the same seed.
+
+**Enforcement sites:**
+
+- `neurophase/validation/null_model.py::NullModelHarness.test_seeded`
+- `neurophase/validation/null_model.py::ReproducibilityWarning`
+
+**Bound tests** (7):
+
+- `tests/test_surrogate_seed_contract.py::test_seeded_same_seed_identical_results`
+- `tests/test_surrogate_seed_contract.py::test_seeded_different_seed_different_results`
+- `tests/test_surrogate_seed_contract.py::test_seeded_result_records_seed[42]`
+- `tests/test_surrogate_seed_contract.py::test_seeded_cyclic_shift_deterministic`
+- `tests/test_surrogate_seed_contract.py::test_seeded_phase_shuffle_deterministic`
+- `tests/test_surrogate_seed_contract.py::test_seeded_block_bootstrap_deterministic`
+- `tests/test_surrogate_seed_contract.py::test_reproducibility_warning_is_user_warning`
+
+**Documentation:**
+
+- `docs/monograph/INVARIANTS_MONOGRAPH.md`
 
 ---
 

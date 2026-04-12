@@ -3,6 +3,15 @@
 from __future__ import annotations
 
 from neurophase.metrics.asymmetry import kurtosis, skewness, topological_asymmetry
+from neurophase.metrics.effect_size import (
+    EffectSizeReport,
+    cohens_d,
+    cohens_d_one_sample,
+    confidence_interval_d,
+    effect_size_report,
+    hedges_g,
+    statistical_power,
+)
 from neurophase.metrics.entropy import (
     delta_entropy,
     freedman_diaconis_bins,
@@ -23,13 +32,19 @@ from neurophase.metrics.plv import PLVResult, plv, plv_significance, rolling_plv
 from neurophase.metrics.ricci import forman_ricci, mean_ricci, ollivier_ricci
 
 __all__ = [
+    "EffectSizeReport",
     "PLVResult",
+    "cohens_d",
+    "cohens_d_one_sample",
     "compute_ism",
     "compute_ppc",
     "compute_topological_energy",
+    "confidence_interval_d",
     "delta_entropy",
+    "effect_size_report",
     "forman_ricci",
     "freedman_diaconis_bins",
+    "hedges_g",
     "hurst_dfa",
     "hurst_rs",
     "iPLVResult",
@@ -46,6 +61,7 @@ __all__ = [
     "rolling_plv",
     "shannon_entropy",
     "skewness",
+    "statistical_power",
     "topological_asymmetry",
     "tsallis_entropy",
 ]

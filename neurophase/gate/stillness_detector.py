@@ -142,6 +142,14 @@ DEFAULT_DT: Final[float] = 1.0
 #: Minimum window size to make the finite-difference derivative defined.
 _MIN_WINDOW: Final[int] = 2
 
+# IEEE 754 float64 machine epsilon: eps ≈ 2.22e-16.
+# π computed in float64 has rounding error ≤ 0.5 ULP.  Numerical
+# operations (addition, subtraction of angles) may accumulate up to
+# a few ULP of drift.  We allow 4 ULP above π — tight enough to
+# reject obviously invalid deltas, loose enough to absorb
+# floating-point arithmetic on the unit circle.
+_DELTA_UPPER: Final[float] = float(np.pi * (1.0 + 4.0 * np.finfo(np.float64).eps))
+
 
 class StillnessState(Enum):
     """Binary actionability classification.
@@ -303,7 +311,7 @@ class StillnessDetector:
             raise ValueError(f"R must be in [0, 1], got {R}")
         if not np.isfinite(delta):
             raise ValueError(f"delta must be finite, got {delta!r}")
-        if not 0.0 <= delta <= np.pi + 1e-12:
+        if not 0.0 <= delta <= _DELTA_UPPER:
             raise ValueError(f"delta must be in [0, π], got {delta}")
 
         self._R_hist.append(float(R))

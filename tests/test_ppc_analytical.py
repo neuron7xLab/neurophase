@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from neurophase.benchmarks.neural_phase_generator import (
@@ -60,10 +62,22 @@ class TestCalibratedPPC:
                 f"Not monotone: k={ks[i]}→{ks[i + 1]}, PPC={ppcs[i]}→{ppcs[i + 1]}"
             )
 
-    def test_high_k_near_one(self) -> None:
-        """k=5 (well above Δω≈3.14) → calibrated PPC > 0.95."""
-        ppc = calibrated_ppc(5.0)
-        assert ppc > 0.95, f"calibrated PPC(k=5)={ppc} should be > 0.95"
+    def test_high_k_near_one_empirical(self) -> None:
+        """k=5 (well above Δω≈3.14) → empirical calibrated PPC > 0.95."""
+        ppc = calibrated_ppc(5.0, model="empirical")
+        assert ppc > 0.95, f"calibrated PPC(k=5, empirical)={ppc} should be > 0.95"
+
+    def test_high_k_ott_antonsen(self) -> None:
+        """k=8 (above K_c=2π≈6.28) → OA PPC > 0.
+        Exact: R∞² = 1 − (K_c/K)² = 1 − (2π/8)² ≈ 0.383."""
+        ppc = calibrated_ppc(8.0, model="ott_antonsen")
+        expected = 1.0 - (2 * math.pi / 8.0) ** 2
+        assert abs(ppc - expected) < 1e-10, f"OA PPC(k=8)={ppc} should be ≈ {expected:.6f}"
+
+    def test_sub_critical_ott_antonsen_zero(self) -> None:
+        """k=5 < K_c=2π → OA PPC = 0 (analytically exact)."""
+        ppc = calibrated_ppc(5.0, model="ott_antonsen")
+        assert ppc == 0.0, f"OA PPC(k=5)={ppc} should be exactly 0.0"
 
     def test_sub_critical_small(self) -> None:
         """k=1 (below Δω≈3.14) → calibrated PPC < 0.05."""
@@ -71,14 +85,18 @@ class TestCalibratedPPC:
         assert ppc < 0.05, f"calibrated PPC(k=1)={ppc} should be < 0.05"
 
     def test_matches_measured_at_endpoints(self) -> None:
-        """Calibrated prediction matches measured PPC at k=0 and k=5 within 0.05."""
+        """Empirical calibrated prediction matches measured PPC at k=0 and k=5 within 0.05."""
         phi_market = generate_synthetic_market_phase(n_samples=20000, fs=256.0, seed=42)
         for k in [0.0, 5.0]:
             trace = generate_neural_phase_trace(
-                phi_market, n_samples=20000, fs=256.0, coupling_k=k, seed=42,
+                phi_market,
+                n_samples=20000,
+                fs=256.0,
+                coupling_k=k,
+                seed=42,
             )
             ppc_meas = compute_ppc(trace.phi_neural, trace.phi_market)
-            ppc_pred = calibrated_ppc(k)
+            ppc_pred = calibrated_ppc(k, model="empirical")
             delta = abs(ppc_meas - ppc_pred)
             assert delta < 0.05, (
                 f"k={k}: measured={ppc_meas:.4f} predicted={ppc_pred:.4f} δ={delta:.4f}"
@@ -92,7 +110,11 @@ class TestPipelineMatchesTheory:
         measured_ppc: list[float] = []
         for k in [0.0, 1.0, 3.0, 5.0]:
             trace = generate_neural_phase_trace(
-                phi_market, n_samples=8192, fs=256.0, coupling_k=k, seed=42,
+                phi_market,
+                n_samples=8192,
+                fs=256.0,
+                coupling_k=k,
+                seed=42,
             )
             measured_ppc.append(compute_ppc(trace.phi_neural, trace.phi_market))
 
@@ -103,7 +125,11 @@ class TestPipelineMatchesTheory:
         """k=0: both measured and theoretical PPC near zero."""
         phi_market = generate_synthetic_market_phase(n_samples=8192, fs=256.0, seed=42)
         trace = generate_neural_phase_trace(
-            phi_market, n_samples=8192, fs=256.0, coupling_k=0.0, seed=42,
+            phi_market,
+            n_samples=8192,
+            fs=256.0,
+            coupling_k=0.0,
+            seed=42,
         )
         measured = compute_ppc(trace.phi_neural, trace.phi_market)
         theory = calibrated_ppc(0.0)
