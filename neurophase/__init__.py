@@ -94,6 +94,9 @@ from neurophase.data.temporal_validator import (
 from neurophase.experiments.ds003458_analysis import (
     run_analysis as run_ds003458_analysis,
 )
+from neurophase.experiments.ds003458_delta_analysis import (
+    run_delta_analysis as run_ds003458_delta_analysis,
+)
 from neurophase.experiments.synthetic_plv_validation import (
     run_sweep as run_synthetic_plv_sweep,
 )
@@ -142,6 +145,11 @@ from neurophase.intel.btc_field_order import (
     validate_request,
 )
 from neurophase.metrics.asymmetry import kurtosis, skewness, topological_asymmetry
+from neurophase.metrics.delta_power import DeltaPowerTrace, extract_delta_power
+from neurophase.metrics.delta_price_xcorr import (
+    DeltaPriceXCorrResult,
+    compute_delta_price_xcorr,
+)
 from neurophase.metrics.entropy import (
     delta_entropy,
     freedman_diaconis_bins,
@@ -250,6 +258,8 @@ __all__ = [
     "DecisionFrame",
     "DecisionTraceLedger",
     "DecisionTraceRecord",
+    "DeltaPowerTrace",
+    "DeltaPriceXCorrResult",
     "DerivativesBlock",
     "Direction",
     "DirectionDecision",
@@ -340,6 +350,7 @@ __all__ = [
     "calibrate_stillness_parameters",
     "calibrated_ppc",
     "compute_cvar",
+    "compute_delta_price_xcorr",
     "compute_fmn",
     "compute_ism",
     "compute_phase",
@@ -355,6 +366,7 @@ __all__ = [
     "dual_surrogate_test",
     "explain_decision",
     "explain_gate",
+    "extract_delta_power",
     "extract_market_phase",
     "extract_market_phase_from_price",
     "fingerprint_parameters",
@@ -389,6 +401,7 @@ __all__ = [
     "replay_ledger",
     "rolling_plv",
     "run_ds003458_analysis",
+    "run_ds003458_delta_analysis",
     "run_synthetic_plv_sweep",
     "shannon_entropy",
     "size_position",

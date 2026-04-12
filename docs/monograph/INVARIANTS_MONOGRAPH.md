@@ -3,7 +3,7 @@
 # neurophase — System Invariants Monograph
 
 **Schema version:** 1  
-**Hard invariants:** 17  
+**Hard invariants:** 20  
 **Advisory invariants:** 4  
 **Honest-naming contracts:** 38  
 **Gate states:** 5  
@@ -29,6 +29,9 @@
   - [PLV-V1 — PLV-V1](#plv-v1)
   - [PLV-V2 — PLV-V2](#plv-v2)
   - [DS-I1 — DS-I1](#ds-i1)
+  - [DELTA-I1 — DELTA-I1](#delta-i1)
+  - [DELTA-I2 — DELTA-I2](#delta-i2)
+  - [DELTA-I3 — DELTA-I3](#delta-i3)
   - [DS-I2 — DS-I2](#ds-i2)
 - [Advisory invariants](#advisory-invariants)
   - [I4 — I₄](#i4)
@@ -456,6 +459,66 @@ These contracts must hold at every tick. A violation in any hard invariant is a 
 **Bound tests** (1):
 
 - `tests/test_ds003458.py::TestPreregistration::test_preregistration_frozen`
+
+**Documentation:**
+
+- `results/ds003458_preregistration.md`
+
+### DELTA-I1 — DELTA-I1
+
+**Statement.** DeltaPowerTrace.envelope is z-scored before xcorr — amplitude differences between subjects do not bias group results.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #delta-power-price
+
+**Enforcement sites:**
+
+- `neurophase/metrics/delta_power.py::extract_delta_power`
+
+**Bound tests** (1):
+
+- `tests/test_delta_power.py::TestDeltaPower::test_zscore_applied`
+
+**Documentation:**
+
+- `results/ds003458_preregistration.md`
+
+### DELTA-I2 — DELTA-I2
+
+**Statement.** phase_randomization surrogate preserves amplitude spectrum to within 1e-6 tolerance.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #delta-power-price
+
+**Enforcement sites:**
+
+- `neurophase/validation/surrogates.py::phase_shuffle`
+
+**Bound tests** (1):
+
+- `tests/test_delta_price_xcorr.py::TestDeltaPriceXCorr::test_surrogate_preserves_spectrum`
+
+**Documentation:**
+
+- `results/ds003458_preregistration.md`
+
+### DELTA-I3 — DELTA-I3
+
+**Statement.** HeldOutSplit enforced — xcorr computed on last 30% of trials only.
+
+**Severity.** `hard`
+
+**Introduced in.** PR #delta-power-price
+
+**Enforcement sites:**
+
+- `neurophase/experiments/ds003458_delta_analysis.py::run_delta_analysis`
+
+**Bound tests** (1):
+
+- `tests/test_delta_price_xcorr.py::TestDeltaPriceXCorr::test_null_xcorr_not_significant`
 
 **Documentation:**
 

@@ -346,6 +346,47 @@ invariants:
       - results/ds003458_preregistration.md
     introduced_in: "PR #ds003458-real-data"
 
+  # ── Delta Power x Price (DELTA-I1..I3) ───────────────────────────────
+
+  - id: DELTA-I1
+    symbol: DELTA-I1
+    statement: "DeltaPowerTrace.envelope is z-scored before xcorr — amplitude differences between subjects do not bias group results."
+    severity: hard
+    enforced_in:
+      - path: neurophase/metrics/delta_power.py
+        symbol: extract_delta_power
+    tests:
+      - tests/test_delta_power.py::TestDeltaPower::test_zscore_applied
+    docs:
+      - results/ds003458_preregistration.md
+    introduced_in: "PR #delta-power-price"
+
+  - id: DELTA-I2
+    symbol: DELTA-I2
+    statement: "phase_randomization surrogate preserves amplitude spectrum to within 1e-6 tolerance."
+    severity: hard
+    enforced_in:
+      - path: neurophase/validation/surrogates.py
+        symbol: phase_shuffle
+    tests:
+      - tests/test_delta_price_xcorr.py::TestDeltaPriceXCorr::test_surrogate_preserves_spectrum
+    docs:
+      - results/ds003458_preregistration.md
+    introduced_in: "PR #delta-power-price"
+
+  - id: DELTA-I3
+    symbol: DELTA-I3
+    statement: "HeldOutSplit enforced — xcorr computed on last 30% of trials only."
+    severity: hard
+    enforced_in:
+      - path: neurophase/experiments/ds003458_delta_analysis.py
+        symbol: run_delta_analysis
+    tests:
+      - tests/test_delta_price_xcorr.py::TestDeltaPriceXCorr::test_null_xcorr_not_significant
+    docs:
+      - results/ds003458_preregistration.md
+    introduced_in: "PR #delta-power-price"
+
   - id: DS-I2
     symbol: DS-I2
     statement: "Per-subject verdict JSON is saved to results/ before any group-level statistical test is computed."
