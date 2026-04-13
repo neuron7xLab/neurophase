@@ -1,0 +1,40 @@
+name: Dependency Review
+
+# PR-delta review. Distinct from ``security.yml`` (which audits the
+# fully-installed environment against the PyPI vulnerability DB):
+# this job inspects only the *new* / *changed* dependencies a PR
+# proposes. Catches a vulnerable pin before it enters the tree.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dep-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Review PR dependency delta
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Fail the PR on any known advisory. We already have pip-audit
+          # enforcing the same posture on main; the PR gate catches it
+          # before merge instead of after.
+          fail-on-severity: low
+          # Summarize findings as a single PR comment on failure only,
+          # so clean PRs stay un-noisy.
+          comment-summary-in-pr: on-failure

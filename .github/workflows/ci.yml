@@ -52,10 +52,43 @@ jobs:
         run: mypy --strict tools
 
       - name: Pytest (default suite — excludes hardware + acceptance)
-        run: pytest -q --cov=neurophase --cov-report=term-missing
+        # Coverage config (source, fail_under, exclude_lines) lives in
+        # [tool.coverage.*] in pyproject.toml. The --cov-fail-under gate
+        # therefore applies here automatically. XML is emitted for the
+        # artifact upload below so reviewers can diff coverage across
+        # runs without re-running the suite.
+        run: |
+          pytest -q \
+            --cov=neurophase \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            --junit-xml=pytest-default-junit.xml
 
-      - name: Pytest (acceptance suite — fresh-clone chain)
-        run: pytest -q -m acceptance --no-cov
+      - name: Pytest (acceptance suite — synthetic fresh-clone chain)
+        # The acceptance marker covers the non-hardware slice of the
+        # Layer-D chain (LSL loopback + replay parity). The hardware
+        # slice (real Polar H10 + BT adapter) is operator-gated via
+        # ``scripts/run_layer_d_acceptance.sh`` and is intentionally
+        # NOT automated in CI.
+        run: |
+          pytest -q -m acceptance --no-cov \
+            --junit-xml=pytest-acceptance-junit.xml
 
       - name: Doctor (axis 7 + 8 + 9 composition-level gate)
         run: python -m neurophase doctor
+
+      - name: Upload CI artifacts
+        # ``if: always()`` so a failed pytest still uploads the junit
+        # (lets reviewers inspect which tests failed without re-running
+        # locally). ``if-no-files-found: warn`` because not every
+        # matrix job necessarily produces every file.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts-py${{ matrix.python-version }}
+          path: |
+            coverage.xml
+            pytest-default-junit.xml
+            pytest-acceptance-junit.xml
+          if-no-files-found: warn
+          retention-days: 30

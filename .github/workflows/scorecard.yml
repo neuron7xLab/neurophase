@@ -1,0 +1,62 @@
+name: OSSF Scorecard
+
+# Supply-chain + repo-posture telemetry from the OpenSSF Scorecard
+# checks. This is *not* a security guarantee — it is a public, audited
+# score across ~20 checks (branch protection presence, token perms,
+# pinned actions, etc.). Results are uploaded as SARIF so they land in
+# the GitHub code-scanning tab alongside CodeQL findings.
+#
+# Triggers are deliberately lean: weekly schedule + manual dispatch +
+# branch-protection-rule changes. Running on every push would be pure
+# noise since most commits do not change the score.
+
+on:
+  branch_protection_rule:
+  schedule:
+    - cron: "37 5 * * 1"
+  workflow_dispatch:
+
+permissions: read-all
+
+concurrency:
+  group: scorecard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      # Upload SARIF into code-scanning.
+      security-events: write
+      # Publish cryptographically signed results to the OpenSSF site.
+      id-token: write
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Persisted credentials are not needed past checkout and would
+          # broaden the token-leak blast radius of later steps.
+          persist-credentials: false
+
+      - name: Run Scorecard analysis
+        uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46 # v2.4.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload SARIF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scorecard-sarif
+          path: results.sarif
+          retention-days: 90
+
+      - name: Upload to GitHub code-scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif

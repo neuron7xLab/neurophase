@@ -128,3 +128,31 @@ markers = [
     "hardware: requires real hardware (Polar H10, BT adapter, etc.). Excluded from default run.",
     "acceptance: full fresh-clone chain acceptance tests. Slow. Excluded from default run.",
 ]
+
+[tool.coverage.run]
+# Coverage is measured against the kernel package only. ``tools/`` is a
+# thin operator-CLI surface exercised by hardware-marked tests that do
+# not run in default CI; including it would drag ``fail_under`` below
+# what the default suite can truthfully defend.
+source = ["neurophase"]
+branch = false
+parallel = false
+
+[tool.coverage.report]
+# Truthful, non-regressive floor. Locally measured baseline on
+# 2026-04-13 against the default suite (-m 'not hardware and not
+# acceptance'): 78.75%. floor = 78. We pin ``fail_under`` to that
+# floor so CI catches major test-surface erosion (>1pp drop) without
+# failing on numerical jitter between Python 3.11 / 3.12 runners or
+# from trivial refactors that mechanically shift a few lines. Raise
+# only when a new green baseline has held across ≥3 consecutive runs.
+fail_under = 78
+show_missing = true
+skip_covered = false
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
