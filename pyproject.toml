@@ -119,4 +119,12 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --strict-markers"
+# Exclude hardware + acceptance suites from the default run. They are
+# opt-in via explicit ``-m hardware`` / ``-m acceptance`` or, in CI, a
+# dedicated step per marker. This keeps the default gate fast and
+# reproducible on machines without BLE / a fresh-clone setup.
+addopts = "-v --strict-markers -m 'not hardware and not acceptance'"
+markers = [
+    "hardware: requires real hardware (Polar H10, BT adapter, etc.). Excluded from default run.",
+    "acceptance: full fresh-clone chain acceptance tests. Slow. Excluded from default run.",
+]

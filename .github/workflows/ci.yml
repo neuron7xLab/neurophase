@@ -26,17 +26,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev,witness]"
 
-      - name: Ruff check
+      - name: Ruff check (neurophase + tests)
         run: ruff check neurophase tests
 
-      - name: Ruff format check
-        run: ruff format --check neurophase tests
+      - name: Ruff check (tools)
+        run: ruff check tools
 
-      - name: Mypy strict
-        run: mypy neurophase
+      - name: Ruff format check (neurophase + tests + tools)
+        run: ruff format --check neurophase tests tools
 
-      - name: Pytest
+      - name: Mypy strict (neurophase)
+        run: mypy --strict neurophase
+
+      - name: Mypy strict (tools)
+        run: mypy --strict tools
+
+      - name: Pytest (default suite — excludes hardware + acceptance)
         run: pytest -q --cov=neurophase --cov-report=term-missing
+
+      - name: Pytest (acceptance suite — fresh-clone chain)
+        run: pytest -q -m acceptance --no-cov
 
       - name: Doctor (axis 7 + 8 + 9 composition-level gate)
         run: python -m neurophase doctor
