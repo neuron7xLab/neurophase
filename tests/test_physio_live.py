@@ -615,6 +615,49 @@ class TestProcessIndependence:
         finally:
             _sys.modules.pop("polar_producer_probe", None)
 
+    def test_live_session_round_trip_through_ledger(self, tmp_path: Path) -> None:
+        """Keystone: run a live LSL session with --ledger-out, then
+        re-execute the ledger offline through a fresh PhysioSession
+        and verify byte-identical decisions (parity_ok)."""
+        from neurophase.physio.session_replay import replay_ledger
+
+        stream = _unique_stream_name()
+        ledger_path = tmp_path / "live.jsonl"
+        consumer = _spawn(
+            "neurophase.physio.live",
+            [
+                "--stream-name",
+                stream,
+                "--max-frames",
+                "24",
+                "--stall-timeout-s",
+                "4.0",
+                "--ledger-out",
+                str(ledger_path),
+            ],
+        )
+        try:
+            _wait_for_event(consumer, "LISTENING", timeout_s=_READY_TIMEOUT_S)
+            producer = _spawn(
+                "neurophase.physio.live_producer",
+                ["--stream-name", stream, "--inter-sample-s", "0.02"],
+            )
+            producer.wait(timeout=_PROC_JOIN_TIMEOUT_S)
+            _drain_events_until_exit(consumer, timeout_s=_PROC_JOIN_TIMEOUT_S)
+        finally:
+            if consumer.poll() is None:
+                consumer.terminate()
+
+        assert consumer.returncode == 0, (
+            f"consumer exit={consumer.returncode} stderr={consumer.stderr.read()!r}"
+        )
+        assert ledger_path.exists()
+
+        report = replay_ledger(ledger_path)
+        assert report.parity_ok, report.divergences
+        assert report.n_frames_recorded == 24
+        assert report.clean_summary_seen is True
+
     def test_consumer_and_producer_have_different_pids(self) -> None:
         """Trivial but explicit process-independence check."""
         stream = _unique_stream_name()

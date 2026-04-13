@@ -53,8 +53,10 @@ from typing import TYPE_CHECKING
 
 from neurophase.physio.features import HRVFeatures, HRVWindow
 from neurophase.physio.gate import PhysioDecision, PhysioGate, PhysioGateState
+from neurophase.physio.ledger import LedgerConfig, PhysioLedger
 from neurophase.physio.pipeline import PhysioFrame, PhysioReplayPipeline, PhysioSession
 from neurophase.physio.replay import ReplayIngestError, RRReplayReader, RRSample
+from neurophase.physio.session_replay import LedgerReplayError, ReplayReport, replay_ledger
 
 # Reachability declaration for ``governance.completeness``. The CLI
 # entry points (demo, live, live_producer) are not re-exported at
@@ -65,17 +67,23 @@ if TYPE_CHECKING:
     from neurophase.physio.demo import main as _demo_main  # noqa: F401
     from neurophase.physio.live import LiveConfig as _LiveConfig  # noqa: F401
     from neurophase.physio.live_producer import ProducerConfig as _ProducerConfig  # noqa: F401
+    from neurophase.physio.session_replay import main as _session_replay_main  # noqa: F401
 
 __all__ = [
     "HRVFeatures",
     "HRVWindow",
+    "LedgerConfig",
+    "LedgerReplayError",
     "PhysioDecision",
     "PhysioFrame",
     "PhysioGate",
     "PhysioGateState",
+    "PhysioLedger",
     "PhysioReplayPipeline",
     "PhysioSession",
     "RRReplayReader",
     "RRSample",
     "ReplayIngestError",
+    "ReplayReport",
+    "replay_ledger",
 ]

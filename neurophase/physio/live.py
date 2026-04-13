@@ -61,6 +61,7 @@ from neurophase.physio.gate import (
     DEFAULT_THRESHOLD_ALLOW,
     PhysioGateState,
 )
+from neurophase.physio.ledger import LedgerConfig, PhysioLedger
 from neurophase.physio.pipeline import CANONICAL_FRAME_SCHEMA_VERSION, PhysioSession
 from neurophase.physio.replay import ReplayIngestError, RRSample
 
@@ -126,17 +127,35 @@ class LiveConfig:
 # --- Event emission (JSON-lines) -----------------------------------------
 
 
-def _emit(event: dict[str, Any], out: TextIO) -> None:
-    """Write one JSON-lines event to *out* and flush immediately."""
+def _emit(
+    event: dict[str, Any],
+    out: TextIO,
+    *,
+    ledger: PhysioLedger | None = None,
+) -> None:
+    """Write one JSON-lines event to *out* and (if set) tee to *ledger*.
+
+    The ledger receives the raw event dict unchanged, so that the
+    persisted trace is byte-identical with the stdout trace modulo
+    ordering (ledger prepends SESSION_HEADER + appends SESSION_SUMMARY
+    on context-manager entry/exit).
+    """
     out.write(json.dumps(event, default=str))
     out.write("\n")
     out.flush()
+    if ledger is not None:
+        ledger.write_event(event)
 
 
 # --- Stream resolution ---------------------------------------------------
 
 
-def _resolve_inlet(config: LiveConfig, *, out: TextIO) -> StreamInlet | None:
+def _resolve_inlet(
+    config: LiveConfig,
+    *,
+    out: TextIO,
+    ledger: PhysioLedger | None = None,
+) -> StreamInlet | None:
     """Poll-based LSL stream resolution with a bounded total timeout.
 
     Returns ``None`` if the stream never appears inside
@@ -160,6 +179,7 @@ def _resolve_inlet(config: LiveConfig, *, out: TextIO) -> StreamInlet | None:
                         ),
                     },
                     out,
+                    ledger=ledger,
                 )
                 return None
             return StreamInlet(info)
@@ -169,7 +189,13 @@ def _resolve_inlet(config: LiveConfig, *, out: TextIO) -> StreamInlet | None:
 # --- Consumer loop -------------------------------------------------------
 
 
-def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | None = None) -> int:
+def _run_consumer(
+    config: LiveConfig,
+    *,
+    out: TextIO,
+    readiness_out: TextIO | None = None,
+    ledger: PhysioLedger | None = None,
+) -> int:
     """Core consumer loop. Returns the process exit code."""
     _emit(
         {
@@ -180,9 +206,10 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
             "schema_version": CANONICAL_FRAME_SCHEMA_VERSION,
         },
         readiness_out or out,
+        ledger=ledger,
     )
 
-    inlet = _resolve_inlet(config, out=out)
+    inlet = _resolve_inlet(config, out=out, ledger=ledger)
     if inlet is None:
         _emit(
             {
@@ -191,12 +218,14 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
                 f"{config.resolve_timeout_s}s",
             },
             out,
+            ledger=ledger,
         )
         return 2
 
     _emit(
         {"event": "READY", "stream_name": config.stream_name},
         readiness_out or out,
+        ledger=ledger,
     )
 
     session = PhysioSession(
@@ -234,6 +263,7 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
                             "reason": "stall timeout exceeded",
                         },
                         out,
+                        ledger=ledger,
                     )
                     n_stalls_emitted += 1
                     # Reset the clock so we don't flood STALL events.
@@ -258,6 +288,7 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
                         "execution_allowed": False,
                     },
                     out,
+                    ledger=ledger,
                 )
                 continue
 
@@ -274,6 +305,7 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
                         "execution_allowed": False,
                     },
                     out,
+                    ledger=ledger,
                 )
                 continue
 
@@ -294,8 +326,10 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
                     "consumer_rx_mono_s": consumer_rx_mono,
                     "latency_s": round(consumer_rx_mono - ts_s, 6),
                     "lsl_ts": lsl_ts,
+                    "source_mode": "live-lsl",
                 },
                 out,
+                ledger=ledger,
             )
             state_counts[frame.decision.state.name] += 1
             tick_index += 1
@@ -310,6 +344,7 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
                 "reason": f"{type(exc).__name__}: {exc}",
             },
             out,
+            ledger=ledger,
         )
         return 3
 
@@ -323,6 +358,7 @@ def _run_consumer(config: LiveConfig, *, out: TextIO, readiness_out: TextIO | No
             "clean_exit": clean_exit,
         },
         out,
+        ledger=ledger,
     )
     return 0
 
@@ -371,6 +407,17 @@ def _build_argparser() -> argparse.ArgumentParser:
         default=0,
         help="0 = unbounded; otherwise cap frames for deterministic tests.",
     )
+    parser.add_argument(
+        "--ledger-out",
+        type=str,
+        default=None,
+        help=(
+            "Optional path for an append-only JSONL session ledger. "
+            "Every stdout event is tee'd to this file with a "
+            "SESSION_HEADER prepended and a SESSION_SUMMARY appended. "
+            "Replayable offline via neurophase.physio.session_replay."
+        ),
+    )
     return parser
 
 
@@ -394,6 +441,17 @@ def main(argv: list[str] | None = None) -> int:
 
     signal.signal(signal.SIGTERM, _sig_handler)
 
+    if args.ledger_out:
+        ledger_config = LedgerConfig(
+            source_mode="live-lsl",
+            stream_name=config.stream_name,
+            window_size=config.window_size,
+            threshold_allow=config.threshold_allow,
+            threshold_abstain=config.threshold_abstain,
+            stall_timeout_s=config.stall_timeout_s,
+        )
+        with PhysioLedger(args.ledger_out, config=ledger_config) as ledger:
+            return _run_consumer(config, out=sys.stdout, ledger=ledger)
     return _run_consumer(config, out=sys.stdout)
 
 
