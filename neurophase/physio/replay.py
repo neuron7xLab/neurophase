@@ -108,19 +108,45 @@ class RRReplayReader:
     __slots__ = ("path",)
 
     _EXPECTED_HEADER: tuple[str, ...] = ("timestamp_s", "rr_ms")
+    _COMMENT_PREFIX: str = "#"
 
     def __init__(self, path: str | Path) -> None:
         self.path: Path = Path(path)
         if not self.path.exists():
             raise ReplayIngestError(f"replay file not found: {self.path}")
 
+    @classmethod
+    def _is_comment_row(cls, row: list[str]) -> bool:
+        """Comment detection: row starts with a ``#`` in its first cell.
+
+        Intentionally permissive on the comment BODY (so users can write
+        ``# SYNTHETIC REPLAY DATA, no commas``), strict on the POSITION
+        (``#`` must begin the first cell, and this is only honoured
+        BEFORE the header row — once the header has been read, a ``#``
+        row is parsed as data and will fail numeric conversion).
+        """
+        if not row:
+            return False
+        first = row[0].lstrip()
+        return first.startswith(cls._COMMENT_PREFIX)
+
     def __iter__(self) -> Iterator[RRSample]:
         with self.path.open("r", encoding="utf-8", newline="") as f:
             reader = csv.reader(f)
-            try:
-                header = next(reader)
-            except StopIteration as exc:
-                raise ReplayIngestError(f"{self.path}: file is empty") from exc
+            # Skip leading blank / comment lines BEFORE the header. This
+            # lets the sample file carry a one-line provenance marker
+            # (e.g. "# SYNTHETIC REPLAY DATA") without forcing callers
+            # to strip it. Comments AFTER the header are intentionally
+            # NOT honoured: the data body must be a strict 2-column CSV
+            # so artefacts can never hide as comments mid-stream.
+            header: list[str] | None = None
+            for row in reader:
+                if not row or self._is_comment_row(row):
+                    continue
+                header = row
+                break
+            if header is None:
+                raise ReplayIngestError(f"{self.path}: file is empty")
             normalised = tuple(col.strip() for col in header)
             if normalised != self._EXPECTED_HEADER:
                 raise ReplayIngestError(

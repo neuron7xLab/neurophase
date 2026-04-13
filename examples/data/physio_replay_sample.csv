@@ -1,3 +1,6 @@
+# SYNTHETIC REPLAY DATA - NOT REAL PHYSIOLOGICAL MEASUREMENTS
+# Generated deterministically by neurophase/physio/demo-gen script (seed=42).
+# Four regimes: warm-up, clean, artifact burst, recovery. See README demo section.
 timestamp_s,rr_ms
 0.824,823.66
 1.631,807.52

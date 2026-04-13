@@ -656,7 +656,10 @@ in this repository.
 python -m neurophase.physio.demo
 ```
 
-Input: `examples/data/physio_replay_sample.csv` (142 samples, four regimes).
+Input: `examples/data/physio_replay_sample.csv` — **synthetic replay data, not
+real physiological measurements** (142 samples, four regimes; a provenance
+marker is carried in the first CSV line and the loader honours leading
+``#``-comments before the header).
 Pipeline: CSV ingest + validation → rolling HRV-style features (RMSSD,
 stability, continuity, confidence) → `PhysioGate` → four-state physio
 decision (EXECUTE_ALLOWED / EXECUTE_REDUCED / ABSTAIN / SENSOR_DEGRADED).

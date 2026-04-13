@@ -101,3 +101,82 @@ class TestRRReplayReader:
         path = _write_csv(tmp_path, ["timestamp_s,rr_ms", "1.0,820.0", "1.0,815.0"])
         with pytest.raises(ReplayIngestError, match="not strictly greater"):
             list(RRReplayReader(path))
+
+
+class TestLeadingProvenanceComments:
+    """# ... lines BEFORE the header are skipped; AFTER the header are data."""
+
+    def test_single_leading_comment_skipped(self, tmp_path: Path) -> None:
+        path = _write_csv(
+            tmp_path,
+            [
+                "# SYNTHETIC REPLAY DATA - NOT REAL PHYSIOLOGICAL MEASUREMENTS",
+                "timestamp_s,rr_ms",
+                "0.0,820.0",
+                "0.8,815.0",
+            ],
+        )
+        samples = list(RRReplayReader(path))
+        assert len(samples) == 2
+        assert samples[0].rr_ms == 820.0
+
+    def test_multiple_leading_comments_skipped(self, tmp_path: Path) -> None:
+        path = _write_csv(
+            tmp_path,
+            [
+                "# line 1",
+                "# line 2: seed=42",
+                "",  # blank line also skipped before header
+                "timestamp_s,rr_ms",
+                "0.0,820.0",
+            ],
+        )
+        samples = list(RRReplayReader(path))
+        assert len(samples) == 1
+
+    def test_comment_after_header_rejected(self, tmp_path: Path) -> None:
+        """Comments mid-stream must fail cleanly (fail-closed). An artefact
+        must never be able to hide as a comment inside the data body."""
+        path = _write_csv(
+            tmp_path,
+            [
+                "timestamp_s,rr_ms",
+                "0.0,820.0",
+                "# sneaky mid-file comment",
+                "1.0,815.0",
+            ],
+        )
+        with pytest.raises(ReplayIngestError, match=r"expected 2 columns|non-numeric"):
+            list(RRReplayReader(path))
+
+    def test_comment_with_trailing_comma_after_header_still_rejected(self, tmp_path: Path) -> None:
+        """A mid-file '#' row that happens to have two columns still fails:
+        the first column is non-numeric, so the numeric parser rejects it."""
+        path = _write_csv(
+            tmp_path,
+            [
+                "timestamp_s,rr_ms",
+                "0.0,820.0",
+                "# sneaky,comment",
+                "1.0,815.0",
+            ],
+        )
+        with pytest.raises(ReplayIngestError, match="non-numeric"):
+            list(RRReplayReader(path))
+
+    def test_only_comments_file_fails_cleanly(self, tmp_path: Path) -> None:
+        path = _write_csv(tmp_path, ["# comment 1", "# comment 2"])
+        with pytest.raises(ReplayIngestError, match="empty"):
+            list(RRReplayReader(path))
+
+    def test_bundled_sample_csv_starts_with_provenance_marker(self) -> None:
+        """The shipped replay sample must carry an explicit provenance note
+        on its first line so a reviewer cannot mistake it for real data."""
+        sample_path = (
+            Path(__file__).resolve().parents[1] / "examples" / "data" / "physio_replay_sample.csv"
+        )
+        first_line = sample_path.read_text(encoding="utf-8").splitlines()[0]
+        assert first_line.startswith("#")
+        upper = first_line.upper()
+        assert "SYNTHETIC" in upper
+        assert "NOT REAL" in upper
