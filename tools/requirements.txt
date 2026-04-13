@@ -1,0 +1,13 @@
+# Out-of-repo tooling dependencies for tools/polar_producer.py.
+#
+# These are NOT kernel dependencies. They are only required by the
+# Polar H10 BLE producer process, which runs as a separate program and
+# feeds NeuroPhase over LSL.
+#
+# Install with:
+#     pip install -r tools/requirements.txt
+#
+# The kernel itself (neurophase/) does not depend on bleak.
+
+bleak>=0.22,<4
+pylsl>=1.16,<2

@@ -561,6 +561,60 @@ class TestProcessIndependence:
         assert any(e.get("event") == "READY" for e in events)
         assert any(e.get("event") == "FRAME" for e in events)
 
+    def test_polar_producer_constants_match_kernel_contract(self) -> None:
+        """Kernel-side guarantee that ``tools/polar_producer.py`` (an
+        out-of-repo tool) still matches the live-consumer LSL contract.
+
+        If anybody ever changes ``LSL_CHANNEL_COUNT`` / ``LSL_STREAM_TYPE``
+        on the kernel side, this test fails and flags the contract
+        drift before the tool is shipped with mismatched constants."""
+        import importlib.util
+        import sys as _sys
+
+        polar_path = _REPO_ROOT / "tools" / "polar_producer.py"
+        if not polar_path.exists():
+            pytest.skip("tools/polar_producer.py not present")
+
+        spec = importlib.util.spec_from_file_location("polar_producer_probe", polar_path)
+        assert spec is not None and spec.loader is not None
+        mod = importlib.util.module_from_spec(spec)
+        _sys.modules["polar_producer_probe"] = mod
+        try:
+            spec.loader.exec_module(mod)
+
+            from neurophase.physio.live import (
+                LSL_CHANNEL_COUNT,
+                LSL_CHANNEL_FORMAT,
+                LSL_STREAM_TYPE,
+            )
+
+            assert mod.LSL_CHANNEL_COUNT == LSL_CHANNEL_COUNT
+            assert mod.LSL_CHANNEL_FORMAT == LSL_CHANNEL_FORMAT
+            assert mod.LSL_STREAM_TYPE == LSL_STREAM_TYPE
+
+            # RR conversion invariants, inline (do not trust the tool's
+            # own self-test to gate this test).
+            r_512 = mod.parse_hrs_payload(bytes([0x10, 75, 0x00, 0x02]))
+            assert r_512.rr_values_ms == (500.0,), r_512.rr_values_ms
+            r_1024 = mod.parse_hrs_payload(bytes([0x10, 75, 0x00, 0x04]))
+            assert r_1024.rr_values_ms == (1000.0,), r_1024.rr_values_ms
+
+            # Sentinel must be single-shot.
+            class _StubOutlet:
+                def __init__(self) -> None:
+                    self.pushes: list[list[float]] = []
+
+                def push_sample(self, x: list[float]) -> None:
+                    self.pushes.append(list(x))
+
+            stub = _StubOutlet()
+            guard = mod.SentinelGuard(stub)
+            assert guard.emit_once() is True
+            assert guard.emit_once() is False
+            assert len(stub.pushes) == 1
+        finally:
+            _sys.modules.pop("polar_producer_probe", None)
+
     def test_consumer_and_producer_have_different_pids(self) -> None:
         """Trivial but explicit process-independence check."""
         stream = _unique_stream_name()
