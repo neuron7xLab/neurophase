@@ -40,6 +40,9 @@ if TYPE_CHECKING:
     from neurophase.experiments.ds003458_rpe_analysis import run_rpe_analysis  # noqa: F401
     from neurophase.experiments.ds003458_scp_analysis import run_scp_analysis  # noqa: F401
     from neurophase.experiments.ds003458_trial_lme import run_trial_lme_analysis  # noqa: F401
+    from neurophase.experiments.plv_market_methodology import (  # noqa: F401
+        run_methodology_sweep,
+    )
     from neurophase.experiments.synthetic_plv_validation import run_sweep  # noqa: F401
 
 __all__: list[str] = []

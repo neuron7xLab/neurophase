@@ -29,4 +29,13 @@ htmlcov/
 .idea/
 *.swp
 .DS_Store
-/data/
+
+# Datasets: ignore everything under data/ EXCEPT the small bundled
+# fixtures we want tracked in-repo for reproducibility. git requires
+# the parent directory to be re-included before files inside it can be,
+# so the order below matters.
+/data/*
+!/data/market/
+/data/market/*
+!/data/market/README.md
+!/data/market/btc_1m_sample.csv

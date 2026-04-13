@@ -1,0 +1,46 @@
+{
+  "experiment": "plv_market_methodology",
+  "timestamp_utc": "2026-04-13T14:15:18.904715+00:00",
+  "dataset": "Binance public BTC/USDT 1m, 2024-06-01 UTC",
+  "dataset_path": "data/market/btc_1m_sample.csv",
+  "n_samples": 1440,
+  "held_out_train_size": 720,
+  "held_out_test_size": 720,
+  "n_surrogates": 1000,
+  "alpha": 0.05,
+  "seed": 42,
+  "noise_sigma": 1.0,
+  "rows": [
+    {
+      "coupling": 0.0,
+      "plv": 0.04572554865270705,
+      "p_value": 0.8001998001998002,
+      "significant": false
+    },
+    {
+      "coupling": 0.25,
+      "plv": 0.03724159404572176,
+      "p_value": 0.8051948051948052,
+      "significant": false
+    },
+    {
+      "coupling": 0.5,
+      "plv": 0.115238224641784,
+      "p_value": 0.4325674325674326,
+      "significant": false
+    },
+    {
+      "coupling": 0.75,
+      "plv": 0.15978900738248225,
+      "p_value": 0.45554445554445555,
+      "significant": false
+    },
+    {
+      "coupling": 1.0,
+      "plv": 1.0,
+      "p_value": 0.000999000999000999,
+      "significant": true
+    }
+  ],
+  "scope": "METHODOLOGY VALIDATION ONLY. Market-side phase is real historical BTC price; neural-side phase is synthetic with known coupling c in [0, 1]. A pass here proves the PLV + surrogate pipeline detects coupling where it exists and rejects where it does not. It proves NOTHING about whether any biological signal couples to any market."
+}
