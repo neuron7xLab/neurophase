@@ -53,14 +53,18 @@ from typing import TYPE_CHECKING
 
 from neurophase.physio.features import HRVFeatures, HRVWindow
 from neurophase.physio.gate import PhysioDecision, PhysioGate, PhysioGateState
-from neurophase.physio.pipeline import PhysioFrame, PhysioReplayPipeline
+from neurophase.physio.pipeline import PhysioFrame, PhysioReplayPipeline, PhysioSession
 from neurophase.physio.replay import ReplayIngestError, RRReplayReader, RRSample
 
-# Reachability declaration for ``governance.completeness`` — the demo
-# module is a CLI entry point, intentionally not re-exported at import
-# time (to avoid pulling argparse into ``from neurophase.physio import *``).
+# Reachability declaration for ``governance.completeness``. The CLI
+# entry points (demo, live, live_producer) are not re-exported at
+# import time to avoid pulling argparse + pylsl into
+# ``from neurophase.physio import *``, but the completeness auditor
+# walks the TYPE_CHECKING block and so they count as reached.
 if TYPE_CHECKING:
     from neurophase.physio.demo import main as _demo_main  # noqa: F401
+    from neurophase.physio.live import LiveConfig as _LiveConfig  # noqa: F401
+    from neurophase.physio.live_producer import ProducerConfig as _ProducerConfig  # noqa: F401
 
 __all__ = [
     "HRVFeatures",
@@ -70,6 +74,7 @@ __all__ = [
     "PhysioGate",
     "PhysioGateState",
     "PhysioReplayPipeline",
+    "PhysioSession",
     "RRReplayReader",
     "RRSample",
     "ReplayIngestError",

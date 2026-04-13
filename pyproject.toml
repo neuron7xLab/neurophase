@@ -51,6 +51,13 @@ dev = [
     "PyWavelets>=1.4",
     "scikit-learn>=1.3",
     "networkx>=3.2",
+    # Live physio ingress (LSL). See neurophase.physio.live.
+    "pylsl>=1.16",
+]
+# Minimal subset for users who only want the live physio slice without
+# the full research stack.
+live = [
+    "pylsl>=1.16",
 ]
 # Optional external γ-verification witness.
 # Pulls the single-file ``neosynaptex`` integrating mirror directly from
@@ -99,7 +106,7 @@ no_implicit_reexport = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "pywt.*", "networkx.*", "sklearn.*", "pandas.*", "yaml.*", "neurodsp.*", "tensorpac.*", "mne.*"]
+module = ["scipy.*", "pywt.*", "networkx.*", "sklearn.*", "pandas.*", "yaml.*", "neurodsp.*", "tensorpac.*", "mne.*", "pylsl.*"]
 ignore_missing_imports = true
 
 # The external ``neosynaptex`` witness is an optional dependency — the

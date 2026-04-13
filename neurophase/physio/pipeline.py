@@ -94,16 +94,21 @@ class PhysioRunSummary:
         }
 
 
-class PhysioReplayPipeline:
-    """Thin composition: replay -> rolling window -> physio gate -> frames.
+class PhysioSession:
+    """Shared incremental physio core used by BOTH replay and live paths.
 
-    Parameters
-    ----------
-    window_size
-        Rolling buffer depth for :class:`HRVWindow`. Default is
-        :data:`DEFAULT_WINDOW_SIZE` (32).
-    threshold_allow, threshold_abstain
-        Physio gate confidence thresholds; see :class:`PhysioGate`.
+    This class owns the single source of truth for:
+
+    * rolling HRV window (:class:`HRVWindow`)
+    * admission gate (:class:`PhysioGate`)
+    * canonical frame emission (:class:`PhysioFrame`)
+
+    Both :class:`PhysioReplayPipeline` (file-driven) and the live
+    session runner in :mod:`neurophase.physio.live` (LSL-driven)
+    consume this class via :meth:`step`. There is intentionally only
+    one state vocabulary, one feature computation, and one gate
+    policy; there is no "live-specific scoring". Refactoring anything
+    that diverges replay vs live from this core is forbidden.
     """
 
     __slots__ = ("_gate", "_window")
@@ -122,7 +127,13 @@ class PhysioReplayPipeline:
         )
 
     def step(self, sample: RRSample, *, tick_index: int) -> PhysioFrame:
-        """Advance by one sample; return the emitted :class:`PhysioFrame`."""
+        """Advance by one sample; return the emitted :class:`PhysioFrame`.
+
+        Pure incremental semantics: given the same ``(sample, tick_index)``
+        history, two :class:`PhysioSession` instances produce byte-identical
+        :class:`PhysioFrame` sequences, regardless of whether they were
+        fed from a replay CSV or from a live LSL stream.
+        """
         self._window.push(sample)
         features: HRVFeatures = self._window.features()
         decision: PhysioDecision = self._gate.evaluate(features)
@@ -134,6 +145,10 @@ class PhysioReplayPipeline:
             features=features,
             decision=decision,
         )
+
+
+class PhysioReplayPipeline(PhysioSession):
+    """Replay-only driver: reads a CSV into the shared :class:`PhysioSession`."""
 
     def run_iterable(
         self, samples: Iterable[RRSample]
@@ -179,5 +194,6 @@ __all__ = [
     "PhysioFrame",
     "PhysioReplayPipeline",
     "PhysioRunSummary",
+    "PhysioSession",
     "ReplayIngestError",
 ]

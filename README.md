@@ -679,6 +679,69 @@ clinical readiness estimator or a trading-alpha signal. The thresholds
 (`threshold_allow=0.80`, `threshold_abstain=0.50`) are illustrative defaults;
 any real deployment needs its own calibration.
 
+### True asynchronous live physiological path (v1.1 — LSL)
+
+A **true live** ingress path (not replay in disguise): one LSL stream, an
+independent producer process and an independent consumer process, waiting
+for future samples, detecting stalls, fail-closed on malformed or impossible
+input, exiting cleanly on EOF.
+
+Transport chosen: **LSL** (`pylsl`), after the objective viability probe
+defined in the v1.1 brief. `pip install pylsl`, `import pylsl`, and a
+loopback producer / consumer smoke test all exited 0 (see the commit
+message for reproducible commands).
+
+Sample schema (LSL stream, `channel_count=2`, `float32`, irregular rate):
+
+```
+channel 0 : timestamp_s   # seconds from time.monotonic() on the producer
+channel 1 : rr_ms         # R-R interval in ms, 300 .. 2000 envelope
+(NaN, NaN) : EOF sentinel  # consumer emits summary and exits 0
+```
+
+Consumer:
+
+```bash
+python -m neurophase.physio.live --stream-name neurophase-rr
+```
+
+Deterministic validation producer (for local integration tests; ships
+24 **synthetic** samples + EOF sentinel, not a device driver, not real
+data):
+
+```bash
+python -m neurophase.physio.live_producer --stream-name neurophase-rr
+```
+
+Timing semantics live in one place (`neurophase.physio.live.LiveConfig`):
+
+* `stall_timeout_s` — default `5.0`, overridable within the safe range
+  `[2.0, 30.0]`. No magic numbers elsewhere.
+* `read_timeout_s` — per-LSL-pull timeout, must be `> 0` and `< stall_timeout_s`.
+* `resolve_timeout_s` — how long the consumer waits for the LSL stream to
+  appear on start-up.
+
+Fail-closed behaviour (proven by `tests/test_physio_live.py`):
+
+* impossible RR (below envelope) → `INGEST_REJECTED`, stream continues.
+* non-monotonic timestamp → `INGEST_REJECTED`, stream continues.
+* insufficient buffer → `SENSOR_DEGRADED`, `execution_allowed=False`.
+* no sample for `stall_timeout_s` → `STALL` event with
+  `gate_state=SENSOR_DEGRADED`.
+* stream never appears within `resolve_timeout_s` → consumer exits non-zero.
+* `(NaN, NaN)` sentinel → consumer emits final summary and exits 0.
+
+Shared core: both replay and live feed the **same** `PhysioSession` class
+(see `neurophase/physio/pipeline.py`). The replay/live semantic-parity
+test asserts byte-for-byte identical gate-state sequences for the same
+24 input samples whether driven from a CSV or from an LSL stream.
+
+**Not claimed.** Not a neural gate. Not a medical device. No hardware
+adapters ship with this repository. The LSL transport is the seam; the
+open-source LSL ecosystem (Polar H10 streamers, OpenBCI GUI, etc.)
+can plug in as independent producer processes without changes to this
+repository.
+
 ---
 
 ## KLR — Ketamine-Like Reset
