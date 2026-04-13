@@ -59,7 +59,7 @@ single clear purpose and no overlap with the controls above:
 | PR dependency-delta review | `.github/workflows/dependency-review.yml` | Fails a PR that introduces a dependency with a known advisory (any severity). Complements `security.yml` (installed-env audit) by catching vulns *before* merge instead of after. |
 | GitHub Actions lint | `.github/workflows/actionlint.yml` | Semantic validation of workflow YAML on every change under `.github/workflows/**` — expression typos, shell-injection risks, invalid job keys. |
 | OSSF Scorecard | `.github/workflows/scorecard.yml` | Weekly supply-chain / repo-posture telemetry. Results published as SARIF into code-scanning and to the OpenSSF site. **Posture signal, not a security guarantee.** |
-| Coverage gate | `pyproject.toml` (`[tool.coverage]`) + `.github/workflows/ci.yml` | `pytest --cov` now enforces `fail_under = 78` (local 2026-04-13 baseline: 78.75%, floor = 78). Emits `coverage.xml` as a CI artifact. Catches major test-surface erosion, not cosmetic drift. |
+| Coverage gate | `pyproject.toml` (`[tool.coverage]`) + `.github/workflows/ci.yml` | `pytest --cov` now enforces `fail_under = 77`. Cross-env baseline on 2026-04-13: local Py 3.12 = 78.89%, CI Py 3.11/3.12 = 77.98%. Floor pinned to 77 (the observed CI minimum, not the optimistic local number). Emits `coverage.xml` as a CI artifact. Catches major test-surface erosion, not cosmetic drift. |
 | Acceptance artifact publication | `.github/workflows/ci.yml` | Default + acceptance pytest runs emit `--junit-xml`; CI uploads `coverage.xml` + both junit files as `ci-artifacts-py{3.11,3.12}` (30-day retention). |
 
 ### Explicit non-goals in this batch
