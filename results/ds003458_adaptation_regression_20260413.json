@@ -1,0 +1,314 @@
+{
+  "metadata": {
+    "repo_task": "ds003458 adaptation continuous regression (follow-up to delta_q)",
+    "dataset": "OpenNeuro ds003458 v1.1.0",
+    "date": "2026-04-13T07:43:44.114890+00:00",
+    "random_seed": 42,
+    "skipped_subjects": [
+      "sub-006",
+      "sub-017",
+      "sub-020",
+      "sub-021",
+      "sub-022",
+      "sub-023"
+    ],
+    "subjects_run": [
+      "sub-001",
+      "sub-002",
+      "sub-003",
+      "sub-004",
+      "sub-005",
+      "sub-007",
+      "sub-008",
+      "sub-009",
+      "sub-010",
+      "sub-011",
+      "sub-012",
+      "sub-013",
+      "sub-014",
+      "sub-015",
+      "sub-016",
+      "sub-018",
+      "sub-019"
+    ]
+  },
+  "experiment_spec": {
+    "neural_feature": {
+      "channel": "FCz",
+      "preprocessing": "CSD (standard_1005)",
+      "time_frequency": "Morlet, freqs=arange(4,9), n_cycles=3",
+      "band_hz": [
+        4.0,
+        8.0
+      ],
+      "window_ms": [
+        200.0,
+        500.0
+      ],
+      "source": "imported verbatim from ds003458_csd_analysis"
+    },
+    "predictive_alignment": "theta_power(t) predicts adaptation_speed(t+1) on trials where RPE(t) < 0; last trial dropped",
+    "adaptation_metric": "adaptation_speed(t+1) = -(zRT(t+1) - zRT(t)); z-score computed within subject over all valid RTs; higher = faster recovery after a loss surprise",
+    "statistic": "Spearman rho per subject",
+    "null": "1000x within-subject theta permutation, two-sided empirical p",
+    "group_tests": [
+      "Wilcoxon signed-rank on Fisher-z(rho) vs 0",
+      "BH-FDR on subject empirical p-values",
+      "Two-sided binomial on sign of rho"
+    ],
+    "alpha": 0.05,
+    "min_trials_required": 20,
+    "scope": "Exploratory follow-up motivated by a subthreshold positive trend in ds003458_delta_q_20260413.json; not an independent replication. Any positive result requires validation on a separate dataset."
+  },
+  "subject_results": [
+    {
+      "subject": "sub-001",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 119,
+      "rho": 0.13945712668200747,
+      "fisher_z": 0.14037189258184743,
+      "p_parametric": 0.1303706810884908,
+      "p_empirical_shuffled": 0.13886113886113885,
+      "null_mean": 0.0028843643511233673,
+      "null_std": 0.09139402270297813
+    },
+    {
+      "subject": "sub-002",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 90,
+      "rho": 0.15602054592079737,
+      "fisher_z": 0.1573053357853357,
+      "p_parametric": 0.14197936896572577,
+      "p_empirical_shuffled": 0.14685314685314685,
+      "null_mean": -0.006369423134126429,
+      "null_std": 0.10768733283398772
+    },
+    {
+      "subject": "sub-003",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 86,
+      "rho": 0.1776129893551973,
+      "fisher_z": 0.17951683907489663,
+      "p_parametric": 0.10182931961900853,
+      "p_empirical_shuffled": 0.1068931068931069,
+      "null_mean": -0.0009776922387591145,
+      "null_std": 0.10813461787643243
+    },
+    {
+      "subject": "sub-004",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 76,
+      "rho": -0.09736158578263841,
+      "fisher_z": -0.0976709866283013,
+      "p_parametric": 0.40276011048059956,
+      "p_empirical_shuffled": 0.4005994005994006,
+      "null_mean": -0.007262857142857142,
+      "null_std": 0.11412083715110395
+    },
+    {
+      "subject": "sub-005",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 100,
+      "rho": 0.07372359353046543,
+      "fisher_z": 0.07385759751462977,
+      "p_parametric": 0.46602620960911234,
+      "p_empirical_shuffled": 0.4825174825174825,
+      "null_mean": 0.003796507040242231,
+      "null_std": 0.10238912248906296
+    },
+    {
+      "subject": "sub-007",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 103,
+      "rho": 0.02272889518603432,
+      "fisher_z": 0.02273281033568013,
+      "p_parametric": 0.8197338279179592,
+      "p_empirical_shuffled": 0.8181818181818182,
+      "null_mean": 0.0019447345733202628,
+      "null_std": 0.09735866475524362
+    },
+    {
+      "subject": "sub-008",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 74,
+      "rho": -0.004857496168190688,
+      "fisher_z": -0.004857534373374524,
+      "p_parametric": 0.9672364223828096,
+      "p_empirical_shuffled": 0.955044955044955,
+      "null_mean": 0.0023336566728271962,
+      "null_std": 0.11820863294514893
+    },
+    {
+      "subject": "sub-009",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 110,
+      "rho": -0.14011288737553013,
+      "fisher_z": -0.14104072212906602,
+      "p_parametric": 0.14430615423655688,
+      "p_empirical_shuffled": 0.13086913086913088,
+      "null_mean": -0.0026621674015436404,
+      "null_std": 0.09386988318104189
+    },
+    {
+      "subject": "sub-010",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 64,
+      "rho": -0.00847069597069597,
+      "fisher_z": -0.008470898577826605,
+      "p_parametric": 0.9470345881258578,
+      "p_empirical_shuffled": 0.951048951048951,
+      "null_mean": 0.0060331959706959705,
+      "null_std": 0.12292677409936141
+    },
+    {
+      "subject": "sub-011",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 72,
+      "rho": 0.05535770272947814,
+      "fisher_z": 0.05541435436720608,
+      "p_parametric": 0.6441822730888621,
+      "p_empirical_shuffled": 0.6243756243756243,
+      "null_mean": 0.00032468586956697145,
+      "null_std": 0.11688063873825745
+    },
+    {
+      "subject": "sub-012",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 90,
+      "rho": 0.19203430920065964,
+      "fisher_z": 0.19444851717998776,
+      "p_parametric": 0.06979365411667103,
+      "p_empirical_shuffled": 0.07292707292707293,
+      "null_mean": 5.725057312746318e-05,
+      "null_std": 0.10597492935294338
+    },
+    {
+      "subject": "sub-013",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 79,
+      "rho": -0.06329152441405188,
+      "fisher_z": -0.06337623954224834,
+      "p_parametric": 0.579485185558767,
+      "p_empirical_shuffled": 0.5924075924075924,
+      "null_mean": 0.0022583267912223903,
+      "null_std": 0.11394999491647134
+    },
+    {
+      "subject": "sub-014",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 79,
+      "rho": -0.16394839337877312,
+      "fisher_z": -0.16544147506783052,
+      "p_parametric": 0.14880432951062098,
+      "p_empirical_shuffled": 0.13686313686313686,
+      "null_mean": 0.006521226874391432,
+      "null_std": 0.1103405664648612
+    },
+    {
+      "subject": "sub-015",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 97,
+      "rho": 0.06419650811531413,
+      "fisher_z": 0.06428491552932297,
+      "p_parametric": 0.5321609273737773,
+      "p_empirical_shuffled": 0.5374625374625375,
+      "null_mean": -0.002876988471074849,
+      "null_std": 0.10312374118582324
+    },
+    {
+      "subject": "sub-016",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 71,
+      "rho": -0.042774023715330706,
+      "fisher_z": -0.042800139085150866,
+      "p_parametric": 0.7232002120141501,
+      "p_empirical_shuffled": 0.7482517482517482,
+      "null_mean": -0.009326397157534338,
+      "null_std": 0.11500496681234967
+    },
+    {
+      "subject": "sub-018",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 88,
+      "rho": -0.16740413953589192,
+      "fisher_z": -0.16899475788895035,
+      "p_parametric": 0.11900600126148432,
+      "p_empirical_shuffled": 0.12187812187812187,
+      "null_mean": 0.002550608250034629,
+      "null_std": 0.10845557641973493
+    },
+    {
+      "subject": "sub-019",
+      "status": "OK",
+      "n_pairs_after_rpe_filter": 90,
+      "rho": -0.061505788804854,
+      "fisher_z": -0.06158352334313709,
+      "p_parametric": 0.5646933021801215,
+      "p_empirical_shuffled": 0.5454545454545454,
+      "null_mean": 0.005817779222913096,
+      "null_std": 0.10527220977437675
+    }
+  ],
+  "group_results": {
+    "n_subjects_total": 17,
+    "n_subjects_valid": 17,
+    "n_subjects_positive_rho": 8,
+    "n_subjects_significant_raw": 0,
+    "n_subjects_significant_fdr": 0,
+    "mean_fisher_z": 0.007864469749001221,
+    "mean_rho_from_z": 0.00786430761416406,
+    "wilcoxon_fisher_z": {
+      "stat": 71.0,
+      "p": 0.8175811767578125,
+      "n": 17
+    },
+    "sign_binomial_p": 1.0,
+    "subject_p_empirical": [
+      0.13886113886113885,
+      0.14685314685314685,
+      0.1068931068931069,
+      0.4005994005994006,
+      0.4825174825174825,
+      0.8181818181818182,
+      0.955044955044955,
+      0.13086913086913088,
+      0.951048951048951,
+      0.6243756243756243,
+      0.07292707292707293,
+      0.5924075924075924,
+      0.13686313686313686,
+      0.5374625374625375,
+      0.7482517482517482,
+      0.12187812187812187,
+      0.5454545454545454
+    ],
+    "subject_q_bh_fdr": [
+      0.3566433566433566,
+      0.3566433566433566,
+      0.3566433566433566,
+      0.8164912011065856,
+      0.8164912011065856,
+      0.9272727272727274,
+      0.9550449550449551,
+      0.3566433566433566,
+      0.9550449550449551,
+      0.8164912011065856,
+      0.3566433566433566,
+      0.8164912011065856,
+      0.3566433566433566,
+      0.8164912011065856,
+      0.9085914085914085,
+      0.3566433566433566,
+      0.8164912011065856
+    ]
+  },
+  "interpretation": {
+    "verdict": "NULL (Case B \u2014 continuous sub-hypothesis not supported)",
+    "caveat": "Exploratory follow-up. A positive outcome here does not promote C5; independent replication on a different dataset is still required before FMtheta becomes a gating primitive."
+  },
+  "limitations": [
+    "Single-dataset follow-up; motivated by a subthreshold trend in the preceding delta_q benchmark, therefore NOT an independent replication.",
+    "RT derived from (Response.onset - Stimulus.onset) because the response_time column in events.tsv is 'n/a'.",
+    "Q-learning RPE with alpha=0.1, V0=0.5 (same parameters as all prior neurophase ds003458 analyses); sensitivity to learning-rate choice not explored here."
+  ]
+}

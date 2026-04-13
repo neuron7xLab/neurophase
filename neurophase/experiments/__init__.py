@@ -9,6 +9,7 @@ fails.
 
 Available entry points::
 
+    from neurophase.experiments.ds003458_adaptation_regression import run_adaptation_regression
     from neurophase.experiments.ds003458_analysis import run_analysis
     from neurophase.experiments.ds003458_csd_analysis import run_csd_analysis
     from neurophase.experiments.ds003458_delta_analysis import run_delta_analysis
@@ -29,6 +30,9 @@ from typing import TYPE_CHECKING
 # contract without forcing the concrete experiment modules to load their
 # heavy scientific dependencies on package import.
 if TYPE_CHECKING:
+    from neurophase.experiments.ds003458_adaptation_regression import (  # noqa: F401
+        run_adaptation_regression,
+    )
     from neurophase.experiments.ds003458_analysis import run_analysis  # noqa: F401
     from neurophase.experiments.ds003458_csd_analysis import run_csd_analysis  # noqa: F401
     from neurophase.experiments.ds003458_delta_analysis import run_delta_analysis  # noqa: F401
