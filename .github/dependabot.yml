@@ -1,0 +1,94 @@
+# Dependabot — weekly automated dependency updates.
+# Covers: Python deps declared in pyproject.toml, GitHub Actions used
+# by workflows, and (if ever added) Docker + git submodules.
+#
+# Open PRs are auto-linked to the security workflow so any PR that
+# bumps a package with a known CVE also exercises pip-audit.
+
+version: 2
+
+updates:
+  # Python dependencies (pyproject.toml + tools/requirements.txt).
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+    reviewers:
+      - "neuron7xLab"
+    groups:
+      # Group dev-toolchain bumps into one PR; reduces review churn.
+      dev-toolchain:
+        patterns:
+          - "ruff"
+          - "mypy"
+          - "pytest*"
+          - "hypothesis"
+          - "pre-commit"
+      # Group scientific-stack bumps.
+      scientific-stack:
+        patterns:
+          - "numpy"
+          - "scipy"
+          - "pandas"
+          - "mne"
+          - "neurodsp"
+          - "PyWavelets"
+          - "scikit-learn"
+          - "networkx"
+    allow:
+      - dependency-type: "direct"
+    ignore:
+      # Never silently bump major versions for the scientific stack;
+      # require an explicit human-authored commit for majors.
+      - dependency-name: "numpy"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "scipy"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "mne"
+        update-types: ["version-update:semver-major"]
+
+  # tools/requirements.txt (separate root for out-of-repo tooling deps).
+  - package-ecosystem: "pip"
+    directory: "/tools"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:30"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(tools)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "tools"
+    reviewers:
+      - "neuron7xLab"
+
+  # GitHub Actions.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "neuron7xLab"

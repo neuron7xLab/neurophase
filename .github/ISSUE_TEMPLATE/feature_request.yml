@@ -1,0 +1,76 @@
+name: Feature request
+description: Propose a new capability. State scope, non-goals, shipping gate.
+title: "[feature] "
+labels: ["feature", "triage"]
+assignees: ["neuron7xLab"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Features are shipped as the smallest-possible complete slice
+        (CLAUDE.md::objective). Proposals that cannot be reduced to a
+        single vertical slice are rejected at triage.
+
+  - type: textarea
+    id: intent
+    attributes:
+      label: Intent — what does this enable?
+      description: One paragraph. Reader should know WHY this matters.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope — what SHIPS
+      description: Files, modules, tests, docs. Concrete surface area.
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals — what does NOT ship
+      description: Prevents scope creep. Be explicit.
+    validations:
+      required: true
+
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Contracts the feature must honour
+      description: "E.g. fail-closed on malformed input; shared core with replay; schema version bump."
+    validations:
+      required: true
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test surface — what will be enforced in CI
+      description: Unit, integration, parity, mutation, acceptance. Per `tests/README.md` domains.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: path
+    attributes:
+      label: Forward path
+      options:
+        - Kernel (neurophase/*) — new runtime capability
+        - Tools (tools/*) — operator-side tooling
+        - Experiments (neurophase/experiments/*) — research track
+        - Docs-only
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: stable_gate
+    attributes:
+      label: Stable-promotion gates this feature must pass (per docs/STABLE_PROMOTION.md)
+      options:
+        - label: G3 replay/live parity
+        - label: G4 tools in CI
+        - label: G5 fresh-clone acceptance
+        - label: G6 no open REAL_BUG
+        - label: G7 claims synced
+        - label: (none — post-stable feature)

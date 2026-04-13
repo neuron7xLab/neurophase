@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability (private)
+    url: https://github.com/neuron7xLab/neurophase/security/advisories/new
+    about: Report a security-sensitive issue privately via GitHub's vulnerability reporting.
+  - name: CLAUDE.md — operating contract
+    url: https://github.com/neuron7xLab/neurophase/blob/main/CLAUDE.md
+    about: Read this before opening an issue about repo behaviour or process.
+  - name: STABLE_PROMOTION.md — release gates
+    url: https://github.com/neuron7xLab/neurophase/blob/main/docs/STABLE_PROMOTION.md
+    about: The 8-gate checklist for promoting a release candidate to stable.

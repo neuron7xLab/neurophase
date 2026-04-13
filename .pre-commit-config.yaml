@@ -1,0 +1,50 @@
+# Pre-commit config — local parity with the CI gate.
+# Install once:    pip install pre-commit && pre-commit install
+# Run on demand:   pre-commit run --all-files
+#
+# Aligned with the CI workflow in .github/workflows/ci.yml so a green
+# `pre-commit run --all-files` is a strong indicator that CI will be
+# green on push. Mypy is intentionally LOCAL-ONLY here because it is
+# slow; CI remains the source of truth for strict typing.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=600"]
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.0
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+        files: ^(neurophase|tests|tools)/
+      - id: ruff-format
+        files: ^(neurophase|tests|tools)/
+
+  # Mypy is opt-in locally (slow). To enable:
+  #   SKIP=mypy pre-commit run   # to skip one run
+  #   pre-commit run mypy --all-files  # to run only mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        name: mypy --strict neurophase
+        files: ^neurophase/
+        args: ["--strict", "--config-file=pyproject.toml"]
+        # Skip by default to keep commits fast; CI enforces it.
+        stages: [manual]
+        additional_dependencies:
+          - numpy
+          - scipy
+          - PyYAML

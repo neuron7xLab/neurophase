@@ -1,0 +1,72 @@
+name: Research question
+description: Propose a new dataset / methodology. Must align with docs/EEG_UTILITY_NEXT.md.
+title: "[research] "
+labels: ["research", "triage"]
+assignees: ["neuron7xLab"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Hard rule:** research on `ds003458` is frozen per
+        `docs/EEG_UTILITY_NEXT.md`. Rescue analyses will be closed at
+        triage. Two permitted forward paths:
+
+        * **Path 1** — new dataset screening with 7 inclusion criteria.
+        * **Path 2** — live self-data via HRV physio gate.
+
+        Pick one below or explain why your proposal does not belong
+        in either.
+
+  - type: dropdown
+    id: path
+    attributes:
+      label: Which forward path?
+      options:
+        - Path 1 (new dataset screening)
+        - Path 2 (live self-data benchmark)
+        - Neither (explain below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis (pre-registered)
+      description: |
+        A concrete, falsifiable statement. State the effect, the direction,
+        the primary metric, the surrogate null, the multiple-comparison
+        rule, and the decision criterion. No post-hoc edits.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dataset
+    attributes:
+      label: Dataset / data source
+      description: |
+        For Path 1: dataset name, DOI, trial count per subject, sample
+        rate, subject count, reward-signal stochasticity, licence.
+        For Path 2: session-count target, operator-id, calibration
+        profile path.
+    validations:
+      required: true
+
+  - type: textarea
+    id: inclusion
+    attributes:
+      label: Path 1 inclusion criteria check (if applicable)
+      description: |
+        Copy the 7 criteria from docs/EEG_UTILITY_NEXT.md and state
+        pass/fail per criterion. A dataset failing any criterion is
+        not eligible.
+      render: markdown
+
+  - type: textarea
+    id: nonclaim
+    attributes:
+      label: What this proposal does NOT claim
+      description: |
+        List the interpretive ceilings explicitly. E.g. "not a clinical
+        readiness claim", "no single-subject generalisation claim".
+    validations:
+      required: true

@@ -1,0 +1,53 @@
+name: Release blocker
+description: Something must be fixed before the next stable tag. References docs/STABLE_PROMOTION.md.
+title: "[blocker] "
+labels: ["release-blocker", "triage"]
+assignees: ["neuron7xLab"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A release blocker is anything that prevents `v1.X-rcN` from
+        being promoted to `v1.X` per `docs/STABLE_PROMOTION.md`. File
+        this only if you can name the specific gate (G1..G8) that is
+        currently red.
+
+  - type: dropdown
+    id: gate
+    attributes:
+      label: Which STABLE_PROMOTION gate is currently blocked?
+      options:
+        - G1 — Layer-D triplet not yet completed
+        - G2 — no real calibration profile
+        - G3 — replay/live parity red
+        - G4 — tools not in CI (should be impossible now, file anyway)
+        - G5 — fresh-clone acceptance red
+        - G6 — open REAL_BUG
+        - G7 — claims not synced with evidence
+        - G8 — decision-quality benchmark missing / redefined
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current state on main
+      description: Paste the exact failing command output (or linked CI run URL).
+    validations:
+      required: true
+
+  - type: textarea
+    id: required_fix
+    attributes:
+      label: Required fix (concrete)
+      description: What exact commit / artifact / operator-run closes the gate?
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence_path
+    attributes:
+      label: How will the gate be verified green?
+      description: Name the command / artifact / URL that a reviewer will check.
+    validations:
+      required: true

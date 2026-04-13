@@ -6,6 +6,16 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel in-flight runs for the same ref when a new push lands. Saves
+# action minutes on rapid-fire commits and keeps the status badge
+# consistent with the latest commit.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   quality:
     runs-on: ubuntu-latest

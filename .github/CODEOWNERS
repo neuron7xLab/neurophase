@@ -1,0 +1,21 @@
+# CODEOWNERS — review assignment
+# Format: <path-glob>  <@owner> [<@owner> ...]
+# Documented at https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
+
+# Default: Yaroslav owns every path.
+*  @neuron7xLab
+
+# Governance artefacts — protocol-level changes need owner sign-off.
+/CLAUDE.md                 @neuron7xLab
+/CLAIMS.yaml               @neuron7xLab
+/INVARIANTS.yaml           @neuron7xLab
+/STATE_MACHINE.yaml        @neuron7xLab
+/docs/STABLE_PROMOTION.md  @neuron7xLab
+/docs/EEG_UTILITY_NEXT.md  @neuron7xLab
+
+# Security boundary — extra-visible review path.
+/SECURITY.md                  @neuron7xLab
+/.github/workflows/codeql.yml @neuron7xLab
+/.github/workflows/security.yml @neuron7xLab
+/.github/workflows/ci.yml     @neuron7xLab
+/.github/dependabot.yml       @neuron7xLab

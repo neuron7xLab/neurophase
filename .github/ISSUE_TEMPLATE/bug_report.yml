@@ -1,0 +1,73 @@
+name: Bug report
+description: Something is broken, a guard is missing, or a test is lying.
+title: "[bug] "
+labels: ["bug", "triage"]
+assignees: ["neuron7xLab"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing: confirm this is NOT a security issue. Security
+        reports go through the private advisories path (see the link on
+        the issue-chooser page). Also confirm the behaviour is wrong
+        against the canonical contract in `CLAUDE.md` — feature requests
+        go in the feature-request template.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One-sentence statement of what is broken.
+      placeholder: "e.g. PhysioLedger silently overwrites a session when __enter__ is called twice."
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Exact reproduction
+      description: Paste the commands. No narration.
+      render: bash
+      placeholder: |
+        git checkout <commit>
+        pip install -e '.[dev]'
+        pytest tests/test_physio_ledger.py::TestLedgerStructuralGuarantees -q
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: Cite the contract (file:line or docstring snippet) that says what SHOULD happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Paste stdout / stderr / traceback verbatim.
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit hash
+      description: Output of `git rev-parse HEAD`.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: classification
+    attributes:
+      label: Classification (per CLAUDE.md::decision_logic)
+      options:
+        - REAL_BUG — code mismatch + needs regression test
+        - MISSING_GUARD — guard is absent + needs invariant test
+        - DOC_DEBT — docs / claims / help mismatch
+        - NON_ISSUE — expected behaviour (explain)
+    validations:
+      required: true

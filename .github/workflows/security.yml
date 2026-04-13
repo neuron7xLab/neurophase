@@ -1,0 +1,48 @@
+name: Security (pip-audit)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly scan independent of commits. Catches newly-published
+    # CVEs against pinned versions.
+    - cron: "23 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pip-audit:
+    name: pip-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install pip-audit + package deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+          # Install the kernel + dev + witness so pip-audit sees the
+          # actual installed tree rather than the spec.
+          pip install -e ".[dev,witness]"
+          # Out-of-repo tooling deps (bleak, pylsl) are audited too so
+          # the polar / fault producers cannot ship with an unpatched
+          # transitive CVE.
+          pip install -r tools/requirements.txt
+
+      - name: Run pip-audit (fail on any known vulnerability)
+        run: pip-audit --strict --progress-spinner off
