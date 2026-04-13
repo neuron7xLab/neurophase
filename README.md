@@ -621,11 +621,25 @@ print(size.fraction, size.reason)
 | Delta (1–4 Hz) × price | xcorr | 23 | 2 / 23 | NULL — mixed signs, no systematic effect |
 | SCP (0.01–0.1 Hz) × reward | xcorr | 23 | 0 / 23 | NULL — no signal detected |
 | Trial theta power | LME (Toma) | 23 | p = 0.935 | NULL — deterministic rewards |
+| Fz Hilbert θ-power × \|RPE\| | trial Spearman + surrogate | 17 | 0 / 17 | NULL — wrong preprocessing |
+| **FCz CSD + Morlet θ × RPE (Q-learn)** | trial Spearman + surrogate | 17 | **9 / 17** | **Coupling exists (binomial p = 3.3e-8); direction unresolved (5 ρ<0, 4 ρ>0)** |
 | Synthetic PLV bridge | PPC sweep | — | confirmed | Methodology verified at known c ∈ {0, 1} |
 
-Null results are committed verbatim to `results/`. The hypothesis survives; the
-dataset does not confirm it. The next empirical target is a stochastic reward
-dataset (Torres et al. or equivalent).
+The CSD+Morlet pipeline (Cavanagh 2010 method) is the first ds003458 analysis
+on this codebase to clear group-level surrogate chance. It establishes that a
+trial-locked FMθ ↔ RPE relationship *exists* on this dataset. It does **not**
+establish its direction: among the 9 significant subjects, 5 show a negative
+Spearman ρ and 4 show a positive one, so the sign of the coupling is
+heterogeneous across participants.
+
+Per `CLAIMS.yaml` C5 and `docs/validation/evidence_labeling_style_guide.md`:
+existence-of-coupling is **Strongly Plausible**, direction-of-coupling is
+**Tentative**. Until the direction heterogeneity is explained and replicated
+in a peer-reviewed study with a prespecified directional prediction, this
+result is **not yet a gating primitive** — the gate still runs on the
+market-side order parameter R(t) only. All results are committed verbatim to
+`results/`: `ds003458_csd_20260413.json`, `ds003458_rpe_20260413.json`,
+`ds003458_verdict_20260412.json`.
 
 </div>
 

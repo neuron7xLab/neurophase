@@ -155,12 +155,37 @@ claims:
         summary: >-
           Frontal midline theta as a mechanism of cognitive control
           and its relationship to conflict, error, and adjustment.
+      - source: "Internal replication on OpenNeuro ds003458 (Cavanagh 2021) — 2026-04-13"
+        doi: ""
+        supports: true
+        summary: >-
+          Cavanagh-style pipeline (FCz, CSD, Morlet θ power 4–8 Hz, 200–500 ms
+          post-feedback) vs trial-wise Q-learning RPE, 17 subjects, 1000×
+          label-shuffle surrogate. 9 / 17 subjects individually significant
+          at α=0.05 (binomial vs chance 0.05: p = 3.29e-8). Confirms a
+          trial-level FMθ ↔ RPE relationship exists above chance at the
+          group level. DOES NOT confirm direction: among the 9 significant
+          subjects, 5 show ρ<0 and 4 show ρ>0, so the sign of the coupling
+          is heterogeneous across participants. See
+          results/ds003458_csd_20260413.json.
     related_invariants:
       - HN1
     introduced_in: "C8 PR"
     notes: >-
-      Currently classified as HYPOTHESIS because the link between
-      frontal-midline theta and the *specific* readiness signal
-      gated by neurophase has not been independently replicated in
-      a published study. Promotion to THEORY requires at least one
-      independent replication on a comparable task.
+      Status held at HYPOTHESIS despite the internal replication above.
+      Rationale: the replication confirms only the existence of a
+      trial-wise FMθ ↔ RPE relationship, not its direction. The
+      product-critical part of this claim — that FMθ is a usable
+      *biomarker for the readiness signal* — requires a direction-
+      consistent effect, which is not present in the ds003458 data
+      (5 negative / 4 positive ρ among the 9 significant subjects).
+      Until that heterogeneity is explained (e.g. by strategy,
+      task-phase, or electrode-referencing differences) and replicated
+      in a peer-reviewed study with a prespecified direction, this
+      claim is NOT suitable as a gating primitive. Promotion to
+      THEORY requires (a) an independent peer-reviewed replication
+      on a comparable task and (b) a resolved, directional prediction.
+      In the evidence-labeling-style-guide vocabulary this sits
+      between "Tentative" and "Strongly Plausible": existence-of-
+      coupling is Strongly Plausible, direction-of-coupling is
+      Tentative.
