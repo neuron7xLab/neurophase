@@ -1,0 +1,1809 @@
+{
+  "metadata": {
+    "repo_task": "ds003458 \u0394Q_gate utility benchmark",
+    "dataset": "OpenNeuro ds003458 v1.1.0 (Cavanagh 2021)",
+    "date": "2026-04-13T07:24:36.142029+00:00",
+    "random_seed": 42,
+    "skipped_subjects": [
+      "sub-006",
+      "sub-017",
+      "sub-020",
+      "sub-021",
+      "sub-022",
+      "sub-023"
+    ],
+    "valid_subjects_run": [
+      "sub-001",
+      "sub-002",
+      "sub-003",
+      "sub-004",
+      "sub-005",
+      "sub-007",
+      "sub-008",
+      "sub-009",
+      "sub-010",
+      "sub-011",
+      "sub-012",
+      "sub-013",
+      "sub-014",
+      "sub-015",
+      "sub-016",
+      "sub-018",
+      "sub-019"
+    ]
+  },
+  "experiment_spec": {
+    "neural_feature_definition": {
+      "channel": "FCz",
+      "preprocessing": "CSD (standard_1005 montage)",
+      "time_frequency": "Morlet, freqs=arange(4,9), n_cycles=3",
+      "band_hz": [
+        4.0,
+        8.0
+      ],
+      "window_ms": [
+        200.0,
+        500.0
+      ],
+      "epoch_sec": [
+        -0.2,
+        0.8
+      ],
+      "source_of_truth": "imported from ds003458_csd_analysis (pre-validated)"
+    },
+    "predictive_alignment": "theta_power(t) \u2192 decision_quality(t+1)",
+    "split": {
+      "low": "theta_t <= 25th percentile",
+      "high": "theta_t >= 75th percentile",
+      "excluded": "middle 50% in quartile contrast"
+    },
+    "metrics": {
+      "value_loss": "best_arm_value(t+1) \u2212 chosen_arm_value(t+1), lower better; \u0394Q = mean_low \u2212 mean_high (positive = HIGH theta helps)",
+      "accuracy": "1[chosen(t+1) == argmax_arm(t+1)], higher better; \u0394Q = mean_high \u2212 mean_low (positive = HIGH theta helps)",
+      "adaptation": "\u2212(zRT(t+1) \u2212 zRT(t)) | RPE(t)<0, higher=faster; \u0394Q = mean_high \u2212 mean_low (positive = HIGH theta helps)"
+    },
+    "statistical_tests": [
+      "Mann\u2013Whitney U (two-sided) on LOW vs HIGH per metric",
+      "Cliff's \u03b4 on LOW vs HIGH per metric",
+      "Spearman \u03c1 (continuous secondary)",
+      "Shuffled-theta empirical p (primary null, 1000\u00d7)",
+      "Random 50/50-gate empirical p (secondary null, 1000\u00d7)",
+      "Wilcoxon signed-rank on subject \u0394s vs 0 (group)",
+      "Two-sided binomial on sign of subject \u0394s (group)",
+      "Benjamini\u2013Hochberg FDR on shuffled-theta subject p-values"
+    ],
+    "n_random_splits": 1000,
+    "n_theta_shuffles": 1000,
+    "alpha": 0.05,
+    "min_trials_required": 30,
+    "min_stratum_size": 5
+  },
+  "subject_results": [
+    {
+      "subject": "sub-001",
+      "status": "OK",
+      "n_trials_total": 479,
+      "n_main_valid_pairs": 478,
+      "n_adapt_valid_pairs": 119,
+      "theta_q1": 0.0015441863125173188,
+      "theta_q3": 0.0053697194456853265,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 18,
+      "n_high_adapt": 49,
+      "behaviour_only": {
+        "value_loss": 0.4053848845151865,
+        "accuracy": 0.20920502092050208,
+        "adaptation": 0.07697394650484107
+      },
+      "value_loss": {
+        "mean_low": 0.41029269502987803,
+        "mean_high": 0.4207500535086781,
+        "delta_q": -0.010457358478800083,
+        "mwu_u": 6905.0,
+        "mwu_p": 0.582020824313434,
+        "cliff_delta": -0.04097222222222219,
+        "spearman_rho": -0.01030518152923753,
+        "spearman_p": 0.82219676918033,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0001110365687520109,
+          "std": 0.03593726187745817,
+          "p_empirical": 0.7872127872127872
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0004078417710458413,
+          "std": 0.025171641626705897,
+          "p_empirical": 0.6803196803196803
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.23333333333333334,
+        "mean_high": 0.2,
+        "delta_q": -0.033333333333333326,
+        "mwu_u": 7440.0,
+        "mwu_p": 0.5325445131144622,
+        "cliff_delta": 0.03333333333333344,
+        "spearman_rho": 0.003056550878006353,
+        "spearman_p": 0.9468593783293359,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 4.166666666666674e-05,
+          "std": 0.05266440857500971,
+          "p_empirical": 0.5624375624375625
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0006276150627615058,
+          "std": 0.03800985222861849,
+          "p_empirical": 0.47052947052947053
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.5879245256698841,
+        "mean_high": 0.2900292329911081,
+        "delta_q": 0.8779537586609922,
+        "mwu_u": 300.0,
+        "mwu_p": 0.04688167892138323,
+        "cliff_delta": -0.3197278911564626,
+        "spearman_rho": 0.13945712668200747,
+        "spearman_p": 0.1303706810884908,
+        "spearman_n": 119,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.015091720618753272,
+          "std": 0.40214466351048256,
+          "p_empirical": 0.03396603396603397
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.013952949136450397,
+          "std": 0.2970059700664192,
+          "p_empirical": 0.003996003996003996
+        }
+      }
+    },
+    {
+      "subject": "sub-002",
+      "status": "OK",
+      "n_trials_total": 478,
+      "n_main_valid_pairs": 477,
+      "n_adapt_valid_pairs": 90,
+      "theta_q1": 0.0011288832845645239,
+      "theta_q3": 0.005840557376492247,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 27,
+      "n_high_adapt": 19,
+      "behaviour_only": {
+        "value_loss": 0.4311999925665615,
+        "accuracy": 0.17819706498951782,
+        "adaptation": -0.21061786838861055
+      },
+      "value_loss": {
+        "mean_low": 0.4149463199424363,
+        "mean_high": 0.4187189216430619,
+        "delta_q": -0.0037726017006255996,
+        "mwu_u": 7165.5,
+        "mwu_p": 0.9493982166596026,
+        "cliff_delta": -0.0047916666666666385,
+        "spearman_rho": -0.015242764749609073,
+        "spearman_p": 0.7398493540731595,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0003217740637243696,
+          "std": 0.03393380772586433,
+          "p_empirical": 0.8911088911088911
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -6.044879347088572e-05,
+          "std": 0.02448203738026018,
+          "p_empirical": 0.8811188811188811
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.20833333333333334,
+        "mean_high": 0.18333333333333332,
+        "delta_q": -0.025000000000000022,
+        "mwu_u": 7380.0,
+        "mwu_p": 0.6272461249648794,
+        "cliff_delta": 0.02499999999999991,
+        "spearman_rho": -0.05920026260452373,
+        "spearman_p": 0.19681010544640504,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0024750000000000006,
+          "std": 0.05066830520925066,
+          "p_empirical": 0.5974025974025974
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0016302521008403357,
+          "std": 0.035599284941431324,
+          "p_empirical": 0.4995004995004995
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.6292494478222985,
+        "mean_high": -0.4622029638967721,
+        "delta_q": 0.1670464839255264,
+        "mwu_u": 202.5,
+        "mwu_p": 0.23262934497963939,
+        "cliff_delta": -0.21052631578947367,
+        "spearman_rho": 0.15602054592079737,
+        "spearman_p": 0.14197936896572577,
+        "spearman_n": 90,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0017362820490286772,
+          "std": 0.5296220018079665,
+          "p_empirical": 0.7422577422577422
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0075178302272959786,
+          "std": 0.3835668749318464,
+          "p_empirical": 0.6713286713286714
+        }
+      }
+    },
+    {
+      "subject": "sub-003",
+      "status": "OK",
+      "n_trials_total": 480,
+      "n_main_valid_pairs": 479,
+      "n_adapt_valid_pairs": 86,
+      "theta_q1": 0.021048047044068187,
+      "theta_q3": 0.03884230449133173,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 20,
+      "n_high_adapt": 28,
+      "behaviour_only": {
+        "value_loss": 0.45144613968947117,
+        "accuracy": 0.1524008350730689,
+        "adaptation": -0.21821906600021865
+      },
+      "value_loss": {
+        "mean_low": 0.4705719359886295,
+        "mean_high": 0.39352189513934044,
+        "delta_q": 0.07705004084928907,
+        "mwu_u": 8639.5,
+        "mwu_p": 0.007295293743044176,
+        "cliff_delta": 0.1999305555555555,
+        "spearman_rho": 0.10194979616777002,
+        "spearman_p": 0.025663449574110937,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0015486645860313109,
+          "std": 0.034897631261795056,
+          "p_empirical": 0.026973026973026972
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.00039814388317592665,
+          "std": 0.023915732802843103,
+          "p_empirical": 0.003996003996003996
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.125,
+        "mean_high": 0.225,
+        "delta_q": 0.1,
+        "mwu_u": 6480.0,
+        "mwu_p": 0.04206014749297353,
+        "cliff_delta": -0.09999999999999998,
+        "spearman_rho": 0.06456623711239844,
+        "spearman_p": 0.15827955896587623,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0016583333333333328,
+          "std": 0.04571758034692757,
+          "p_empirical": 0.030969030969030968
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0010920502092050216,
+          "std": 0.03246680725436032,
+          "p_empirical": 0.002997002997002997
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.4430606062643479,
+        "mean_high": 0.004079747755754022,
+        "delta_q": 0.44714035402010194,
+        "mwu_u": 206.5,
+        "mwu_p": 0.1268535469156407,
+        "cliff_delta": -0.26249999999999996,
+        "spearman_rho": 0.1776129893551973,
+        "spearman_p": 0.10182931961900853,
+        "spearman_n": 86,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.011065017685652835,
+          "std": 0.4407479817544237,
+          "p_empirical": 0.3036963036963037
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.003075560540635834,
+          "std": 0.29917411349008033,
+          "p_empirical": 0.13786213786213786
+        }
+      }
+    },
+    {
+      "subject": "sub-004",
+      "status": "OK",
+      "n_trials_total": 478,
+      "n_main_valid_pairs": 477,
+      "n_adapt_valid_pairs": 76,
+      "theta_q1": 0.0010792562418647633,
+      "theta_q3": 0.00383080060119083,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 32,
+      "n_high_adapt": 15,
+      "behaviour_only": {
+        "value_loss": 0.4437141419382255,
+        "accuracy": 0.15932914046121593,
+        "adaptation": 0.10617286913270632
+      },
+      "value_loss": {
+        "mean_low": 0.4141488305534821,
+        "mean_high": 0.4475494611793118,
+        "delta_q": -0.03340063062582971,
+        "mwu_u": 6527.0,
+        "mwu_p": 0.20988053435852883,
+        "cliff_delta": -0.09347222222222218,
+        "spearman_rho": -0.05664287042784764,
+        "spearman_p": 0.21688828926863404,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0010963966936936645,
+          "std": 0.034587171057544074,
+          "p_empirical": 0.3436563436563437
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0003853481448125277,
+          "std": 0.022895068058577977,
+          "p_empirical": 0.14185814185814186
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.20833333333333334,
+        "mean_high": 0.14166666666666666,
+        "delta_q": -0.06666666666666668,
+        "mwu_u": 7680.0,
+        "mwu_p": 0.17547742597855864,
+        "cliff_delta": 0.06666666666666665,
+        "spearman_rho": -0.049212900317106074,
+        "spearman_p": 0.2834254993655634,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 2.499999999999991e-05,
+          "std": 0.0472456575018041,
+          "p_empirical": 0.15984015984015984
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0010126050420168069,
+          "std": 0.0339642718750118,
+          "p_empirical": 0.06593406593406594
+        }
+      },
+      "adaptation": {
+        "mean_low": 0.2689932720092293,
+        "mean_high": 0.23094915198439306,
+        "delta_q": -0.03804412002483623,
+        "mwu_u": 275.0,
+        "mwu_p": 0.43107631917534717,
+        "cliff_delta": 0.14583333333333326,
+        "spearman_rho": -0.09736158578263841,
+        "spearman_p": 0.40276011048059956,
+        "spearman_n": 76,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.022026701253337992,
+          "std": 0.4340796604119005,
+          "p_empirical": 0.938061938061938
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.009651725270957664,
+          "std": 0.3073413070202406,
+          "p_empirical": 0.8871128871128872
+        }
+      }
+    },
+    {
+      "subject": "sub-005",
+      "status": "OK",
+      "n_trials_total": 480,
+      "n_main_valid_pairs": 479,
+      "n_adapt_valid_pairs": 100,
+      "theta_q1": 0.0017422665105176394,
+      "theta_q3": 0.0069648696305958,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 10,
+      "n_high_adapt": 39,
+      "behaviour_only": {
+        "value_loss": 0.4307104609690463,
+        "accuracy": 0.162839248434238,
+        "adaptation": -0.6472789498996483
+      },
+      "value_loss": {
+        "mean_low": 0.4763908257131496,
+        "mean_high": 0.4142204712495062,
+        "delta_q": 0.06217035446364344,
+        "mwu_u": 8202.0,
+        "mwu_p": 0.062248217673456105,
+        "cliff_delta": 0.13916666666666666,
+        "spearman_rho": 0.08713088730089198,
+        "spearman_p": 0.056702693621252916,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0001551443955307204,
+          "std": 0.03270811755770466,
+          "p_empirical": 0.06793206793206794
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -6.986698885762066e-05,
+          "std": 0.023928266208092408,
+          "p_empirical": 0.00999000999000999
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.10833333333333334,
+        "mean_high": 0.15833333333333333,
+        "delta_q": 0.04999999999999999,
+        "mwu_u": 6840.0,
+        "mwu_p": 0.2562175609222158,
+        "cliff_delta": -0.050000000000000044,
+        "spearman_rho": 0.03459448991213747,
+        "spearman_p": 0.4500178302519905,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0018083333333333337,
+          "std": 0.048281517483976785,
+          "p_empirical": 0.35064935064935066
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.000280334728033473,
+          "std": 0.033552340388207855,
+          "p_empirical": 0.16783216783216784
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.0874390334027036,
+        "mean_high": -0.5121260525881578,
+        "delta_q": -0.4246870191854542,
+        "mwu_u": 193.0,
+        "mwu_p": 0.9703172301083884,
+        "cliff_delta": -0.01025641025641022,
+        "spearman_rho": 0.07372359353046543,
+        "spearman_p": 0.46602620960911234,
+        "spearman_n": 100,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.003184621637622437,
+          "std": 0.5496346165858524,
+          "p_empirical": 0.45054945054945056
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.012946959614310168,
+          "std": 0.38398390339481514,
+          "p_empirical": 0.27972027972027974
+        }
+      }
+    },
+    {
+      "subject": "sub-007",
+      "status": "OK",
+      "n_trials_total": 479,
+      "n_main_valid_pairs": 478,
+      "n_adapt_valid_pairs": 103,
+      "theta_q1": 0.0007893705981233104,
+      "theta_q3": 0.0025958593967555467,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 38,
+      "n_high_adapt": 15,
+      "behaviour_only": {
+        "value_loss": 0.4278716783731921,
+        "accuracy": 0.17573221757322174,
+        "adaptation": 0.04244506594766029
+      },
+      "value_loss": {
+        "mean_low": 0.4268432134395984,
+        "mean_high": 0.4227487996424788,
+        "delta_q": 0.0040944137971196115,
+        "mwu_u": 7358.5,
+        "mwu_p": 0.7683453233158846,
+        "cliff_delta": 0.022013888888889,
+        "spearman_rho": 0.018854295876866812,
+        "spearman_p": 0.6809458799930463,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.000736367335480303,
+          "std": 0.03355424383967455,
+          "p_empirical": 0.8921078921078921
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0006090855756672091,
+          "std": 0.02471645059718451,
+          "p_empirical": 0.8731268731268731
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.15,
+        "mean_high": 0.19166666666666668,
+        "delta_q": 0.041666666666666685,
+        "mwu_u": 6900.0,
+        "mwu_p": 0.3929217299046013,
+        "cliff_delta": -0.04166666666666663,
+        "spearman_rho": 0.04103109881557042,
+        "spearman_p": 0.37073372126071036,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0005583333333333335,
+          "std": 0.04962813871965962,
+          "p_empirical": 0.41858141858141856
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0004267782426778244,
+          "std": 0.035422702871373446,
+          "p_empirical": 0.3116883116883117
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.07010241941476474,
+        "mean_high": 0.12151086031938058,
+        "delta_q": 0.19161327973414533,
+        "mwu_u": 287.0,
+        "mwu_p": 0.9763712008442209,
+        "cliff_delta": 0.007017543859649145,
+        "spearman_rho": 0.02272889518603432,
+        "spearman_p": 0.8197338279179592,
+        "spearman_n": 103,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.013999894361191735,
+          "std": 0.44951962971577314,
+          "p_empirical": 0.6873126873126874
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.008912379246899506,
+          "std": 0.31992587110066156,
+          "p_empirical": 0.5724275724275725
+        }
+      }
+    },
+    {
+      "subject": "sub-008",
+      "status": "OK",
+      "n_trials_total": 478,
+      "n_main_valid_pairs": 477,
+      "n_adapt_valid_pairs": 74,
+      "theta_q1": 0.0007857649396226556,
+      "theta_q3": 0.006936975489634403,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 18,
+      "n_high_adapt": 9,
+      "behaviour_only": {
+        "value_loss": 0.4571198635679827,
+        "accuracy": 0.12578616352201258,
+        "adaptation": -0.2271497276503041
+      },
+      "value_loss": {
+        "mean_low": 0.45932277674671257,
+        "mean_high": 0.46281904886223835,
+        "delta_q": -0.003496272115525778,
+        "mwu_u": 7467.5,
+        "mwu_p": 0.6193922287649085,
+        "cliff_delta": 0.03715277777777781,
+        "spearman_rho": 0.023921276947576398,
+        "spearman_p": 0.602260609933281,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0009194101301579134,
+          "std": 0.03173306905249602,
+          "p_empirical": 0.9150849150849151
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -8.284506521400215e-05,
+          "std": 0.023181735865154627,
+          "p_empirical": 0.8681318681318682
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.125,
+        "mean_high": 0.06666666666666667,
+        "delta_q": -0.058333333333333334,
+        "mwu_u": 7620.0,
+        "mwu_p": 0.1260215691209882,
+        "cliff_delta": 0.05833333333333335,
+        "spearman_rho": -0.056747667632031415,
+        "spearman_p": 0.2160376842022691,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.000575,
+          "std": 0.042809525646882736,
+          "p_empirical": 0.17282717282717283
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0005504201680672273,
+          "std": 0.03102645707728242,
+          "p_empirical": 0.07892107892107893
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.3346398009806904,
+        "mean_high": -0.06832959287015486,
+        "delta_q": 0.2663102081105355,
+        "mwu_u": 67.5,
+        "mwu_p": 0.5036550140135359,
+        "cliff_delta": -0.16666666666666663,
+        "spearman_rho": -0.004857496168190688,
+        "spearman_p": 0.9672364223828096,
+        "spearman_n": 74,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.023743012013305875,
+          "std": 0.5104920137897131,
+          "p_empirical": 0.6053946053946054
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.009548812003246074,
+          "std": 0.38127223715845815,
+          "p_empirical": 0.4905094905094905
+        }
+      }
+    },
+    {
+      "subject": "sub-009",
+      "status": "OK",
+      "n_trials_total": 479,
+      "n_main_valid_pairs": 478,
+      "n_adapt_valid_pairs": 110,
+      "theta_q1": 0.001158244428948815,
+      "theta_q3": 0.0030889639938416584,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 26,
+      "n_high_adapt": 27,
+      "behaviour_only": {
+        "value_loss": 0.4044998702306879,
+        "accuracy": 0.20920502092050208,
+        "adaptation": -0.0836188824492177
+      },
+      "value_loss": {
+        "mean_low": 0.4096690026149836,
+        "mean_high": 0.3436568531830962,
+        "delta_q": 0.06601214943188743,
+        "mwu_u": 8330.0,
+        "mwu_p": 0.034403536076769305,
+        "cliff_delta": 0.15694444444444455,
+        "spearman_rho": 0.08126115859963313,
+        "spearman_p": 0.07591199735428082,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0016342471626299012,
+          "std": 0.03641125142464295,
+          "p_empirical": 0.08291708291708291
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -1.2477742243203748e-06,
+          "std": 0.023621464861827632,
+          "p_empirical": 0.004995004995004995
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.225,
+        "mean_high": 0.25833333333333336,
+        "delta_q": 0.033333333333333354,
+        "mwu_u": 6960.0,
+        "mwu_p": 0.5480896704089557,
+        "cliff_delta": -0.033333333333333326,
+        "spearman_rho": 0.030080933640867395,
+        "spearman_p": 0.5117646899197115,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0022666666666666677,
+          "std": 0.05436119939810012,
+          "p_empirical": 0.5584415584415584
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.00024267782426778232,
+          "std": 0.037019391155318555,
+          "p_empirical": 0.4145854145854146
+        }
+      },
+      "adaptation": {
+        "mean_low": 0.3102310017495641,
+        "mean_high": -0.43326174989856725,
+        "delta_q": -0.7434927516481313,
+        "mwu_u": 419.0,
+        "mwu_p": 0.22976627046113807,
+        "cliff_delta": 0.19373219373219364,
+        "spearman_rho": -0.14011288737553013,
+        "spearman_p": 0.14430615423655688,
+        "spearman_n": 110,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.020103806908556444,
+          "std": 0.43657555683339666,
+          "p_empirical": 0.0939060939060939
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.015297252649092137,
+          "std": 0.3095232513483433,
+          "p_empirical": 0.008991008991008992
+        }
+      }
+    },
+    {
+      "subject": "sub-010",
+      "status": "OK",
+      "n_trials_total": 477,
+      "n_main_valid_pairs": 476,
+      "n_adapt_valid_pairs": 64,
+      "theta_q1": 0.00033508291220145836,
+      "theta_q3": 0.0020162986920443495,
+      "n_low": 119,
+      "n_high": 119,
+      "n_low_adapt": 10,
+      "n_high_adapt": 29,
+      "behaviour_only": {
+        "value_loss": 0.4492958304919704,
+        "accuracy": 0.11134453781512606,
+        "adaptation": -0.17377785026194292
+      },
+      "value_loss": {
+        "mean_low": 0.46823661036413244,
+        "mean_high": 0.4082217145819901,
+        "delta_q": 0.06001489578214236,
+        "mwu_u": 7902.0,
+        "mwu_p": 0.12181837470956333,
+        "cliff_delta": 0.11602287974013126,
+        "spearman_rho": 0.09879171893248366,
+        "spearman_p": 0.03116278187197765,
+        "spearman_n": 476,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0010810720569902571,
+          "std": 0.032020717055810256,
+          "p_empirical": 0.059940059940059943
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0007321875078259634,
+          "std": 0.022517185397661985,
+          "p_empirical": 0.004995004995004995
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.07563025210084033,
+        "mean_high": 0.15966386554621848,
+        "delta_q": 0.08403361344537814,
+        "mwu_u": 6485.5,
+        "mwu_p": 0.04486143524115335,
+        "cliff_delta": -0.08403361344537819,
+        "spearman_rho": 0.115362788812125,
+        "spearman_p": 0.011778371040009781,
+        "spearman_n": 476,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -2.5210084033613246e-05,
+          "std": 0.04116702944414029,
+          "p_empirical": 0.058941058941058944
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0016638655462184872,
+          "std": 0.02887480555563963,
+          "p_empirical": 0.004995004995004995
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.8716228354711726,
+        "mean_high": 0.06409783550930515,
+        "delta_q": 0.9357206709804777,
+        "mwu_u": 143.0,
+        "mwu_p": 0.9615209360472419,
+        "cliff_delta": -0.01379310344827589,
+        "spearman_rho": -0.00847069597069597,
+        "spearman_p": 0.9470345881258578,
+        "spearman_n": 64,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.02693361423047309,
+          "std": 0.656713697796646,
+          "p_empirical": 0.15284715284715283
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.025702525077778517,
+          "std": 0.4542224863489083,
+          "p_empirical": 0.03896103896103896
+        }
+      }
+    },
+    {
+      "subject": "sub-011",
+      "status": "OK",
+      "n_trials_total": 480,
+      "n_main_valid_pairs": 479,
+      "n_adapt_valid_pairs": 72,
+      "theta_q1": 0.000788167463391901,
+      "theta_q3": 0.05991818209005657,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 11,
+      "n_high_adapt": 19,
+      "behaviour_only": {
+        "value_loss": 0.4742763863883646,
+        "accuracy": 0.10647181628392484,
+        "adaptation": -0.014446374260287661
+      },
+      "value_loss": {
+        "mean_low": 0.490456273614553,
+        "mean_high": 0.4691964720373097,
+        "delta_q": 0.02125980157724333,
+        "mwu_u": 7286.5,
+        "mwu_p": 0.87288165490274,
+        "cliff_delta": 0.01201388888888899,
+        "spearman_rho": 0.020796658350378583,
+        "spearman_p": 0.6498165989877018,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.00019694814400786286,
+          "std": 0.03277024269626636,
+          "p_empirical": 0.5194805194805194
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0002636222620071136,
+          "std": 0.0224049884433045,
+          "p_empirical": 0.34965034965034963
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.1,
+        "mean_high": 0.1,
+        "delta_q": 0.0,
+        "mwu_u": 7200.0,
+        "mwu_p": 1.0,
+        "cliff_delta": 0.0,
+        "spearman_rho": 0.004503362538767007,
+        "spearman_p": 0.9216909927067528,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.00024166666666666726,
+          "std": 0.04050047924956499,
+          "p_empirical": 1.0
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0009246861924686188,
+          "std": 0.028289024114462588,
+          "p_empirical": 1.0
+        }
+      },
+      "adaptation": {
+        "mean_low": 0.21414625373678478,
+        "mean_high": 0.3928698188861112,
+        "delta_q": 0.17872356514932644,
+        "mwu_u": 96.0,
+        "mwu_p": 0.7306268857145148,
+        "cliff_delta": -0.08133971291866027,
+        "spearman_rho": 0.05535770272947814,
+        "spearman_p": 0.6441822730888621,
+        "spearman_n": 72,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.01608816220536364,
+          "std": 0.4461027953743775,
+          "p_empirical": 0.6823176823176823
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.01758038768772179,
+          "std": 0.3235376307789098,
+          "p_empirical": 0.5754245754245755
+        }
+      }
+    },
+    {
+      "subject": "sub-012",
+      "status": "OK",
+      "n_trials_total": 480,
+      "n_main_valid_pairs": 479,
+      "n_adapt_valid_pairs": 90,
+      "theta_q1": 0.0005939688126280067,
+      "theta_q3": 0.003100697335246521,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 12,
+      "n_high_adapt": 23,
+      "behaviour_only": {
+        "value_loss": 0.4336629726579047,
+        "accuracy": 0.15657620041753653,
+        "adaptation": -0.008477238145214524
+      },
+      "value_loss": {
+        "mean_low": 0.4355344635957922,
+        "mean_high": 0.4312725968753144,
+        "delta_q": 0.004261866720477792,
+        "mwu_u": 7152.5,
+        "mwu_p": 0.9302650794830153,
+        "cliff_delta": -0.006597222222222254,
+        "spearman_rho": -0.01717942836342591,
+        "spearman_p": 0.7076340939987502,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0003833050279229436,
+          "std": 0.03446550758064633,
+          "p_empirical": 0.8991008991008991
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0005215778860252018,
+          "std": 0.02336442457004181,
+          "p_empirical": 0.8531468531468531
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.16666666666666666,
+        "mean_high": 0.10833333333333334,
+        "delta_q": -0.05833333333333332,
+        "mwu_u": 7620.0,
+        "mwu_p": 0.19094504716544325,
+        "cliff_delta": 0.05833333333333335,
+        "spearman_rho": -0.06601743385527119,
+        "spearman_p": 0.14911593385258012,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0009749999999999997,
+          "std": 0.046948043829795984,
+          "p_empirical": 0.24775224775224775
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0008075313807531381,
+          "std": 0.03282739464187506,
+          "p_empirical": 0.07392607392607392
+        }
+      },
+      "adaptation": {
+        "mean_low": -1.012249160115811,
+        "mean_high": 0.39806161725884814,
+        "delta_q": 1.4103107773746593,
+        "mwu_u": 83.0,
+        "mwu_p": 0.05822422306972624,
+        "cliff_delta": -0.39855072463768115,
+        "spearman_rho": 0.19203430920065964,
+        "spearman_p": 0.06979365411667103,
+        "spearman_n": 90,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.00792369583304595,
+          "std": 0.458776856582032,
+          "p_empirical": 0.003996003996003996
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.01939056683135794,
+          "std": 0.3419435135224643,
+          "p_empirical": 0.000999000999000999
+        }
+      }
+    },
+    {
+      "subject": "sub-013",
+      "status": "OK",
+      "n_trials_total": 479,
+      "n_main_valid_pairs": 478,
+      "n_adapt_valid_pairs": 79,
+      "theta_q1": 0.0016447826064715735,
+      "theta_q3": 0.004176024460875354,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 21,
+      "n_high_adapt": 26,
+      "behaviour_only": {
+        "value_loss": 0.456411697715439,
+        "accuracy": 0.14225941422594143,
+        "adaptation": -0.2319792063442394
+      },
+      "value_loss": {
+        "mean_low": 0.4519662375122797,
+        "mean_high": 0.43701704199879754,
+        "delta_q": 0.014949195513482172,
+        "mwu_u": 7261.5,
+        "mwu_p": 0.9094800965609983,
+        "cliff_delta": 0.00854166666666667,
+        "spearman_rho": -0.02943679403637791,
+        "spearman_p": 0.5208491927827505,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 6.441878853170313e-05,
+          "std": 0.032155817787857935,
+          "p_empirical": 0.6303696303696303
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0006333853886654535,
+          "std": 0.023825021515583744,
+          "p_empirical": 0.5424575424575424
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.15833333333333333,
+        "mean_high": 0.175,
+        "delta_q": 0.016666666666666663,
+        "mwu_u": 7080.0,
+        "mwu_p": 0.7306602720754498,
+        "cliff_delta": -0.01666666666666672,
+        "spearman_rho": 0.005598955327348421,
+        "spearman_p": 0.9028264738619435,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0014833333333333326,
+          "std": 0.0460105030279923,
+          "p_empirical": 0.7942057942057942
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0003430962343096234,
+          "std": 0.03211832673091544,
+          "p_empirical": 0.6853146853146853
+        }
+      },
+      "adaptation": {
+        "mean_low": 0.04176795621929407,
+        "mean_high": -0.4306679610181879,
+        "delta_q": -0.47243591723748196,
+        "mwu_u": 307.0,
+        "mwu_p": 0.47347663793777783,
+        "cliff_delta": 0.12454212454212454,
+        "spearman_rho": -0.06329152441405188,
+        "spearman_p": 0.579485185558767,
+        "spearman_n": 79,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.031549514598303414,
+          "std": 0.5723857310368263,
+          "p_empirical": 0.4125874125874126
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.008425300877380653,
+          "std": 0.44328172769272994,
+          "p_empirical": 0.3006993006993007
+        }
+      }
+    },
+    {
+      "subject": "sub-014",
+      "status": "OK",
+      "n_trials_total": 479,
+      "n_main_valid_pairs": 478,
+      "n_adapt_valid_pairs": 79,
+      "theta_q1": 0.00026169962946404643,
+      "theta_q3": 0.0015304253986783973,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 12,
+      "n_high_adapt": 19,
+      "behaviour_only": {
+        "value_loss": 0.4572724895701394,
+        "accuracy": 0.13179916317991633,
+        "adaptation": 0.12264071396678133
+      },
+      "value_loss": {
+        "mean_low": 0.42044058379328225,
+        "mean_high": 0.4927477029150384,
+        "delta_q": -0.07230711912175614,
+        "mwu_u": 6273.0,
+        "mwu_p": 0.08429739516790566,
+        "cliff_delta": -0.12875000000000003,
+        "spearman_rho": -0.07328822093015337,
+        "spearman_p": 0.10953798428975293,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0006309666130011628,
+          "std": 0.031087623716547615,
+          "p_empirical": 0.02097902097902098
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0008456110535550926,
+          "std": 0.022909217482192743,
+          "p_empirical": 0.001998001998001998
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.20833333333333334,
+        "mean_high": 0.10833333333333334,
+        "delta_q": -0.1,
+        "mwu_u": 7920.0,
+        "mwu_p": 0.034346733682781606,
+        "cliff_delta": 0.10000000000000009,
+        "spearman_rho": -0.09253035767361116,
+        "spearman_p": 0.04317079173301331,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0026083333333333336,
+          "std": 0.045202500391755614,
+          "p_empirical": 0.028971028971028972
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0011548117154811712,
+          "std": 0.03157702192940427,
+          "p_empirical": 0.003996003996003996
+        }
+      },
+      "adaptation": {
+        "mean_low": 0.9349920310498249,
+        "mean_high": -0.6334545903168555,
+        "delta_q": -1.5684466213666803,
+        "mwu_u": 155.0,
+        "mwu_p": 0.10048810573083827,
+        "cliff_delta": 0.35964912280701755,
+        "spearman_rho": -0.16394839337877312,
+        "spearman_p": 0.14880432951062098,
+        "spearman_n": 79,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.001636474572721046,
+          "std": 0.5526708304515937,
+          "p_empirical": 0.003996003996003996
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.001223415789448943,
+          "std": 0.4065371247945876,
+          "p_empirical": 0.000999000999000999
+        }
+      }
+    },
+    {
+      "subject": "sub-015",
+      "status": "OK",
+      "n_trials_total": 480,
+      "n_main_valid_pairs": 479,
+      "n_adapt_valid_pairs": 97,
+      "theta_q1": 0.0017855804937936207,
+      "theta_q3": 0.004038424236528049,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 49,
+      "n_high_adapt": 15,
+      "behaviour_only": {
+        "value_loss": 0.44604957880056706,
+        "accuracy": 0.12734864300626306,
+        "adaptation": -0.48473391190025816
+      },
+      "value_loss": {
+        "mean_low": 0.43499965676523844,
+        "mean_high": 0.4608622597858692,
+        "delta_q": -0.02586260302063076,
+        "mwu_u": 6891.0,
+        "mwu_p": 0.565539138342575,
+        "cliff_delta": -0.042916666666666714,
+        "spearman_rho": 0.002269044160382746,
+        "spearman_p": 0.960496316384862,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0017439469962231477,
+          "std": 0.0329120642331162,
+          "p_empirical": 0.42657342657342656
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.00010351658009387572,
+          "std": 0.02301277295725376,
+          "p_empirical": 0.27472527472527475
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.18333333333333332,
+        "mean_high": 0.11666666666666667,
+        "delta_q": -0.06666666666666665,
+        "mwu_u": 7680.0,
+        "mwu_p": 0.14939163407852082,
+        "cliff_delta": 0.06666666666666665,
+        "spearman_rho": -0.049954947866935634,
+        "spearman_p": 0.2752103115780297,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.002041666666666667,
+          "std": 0.042292775026527216,
+          "p_empirical": 0.13086913086913088
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.00029707112970711304,
+          "std": 0.030279117689428786,
+          "p_empirical": 0.029970029970029972
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.6756986244336156,
+        "mean_high": -0.4505212484829261,
+        "delta_q": 0.22517737595068954,
+        "mwu_u": 333.5,
+        "mwu_p": 0.5954649259190071,
+        "cliff_delta": -0.09251700680272112,
+        "spearman_rho": 0.06419650811531413,
+        "spearman_p": 0.5321609273737773,
+        "spearman_n": 97,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.004942317808802247,
+          "std": 0.43004679314205174,
+          "p_empirical": 0.6213786213786214
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.006175121161770322,
+          "std": 0.31195799317845746,
+          "p_empirical": 0.45454545454545453
+        }
+      }
+    },
+    {
+      "subject": "sub-016",
+      "status": "OK",
+      "n_trials_total": 480,
+      "n_main_valid_pairs": 479,
+      "n_adapt_valid_pairs": 71,
+      "theta_q1": 0.0014309560681391215,
+      "theta_q3": 0.0038402783453832467,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 16,
+      "n_high_adapt": 16,
+      "behaviour_only": {
+        "value_loss": 0.44654903098813364,
+        "accuracy": 0.1544885177453027,
+        "adaptation": 0.043399801444319194
+      },
+      "value_loss": {
+        "mean_low": 0.4531815165026311,
+        "mean_high": 0.42450506808650945,
+        "delta_q": 0.028676448416121658,
+        "mwu_u": 7943.5,
+        "mwu_p": 0.16648283636229289,
+        "cliff_delta": 0.10326388888888882,
+        "spearman_rho": 0.09221642901328536,
+        "spearman_p": 0.04366609022667803,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.000996033847102598,
+          "std": 0.03408897609419532,
+          "p_empirical": 0.4045954045954046
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.00048203290752614784,
+          "std": 0.023461540964461066,
+          "p_empirical": 0.21878121878121878
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.14166666666666666,
+        "mean_high": 0.14166666666666666,
+        "delta_q": 0.0,
+        "mwu_u": 7200.0,
+        "mwu_p": 1.0,
+        "cliff_delta": 0.0,
+        "spearman_rho": 0.018171967085369944,
+        "spearman_p": 0.6915838649015991,
+        "spearman_n": 479,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0003583333333333338,
+          "std": 0.047214898043120054,
+          "p_empirical": 1.0
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -6.694560669456063e-05,
+          "std": 0.033145297383000163,
+          "p_empirical": 1.0
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.21593045150327483,
+        "mean_high": -0.16807559468357924,
+        "delta_q": 0.04785485681969559,
+        "mwu_u": 131.5,
+        "mwu_p": 0.9099694163450038,
+        "cliff_delta": 0.02734375,
+        "spearman_rho": -0.042774023715330706,
+        "spearman_p": 0.7232002120141501,
+        "spearman_n": 71,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.002273170542916917,
+          "std": 0.6146833728038451,
+          "p_empirical": 0.926073926073926
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.00045567161225766915,
+          "std": 0.45685984424549425,
+          "p_empirical": 0.903096903096903
+        }
+      }
+    },
+    {
+      "subject": "sub-018",
+      "status": "OK",
+      "n_trials_total": 478,
+      "n_main_valid_pairs": 477,
+      "n_adapt_valid_pairs": 88,
+      "theta_q1": 0.002831424134124807,
+      "theta_q3": 0.006119705965379424,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 28,
+      "n_high_adapt": 24,
+      "behaviour_only": {
+        "value_loss": 0.4405349400464897,
+        "accuracy": 0.1509433962264151,
+        "adaptation": -0.2826565397233535
+      },
+      "value_loss": {
+        "mean_low": 0.42453917177574774,
+        "mean_high": 0.4447476238461848,
+        "delta_q": -0.02020845207043709,
+        "mwu_u": 7301.0,
+        "mwu_p": 0.8514127116081466,
+        "cliff_delta": 0.01402777777777775,
+        "spearman_rho": 0.02929132202362834,
+        "spearman_p": 0.5233496124920974,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0009910699178312832,
+          "std": 0.0337547769835101,
+          "p_empirical": 0.5584415584415584
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.00015984980383656954,
+          "std": 0.023522796672325517,
+          "p_empirical": 0.3946053946053946
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.15833333333333333,
+        "mean_high": 0.175,
+        "delta_q": 0.016666666666666663,
+        "mwu_u": 7080.0,
+        "mwu_p": 0.7306602720754498,
+        "cliff_delta": -0.01666666666666672,
+        "spearman_rho": 0.02598487600415277,
+        "spearman_p": 0.5713089088955835,
+        "spearman_n": 477,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0014083333333333333,
+          "std": 0.04629047703241876,
+          "p_empirical": 0.7852147852147852
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0009201680672268912,
+          "std": 0.03271839836474684,
+          "p_empirical": 0.6873126873126874
+        }
+      },
+      "adaptation": {
+        "mean_low": -0.30401066350778194,
+        "mean_high": -0.8272086654906863,
+        "delta_q": -0.5231980019829043,
+        "mwu_u": 419.5,
+        "mwu_p": 0.12762229950671233,
+        "cliff_delta": 0.24851190476190466,
+        "spearman_rho": -0.16740413953589192,
+        "spearman_p": 0.11900600126148432,
+        "spearman_n": 88,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0012407361058072218,
+          "std": 0.5561998395346495,
+          "p_empirical": 0.3336663336663337
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.00978379165244315,
+          "std": 0.39258674870183424,
+          "p_empirical": 0.1878121878121878
+        }
+      }
+    },
+    {
+      "subject": "sub-019",
+      "status": "OK",
+      "n_trials_total": 479,
+      "n_main_valid_pairs": 478,
+      "n_adapt_valid_pairs": 90,
+      "theta_q1": 0.0008030560769876464,
+      "theta_q3": 0.0032923396381911336,
+      "n_low": 120,
+      "n_high": 120,
+      "n_low_adapt": 32,
+      "n_high_adapt": 14,
+      "behaviour_only": {
+        "value_loss": 0.4575299577923241,
+        "accuracy": 0.15271966527196654,
+        "adaptation": -0.03931762878925497
+      },
+      "value_loss": {
+        "mean_low": 0.45795837826684077,
+        "mean_high": 0.44298421725709974,
+        "delta_q": 0.014974161009741027,
+        "mwu_u": 7293.5,
+        "mwu_p": 0.8623094736381096,
+        "cliff_delta": 0.012986111111111143,
+        "spearman_rho": 0.027087605714917605,
+        "spearman_p": 0.5546679116366428,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.0017371300480164698,
+          "std": 0.03411871168670184,
+          "p_empirical": 0.6413586413586414
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.0008574438617021405,
+          "std": 0.02405906487831792,
+          "p_empirical": 0.5214785214785215
+        }
+      },
+      "accuracy": {
+        "mean_low": 0.175,
+        "mean_high": 0.18333333333333332,
+        "delta_q": 0.008333333333333331,
+        "mwu_u": 7140.0,
+        "mwu_p": 0.8677082376663358,
+        "cliff_delta": -0.008333333333333304,
+        "spearman_rho": 0.005500285678097529,
+        "spearman_p": 0.9045307065682201,
+        "spearman_n": 478,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": 0.0007000000000000004,
+          "std": 0.04568988460869162,
+          "p_empirical": 0.916083916083916
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": 0.00106276150627615,
+          "std": 0.03239247314826583,
+          "p_empirical": 0.8001998001998002
+        }
+      },
+      "adaptation": {
+        "mean_low": 0.02341125700718992,
+        "mean_high": 0.29032805042251625,
+        "delta_q": 0.2669167934153263,
+        "mwu_u": 236.0,
+        "mwu_p": 0.7836721465981258,
+        "cliff_delta": 0.0535714285714286,
+        "spearman_rho": -0.061505788804854,
+        "spearman_p": 0.5646933021801215,
+        "spearman_n": 90,
+        "null_shuffled_theta": {
+          "n_iter": 1000,
+          "n_finite": 1000,
+          "mean": -0.004561491763055264,
+          "std": 0.5006616583787109,
+          "p_empirical": 0.6113886113886113
+        },
+        "null_random_gate": {
+          "n_iter": 1000,
+          "mean": -0.0138936456903663,
+          "std": 0.35566166854104453,
+          "p_empirical": 0.46153846153846156
+        }
+      }
+    }
+  ],
+  "group_results": {
+    "n_subjects_total": 17,
+    "n_subjects_valid": 17,
+    "value_loss": {
+      "mean_delta_q": 0.010821075907502515,
+      "median_delta_q": 0.004261866720477792,
+      "std_delta_q": 0.038413054174380616,
+      "n_subjects_with_delta": 17,
+      "n_subjects_positive": 10,
+      "n_subjects_negative": 7,
+      "sign_binomial": {
+        "n_positive": 10,
+        "n_total": 17,
+        "p": 0.629058837890625
+      },
+      "wilcoxon_signed_rank": {
+        "stat": 54.0,
+        "p": 0.3060455322265625,
+        "n": 17
+      },
+      "subject_p_shuffled_theta": [
+        0.7872127872127872,
+        0.8911088911088911,
+        0.026973026973026972,
+        0.3436563436563437,
+        0.06793206793206794,
+        0.8921078921078921,
+        0.9150849150849151,
+        0.08291708291708291,
+        0.059940059940059943,
+        0.5194805194805194,
+        0.8991008991008991,
+        0.6303696303696303,
+        0.02097902097902098,
+        0.42657342657342656,
+        0.4045954045954046,
+        0.5584415584415584,
+        0.6413586413586414
+      ],
+      "subject_q_shuffled_theta_bh": [
+        0.9150849150849151,
+        0.9150849150849151,
+        0.22927072927072925,
+        0.9064685314685315,
+        0.2819180819180819,
+        0.9150849150849151,
+        0.9150849150849151,
+        0.2819180819180819,
+        0.2819180819180819,
+        0.9085914085914086,
+        0.9150849150849151,
+        0.9085914085914086,
+        0.22927072927072925,
+        0.9064685314685315,
+        0.9064685314685315,
+        0.9085914085914086,
+        0.9085914085914086
+      ],
+      "n_subjects_significant_raw": 2,
+      "n_subjects_significant_fdr": 0
+    },
+    "accuracy": {
+      "mean_delta_q": -0.003390179601252265,
+      "median_delta_q": 0.0,
+      "std_delta_q": 0.05437832589697324,
+      "n_subjects_with_delta": 17,
+      "n_subjects_positive": 8,
+      "n_subjects_negative": 7,
+      "sign_binomial": {
+        "n_positive": 8,
+        "n_total": 17,
+        "p": 1.0
+      },
+      "wilcoxon_signed_rank": {
+        "stat": 72.0,
+        "p": 0.8312403521842914,
+        "n": 17
+      },
+      "subject_p_shuffled_theta": [
+        0.5624375624375625,
+        0.5974025974025974,
+        0.030969030969030968,
+        0.15984015984015984,
+        0.35064935064935066,
+        0.41858141858141856,
+        0.17282717282717283,
+        0.5584415584415584,
+        0.058941058941058944,
+        1.0,
+        0.24775224775224775,
+        0.7942057942057942,
+        0.028971028971028972,
+        0.13086913086913088,
+        1.0,
+        0.7852147852147852,
+        0.916083916083916
+      ],
+      "subject_q_shuffled_theta_bh": [
+        0.8463203463203463,
+        0.8463203463203463,
+        0.2632367632367632,
+        0.4896769896769897,
+        0.7451298701298701,
+        0.7906537906537907,
+        0.4896769896769897,
+        0.8463203463203463,
+        0.33399933399933407,
+        1.0,
+        0.6016840302554588,
+        0.9643927501070358,
+        0.2632367632367632,
+        0.4896769896769897,
+        1.0,
+        0.9643927501070358,
+        1.0
+      ],
+      "n_subjects_significant_raw": 2,
+      "n_subjects_significant_fdr": 0
+    },
+    "adaptation": {
+      "mean_delta_q": 0.07320374662917577,
+      "median_delta_q": 0.17872356514932644,
+      "std_delta_q": 0.6742078151396872,
+      "n_subjects_with_delta": 17,
+      "n_subjects_positive": 11,
+      "n_subjects_negative": 6,
+      "sign_binomial": {
+        "n_positive": 11,
+        "n_total": 17,
+        "p": 0.332305908203125
+      },
+      "wilcoxon_signed_rank": {
+        "stat": 63.0,
+        "p": 0.54766845703125,
+        "n": 17
+      },
+      "subject_p_shuffled_theta": [
+        0.03396603396603397,
+        0.7422577422577422,
+        0.3036963036963037,
+        0.938061938061938,
+        0.45054945054945056,
+        0.6873126873126874,
+        0.6053946053946054,
+        0.0939060939060939,
+        0.15284715284715283,
+        0.6823176823176823,
+        0.003996003996003996,
+        0.4125874125874126,
+        0.003996003996003996,
+        0.6213786213786214,
+        0.926073926073926,
+        0.3336663336663337,
+        0.6113886113886113
+      ],
+      "subject_q_shuffled_theta_bh": [
+        0.19247419247419248,
+        0.8412254412254412,
+        0.810332524618239,
+        0.938061938061938,
+        0.8345939774511203,
+        0.8345939774511203,
+        0.8345939774511203,
+        0.3991008991008991,
+        0.5196803196803196,
+        0.8345939774511203,
+        0.03396603396603397,
+        0.8345939774511203,
+        0.03396603396603397,
+        0.8345939774511203,
+        0.938061938061938,
+        0.810332524618239,
+        0.8345939774511203
+      ],
+      "n_subjects_significant_raw": 3,
+      "n_subjects_significant_fdr": 2
+    }
+  },
+  "baselines": {
+    "B1_behavior_only": "per-subject means reported in each subject.behaviour_only",
+    "B2_random_gate": "1000 random 50/50 splits per metric per subject; two-sided empirical p vs |observed \u0394|",
+    "B3_shuffled_theta": "1000 within-subject \u03b8 permutations per metric; quartile-based \u0394 recomputed each iteration; primary null"
+  },
+  "interpretation": {
+    "value_loss": "NULL (Case B \u2014 FM\u03b8 exists but not decision-relevant here)",
+    "accuracy": "NULL (Case B \u2014 FM\u03b8 exists but not decision-relevant here)",
+    "adaptation": "NULL (Case B \u2014 FM\u03b8 exists but not decision-relevant here)",
+    "_across_metrics": "CONSISTENT"
+  },
+  "limitations": [
+    "Internal replication on a single dataset (ds003458). Not peer-reviewed.",
+    "Arm values for value_loss / accuracy are the task's programmed reward probabilities, not participant-internal Q-estimates. Q-learned arm values are not used for these metrics to avoid circularity with the same Q-learning model that generated RPE.",
+    "Adaptation metric assumes RT ~ post-feedback motor readiness; RT was derived from (Response.onset \u2212 Stimulus.onset) because response_time column in events.tsv is 'n/a'.",
+    "Trial indexing uses the i-th completed (Stim, Resp, Feedback) triple; subjects with missed responses may have minor misalignment against the 480-trial oscillating schedule (typically 0\u20132 trials).",
+    "Group null via pooled subject-level shuffled-theta p-values + BH-FDR. No full cross-subject permutation was run."
+  ]
+}
