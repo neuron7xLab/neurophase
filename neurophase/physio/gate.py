@@ -31,6 +31,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Any
 
 from neurophase.gate.execution_gate import ExecutionGate, GateDecision, GateState
 from neurophase.physio.features import HRVFeatures
@@ -95,7 +96,7 @@ class PhysioGate:
         kernel invariants. Injected so tests can observe or replace it.
     """
 
-    __slots__ = ("kernel_gate", "threshold_abstain", "threshold_allow")
+    __slots__ = ("kernel_gate", "mode", "profile_user_id", "threshold_abstain", "threshold_allow")
 
     def __init__(
         self,
@@ -103,17 +104,50 @@ class PhysioGate:
         threshold_allow: float = DEFAULT_THRESHOLD_ALLOW,
         threshold_abstain: float = DEFAULT_THRESHOLD_ABSTAIN,
         kernel_gate: ExecutionGate | None = None,
+        mode: str = "default",
+        profile_user_id: str | None = None,
     ) -> None:
         if not 0.0 < threshold_abstain < threshold_allow < 1.0:
             raise ValueError(
                 f"need 0 < threshold_abstain ({threshold_abstain}) < "
                 f"threshold_allow ({threshold_allow}) < 1"
             )
+        if mode not in ("default", "calibrated"):
+            raise ValueError(f"mode must be 'default' or 'calibrated'; got {mode!r}")
+        if mode == "calibrated" and not profile_user_id:
+            raise ValueError(
+                "mode='calibrated' requires a non-empty profile_user_id; "
+                "construct via PhysioGate.from_profile(...) to enforce this"
+            )
         self.threshold_allow: float = threshold_allow
         self.threshold_abstain: float = threshold_abstain
+        self.mode: str = mode
+        self.profile_user_id: str | None = profile_user_id
         # The kernel gate runs with its own threshold equal to our
         # abstain threshold: anything below it is BLOCKED regardless.
         self.kernel_gate: ExecutionGate = kernel_gate or ExecutionGate(threshold=threshold_abstain)
+
+    @classmethod
+    def from_profile(cls, profile: Any) -> PhysioGate:
+        """Construct a calibrated gate from a :class:`PhysioProfile`.
+
+        Importing :mod:`neurophase.physio.profile` from inside the
+        classmethod keeps :mod:`neurophase.physio.gate` free of a hard
+        dependency on the calibration stack — callers that do not
+        calibrate never pay the import cost.
+        """
+        from neurophase.physio.profile import PhysioProfile
+
+        if not isinstance(profile, PhysioProfile):
+            raise TypeError(
+                f"PhysioGate.from_profile expected PhysioProfile, got {type(profile).__name__}"
+            )
+        return cls(
+            threshold_allow=profile.threshold_allow,
+            threshold_abstain=profile.threshold_abstain,
+            mode="calibrated",
+            profile_user_id=profile.user_id,
+        )
 
     def evaluate(self, features: HRVFeatures) -> PhysioDecision:
         """Return a fail-closed decision for one feature snapshot."""

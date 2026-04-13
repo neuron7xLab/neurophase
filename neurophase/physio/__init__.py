@@ -51,10 +51,22 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from neurophase.physio.calibration import (
+    CalibrationError,
+    SessionSource,
+    calibrate_profile,
+)
 from neurophase.physio.features import HRVFeatures, HRVWindow
 from neurophase.physio.gate import PhysioDecision, PhysioGate, PhysioGateState
 from neurophase.physio.ledger import LedgerConfig, PhysioLedger
 from neurophase.physio.pipeline import PhysioFrame, PhysioReplayPipeline, PhysioSession
+from neurophase.physio.profile import (
+    FeatureBand,
+    PhysioProfile,
+    ProfileValidationError,
+    load_profile,
+    save_profile,
+)
 from neurophase.physio.replay import ReplayIngestError, RRReplayReader, RRSample
 from neurophase.physio.session_replay import LedgerReplayError, ReplayReport, replay_ledger
 
@@ -70,6 +82,8 @@ if TYPE_CHECKING:
     from neurophase.physio.session_replay import main as _session_replay_main  # noqa: F401
 
 __all__ = [
+    "CalibrationError",
+    "FeatureBand",
     "HRVFeatures",
     "HRVWindow",
     "LedgerConfig",
@@ -79,11 +93,17 @@ __all__ = [
     "PhysioGate",
     "PhysioGateState",
     "PhysioLedger",
+    "PhysioProfile",
     "PhysioReplayPipeline",
     "PhysioSession",
+    "ProfileValidationError",
     "RRReplayReader",
     "RRSample",
     "ReplayIngestError",
     "ReplayReport",
+    "SessionSource",
+    "calibrate_profile",
+    "load_profile",
     "replay_ledger",
+    "save_profile",
 ]

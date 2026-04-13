@@ -63,6 +63,7 @@ from neurophase.physio.gate import (
 )
 from neurophase.physio.ledger import LedgerConfig, PhysioLedger
 from neurophase.physio.pipeline import CANONICAL_FRAME_SCHEMA_VERSION, PhysioSession
+from neurophase.physio.profile import ProfileValidationError, load_profile
 from neurophase.physio.replay import ReplayIngestError, RRSample
 
 if TYPE_CHECKING:
@@ -418,11 +419,43 @@ def _build_argparser() -> argparse.ArgumentParser:
             "Replayable offline via neurophase.physio.session_replay."
         ),
     )
+    parser.add_argument(
+        "--profile",
+        type=str,
+        default=None,
+        help=(
+            "Path to a per-user PhysioProfile JSON produced by "
+            "tools/calibrate_physio.py. When set, the gate runs in "
+            "calibrated mode: thresholds come from the profile, not "
+            "from the illustrative defaults. Without --profile the "
+            "gate stays in default mode."
+        ),
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_argparser().parse_args(argv)
+
+    # Profile loading (fail-closed: a broken profile aborts before LSL).
+    profile_overrides: dict[str, Any] = {}
+    profile_user_id: str | None = None
+    mode = "default"
+    if args.profile:
+        try:
+            profile = load_profile(args.profile)
+        except ProfileValidationError as exc:
+            _emit(
+                {"event": "FATAL", "reason": f"profile load failed: {exc}"},
+                sys.stderr,
+            )
+            return 2
+        profile_overrides["threshold_allow"] = profile.threshold_allow
+        profile_overrides["threshold_abstain"] = profile.threshold_abstain
+        profile_overrides["window_size"] = profile.window_size
+        profile_user_id = profile.user_id
+        mode = "calibrated"
+
     try:
         config = LiveConfig(
             stream_name=args.stream_name,
@@ -430,10 +463,22 @@ def main(argv: list[str] | None = None) -> int:
             read_timeout_s=args.read_timeout_s,
             resolve_timeout_s=args.resolve_timeout_s,
             max_frames=args.max_frames,
+            **profile_overrides,
         )
     except ValueError as exc:
         _emit({"event": "FATAL", "reason": f"bad config: {exc}"}, sys.stderr)
         return 2
+
+    _emit(
+        {
+            "event": "GATE_MODE",
+            "mode": mode,
+            "profile_user_id": profile_user_id,
+            "threshold_allow": config.threshold_allow,
+            "threshold_abstain": config.threshold_abstain,
+        },
+        sys.stdout,
+    )
 
     # Ensure we respond to SIGTERM cleanly on typical Linux test runners.
     def _sig_handler(_sig: int, _frm: object) -> None:
