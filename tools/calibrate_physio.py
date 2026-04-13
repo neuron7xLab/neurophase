@@ -125,9 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     out_path = save_profile(profile, args.out)
     sys.stderr.write(f"profile written: {out_path}\n")
     if args.json_report:
-        sys.stdout.write(
-            json.dumps(calibration_report(profile), indent=2, default=str) + "\n"
-        )
+        sys.stdout.write(json.dumps(calibration_report(profile), indent=2, default=str) + "\n")
     return EXIT_OK
 
 

@@ -57,9 +57,30 @@ from neurophase.physio.live import (  # noqa: E402
 )
 
 _STABLE_RR: tuple[float, ...] = (
-    820.0, 825.0, 818.0, 822.0, 830.0, 815.0, 819.0, 824.0,
-    820.0, 823.0, 821.0, 822.0, 820.0, 819.0, 821.0, 823.0,
-    820.0, 822.0, 819.0, 821.0, 820.0, 823.0, 821.0, 822.0,
+    820.0,
+    825.0,
+    818.0,
+    822.0,
+    830.0,
+    815.0,
+    819.0,
+    824.0,
+    820.0,
+    823.0,
+    821.0,
+    822.0,
+    820.0,
+    819.0,
+    821.0,
+    823.0,
+    820.0,
+    822.0,
+    819.0,
+    821.0,
+    820.0,
+    823.0,
+    821.0,
+    822.0,
 )
 
 
@@ -257,6 +278,65 @@ def _run_delayed_outlet(_outlet: object, config: FaultConfig) -> int:
     raise RuntimeError("_run_delayed_outlet must be handled before outlet creation")
 
 
+def _run_malformed_burst(outlet: object, config: FaultConfig) -> int:
+    # Warm-up, then a CONTIGUOUS burst of structurally-malformed
+    # samples that pass LSL transport but explode the consumer's
+    # ingest validation in DIFFERENT ways than impossible-RR alone:
+    #   * +inf timestamp_s   -> RRSample post-init: "non-finite"
+    #   * negative ts        -> RRSample post-init: "negative"
+    #   * +inf rr_ms         -> RRSample post-init: "outside envelope"
+    #   * NaN ts only        -> consumer sees ch0 NaN -> EOF SENTINEL
+    #     (this one we do NOT inject, because it would terminate the
+    #     stream cleanly and defeat the burst test)
+    warmup = 16
+    for i in range(warmup):
+        _push(outlet, time.monotonic(), _STABLE_RR[i])
+        _emit({"event": "SENT", "index": i, "rr_ms": _STABLE_RR[i], "fault": "malformed_burst"})
+        if config.inter_sample_s > 0:
+            time.sleep(config.inter_sample_s)
+    # Burst of three different malformed shapes. None should advance
+    # the gate; all should land as INGEST_REJECTED.
+    base_ts = time.monotonic()
+    malformed = [
+        (math.inf, 820.0, "ts_inf"),
+        (-1.0, 820.0, "ts_negative"),
+        (base_ts + 1.0, math.inf, "rr_inf"),
+    ]
+    for j, (ts, rr, kind) in enumerate(malformed):
+        _push(outlet, ts, rr)
+        _emit(
+            {
+                "event": "SENT",
+                "index": warmup + j,
+                "ts": ts,
+                "rr_ms": rr,
+                "kind": kind,
+                "fault": "malformed_burst",
+            }
+        )
+        if config.inter_sample_s > 0:
+            time.sleep(config.inter_sample_s)
+    # Trail with valid samples so the consumer can reach SUMMARY.
+    tail_start = warmup + len(malformed)
+    last_good_ts = base_ts + 2.0
+    for k in range(5):
+        last_good_ts += _STABLE_RR[k] / 1000.0
+        _push(outlet, last_good_ts, _STABLE_RR[k])
+        _emit(
+            {
+                "event": "SENT",
+                "index": tail_start + k,
+                "rr_ms": _STABLE_RR[k],
+                "fault": "malformed_burst",
+            }
+        )
+        if config.inter_sample_s > 0:
+            time.sleep(config.inter_sample_s)
+    _push_sentinel(outlet)
+    _emit({"event": "DONE", "fault": "malformed_burst"})
+    return EXIT_OK
+
+
 def _run_abrupt_disconnect(outlet: object, config: FaultConfig) -> int:
     # Push 16 clean samples then exit WITHOUT a sentinel and without a
     # graceful outlet.__del__ -> consumer stalls then sees DISCONNECTED.
@@ -276,6 +356,7 @@ _FAULT_DRIVERS = {
     "dup_timestamps": _run_dup_timestamps,
     "dropped_packets": _run_dropped_packets,
     "abrupt_disconnect": _run_abrupt_disconnect,
+    "malformed_burst": _run_malformed_burst,
 }
 
 

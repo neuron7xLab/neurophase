@@ -22,6 +22,7 @@ file needs to change for that to work.
 from __future__ import annotations
 
 import csv
+import math
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -65,8 +66,15 @@ class RRSample:
                 f"row {self.row_index}: timestamp_s must be float, "
                 f"got {type(self.timestamp_s).__name__}"
             )
-        if self.timestamp_s != self.timestamp_s:  # NaN
-            raise ReplayIngestError(f"row {self.row_index}: timestamp_s is NaN")
+        # Reject any non-finite timestamp (NaN, +inf, -inf). A
+        # non-finite timestamp would survive the < 0 check below
+        # for +inf and silently corrupt downstream monotonicity
+        # tracking (a recorded last_ts of +inf would reject every
+        # subsequent finite sample).
+        if not math.isfinite(self.timestamp_s):
+            raise ReplayIngestError(
+                f"row {self.row_index}: timestamp_s={self.timestamp_s!r} is not finite"
+            )
         if self.timestamp_s < 0.0:
             raise ReplayIngestError(
                 f"row {self.row_index}: timestamp_s={self.timestamp_s!r} is negative"
@@ -75,8 +83,8 @@ class RRSample:
             raise ReplayIngestError(
                 f"row {self.row_index}: rr_ms must be float, got {type(self.rr_ms).__name__}"
             )
-        if self.rr_ms != self.rr_ms:  # NaN
-            raise ReplayIngestError(f"row {self.row_index}: rr_ms is NaN")
+        if not math.isfinite(self.rr_ms):
+            raise ReplayIngestError(f"row {self.row_index}: rr_ms={self.rr_ms!r} is not finite")
         if not (RR_MIN_MS <= self.rr_ms <= RR_MAX_MS):
             raise ReplayIngestError(
                 f"row {self.row_index}: rr_ms={self.rr_ms!r} outside "

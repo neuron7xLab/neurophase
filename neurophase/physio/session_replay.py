@@ -51,6 +51,9 @@ class LedgerReplayError(ValueError):
     """Raised when a ledger is structurally invalid beyond recovery."""
 
 
+CONFIDENCE_TOLERANCE: float = 1e-9
+
+
 @dataclass(frozen=True)
 class ReplayDivergence:
     tick_index: int
@@ -60,6 +63,12 @@ class ReplayDivergence:
     replay_execution_allowed: bool
     timestamp_s: float
     rr_ms: float
+    #: Set only when --full-parity uncovers a kernel_state or
+    #: confidence mismatch ON TOP OF a state match. ``None`` for
+    #: divergences that already fail the decision-only check.
+    field: str | None = None
+    recorded_value: str | None = None
+    replay_value: str | None = None
 
 
 @dataclass(frozen=True)
@@ -94,21 +103,32 @@ class ReplayReport:
 
 
 def _iter_ledger_events(path: Path) -> list[dict[str, Any]]:
-    """Read all JSONL events from path, tolerating a partial trailing line."""
+    """Read all JSONL events from path, tolerating a partial trailing line.
+
+    Robustness rule (single source of truth): a malformed JSON line
+    is tolerated **iff it is the LAST non-blank line** of the file.
+    Anything else is a hard :class:`LedgerReplayError`. This matches
+    the ledger writer's flush-after-each-line semantics (a crash can
+    only truncate the line currently being written).
+    """
     if not path.exists():
         raise LedgerReplayError(f"ledger file not found: {path}")
-    events: list[dict[str, Any]] = []
     raw = path.read_text(encoding="utf-8")
+    # Index of the last non-blank line, if any. Lines that are
+    # whitespace-only are ignored from both the count and the parse.
+    non_blank: list[tuple[int, str]] = []
     for lineno, line in enumerate(raw.splitlines(), start=1):
-        line = line.strip()
-        if not line:
-            continue
+        if line.strip():
+            non_blank.append((lineno, line.strip()))
+    last_idx = len(non_blank) - 1
+
+    events: list[dict[str, Any]] = []
+    for i, (lineno, line) in enumerate(non_blank):
         try:
             events.append(json.loads(line))
         except json.JSONDecodeError:
-            # Permit a single truncated trailing line (crash tolerance).
-            # Mid-file malformed lines are hard failures.
-            if lineno == raw.count("\n") + (0 if raw.endswith("\n") else 1):
+            if i == last_idx:
+                # Truncated trailing line: tolerated.
                 break
             raise LedgerReplayError(
                 f"{path}: malformed JSON at line {lineno}: {line[:80]!r}"
@@ -126,8 +146,22 @@ def _extract_session_core(header: dict[str, Any]) -> PhysioSession:
     )
 
 
-def replay_ledger(path: str | Path) -> ReplayReport:
+def replay_ledger(
+    path: str | Path,
+    *,
+    full_parity: bool = False,
+) -> ReplayReport:
     """Reconstruct a session from a ledger file, frame-by-frame.
+
+    Default mode (``full_parity=False``) compares ``gate_state`` and
+    ``execution_allowed`` only — the **decision parity** check that
+    proves the gate's user-visible output is reproducible.
+
+    With ``full_parity=True`` the replayer additionally checks
+    ``kernel_state`` and ``confidence`` (within
+    :data:`CONFIDENCE_TOLERANCE`). This catches subtle drift in the
+    underlying feature pipeline that would not change the decision
+    today but could on a different sample sequence.
 
     Returns a :class:`ReplayReport`. Malformed ledgers raise
     :class:`LedgerReplayError`.
@@ -197,6 +231,50 @@ def replay_ledger(path: str | Path) -> ReplayReport:
                     rr_ms=rr_ms,
                 )
             )
+            continue
+
+        if not full_parity:
+            continue
+
+        # Full-parity additional checks. Only run when the decision
+        # itself matched -- a decision divergence is the headline
+        # finding and is reported above without piling on.
+        recorded_kernel = evt.get("kernel_state")
+        if recorded_kernel is not None and str(recorded_kernel) != frame.decision.kernel_state.name:
+            divergences.append(
+                ReplayDivergence(
+                    tick_index=tick_index,
+                    recorded_state=recorded_state,
+                    replay_state=replay_state,
+                    recorded_execution_allowed=recorded_allowed,
+                    replay_execution_allowed=replay_allowed,
+                    timestamp_s=timestamp_s,
+                    rr_ms=rr_ms,
+                    field="kernel_state",
+                    recorded_value=str(recorded_kernel),
+                    replay_value=frame.decision.kernel_state.name,
+                )
+            )
+            continue
+
+        recorded_conf = evt.get("confidence")
+        if recorded_conf is not None:
+            replay_conf = frame.decision.confidence
+            if abs(float(recorded_conf) - float(replay_conf)) > CONFIDENCE_TOLERANCE:
+                divergences.append(
+                    ReplayDivergence(
+                        tick_index=tick_index,
+                        recorded_state=recorded_state,
+                        replay_state=replay_state,
+                        recorded_execution_allowed=recorded_allowed,
+                        replay_execution_allowed=replay_allowed,
+                        timestamp_s=timestamp_s,
+                        rr_ms=rr_ms,
+                        field="confidence",
+                        recorded_value=f"{float(recorded_conf):.12f}",
+                        replay_value=f"{float(replay_conf):.12f}",
+                    )
+                )
 
     return ReplayReport(
         path=path,
@@ -241,6 +319,15 @@ def _build_argparser() -> argparse.ArgumentParser:
             "valid ledger."
         ),
     )
+    p.add_argument(
+        "--full-parity",
+        action="store_true",
+        help=(
+            "Additionally check kernel_state and confidence (within "
+            f"{CONFIDENCE_TOLERANCE:g}). Default mode checks gate_state "
+            "and execution_allowed only -- the user-visible decision."
+        ),
+    )
     return p
 
 
@@ -274,7 +361,7 @@ def _format_human(report: ReplayReport) -> str:
 def main(argv: list[str] | None = None) -> int:
     args = _build_argparser().parse_args(argv)
     try:
-        report = replay_ledger(args.ledger)
+        report = replay_ledger(args.ledger, full_parity=args.full_parity)
     except LedgerReplayError as exc:
         if args.json:
             sys.stdout.write(json.dumps({"error": str(exc)}) + "\n")

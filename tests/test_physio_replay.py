@@ -36,12 +36,24 @@ class TestRRSample:
             RRSample(timestamp_s=1.0, rr_ms=RR_MAX_MS + 1.0, row_index=0)
 
     def test_nan_timestamp_rejected(self) -> None:
-        with pytest.raises(ReplayIngestError, match="NaN"):
+        with pytest.raises(ReplayIngestError, match="not finite"):
             RRSample(timestamp_s=float("nan"), rr_ms=820.0, row_index=0)
 
     def test_nan_rr_rejected(self) -> None:
-        with pytest.raises(ReplayIngestError, match="NaN"):
+        with pytest.raises(ReplayIngestError, match="not finite"):
             RRSample(timestamp_s=1.0, rr_ms=float("nan"), row_index=0)
+
+    def test_inf_timestamp_rejected(self) -> None:
+        with pytest.raises(ReplayIngestError, match="not finite"):
+            RRSample(timestamp_s=float("inf"), rr_ms=820.0, row_index=0)
+
+    def test_neg_inf_timestamp_rejected(self) -> None:
+        with pytest.raises(ReplayIngestError, match="not finite"):
+            RRSample(timestamp_s=float("-inf"), rr_ms=820.0, row_index=0)
+
+    def test_inf_rr_rejected(self) -> None:
+        with pytest.raises(ReplayIngestError, match="not finite"):
+            RRSample(timestamp_s=1.0, rr_ms=float("inf"), row_index=0)
 
     def test_negative_timestamp_rejected(self) -> None:
         with pytest.raises(ReplayIngestError, match="negative"):

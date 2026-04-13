@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import math
 import os
 import subprocess
 import sys
@@ -73,6 +72,7 @@ def _wait_for_event(stdout: Any, event_name: str, *, timeout_s: float) -> dict[s
         except json.JSONDecodeError:
             continue
         if evt.get("event") == event_name:
+            assert isinstance(evt, dict)
             return evt
     raise RuntimeError(f"timed out waiting for {event_name!r}")
 
@@ -88,16 +88,13 @@ def main() -> int:
     )
 
     assert pp.LSL_CHANNEL_COUNT == LSL_CHANNEL_COUNT, (
-        f"channel_count mismatch: producer={pp.LSL_CHANNEL_COUNT} "
-        f"consumer={LSL_CHANNEL_COUNT}"
+        f"channel_count mismatch: producer={pp.LSL_CHANNEL_COUNT} consumer={LSL_CHANNEL_COUNT}"
     )
     assert pp.LSL_CHANNEL_FORMAT == LSL_CHANNEL_FORMAT, (
-        f"channel_format mismatch: producer={pp.LSL_CHANNEL_FORMAT} "
-        f"consumer={LSL_CHANNEL_FORMAT}"
+        f"channel_format mismatch: producer={pp.LSL_CHANNEL_FORMAT} consumer={LSL_CHANNEL_FORMAT}"
     )
     assert pp.LSL_STREAM_TYPE == LSL_STREAM_TYPE, (
-        f"stream_type mismatch: producer={pp.LSL_STREAM_TYPE} "
-        f"consumer={LSL_STREAM_TYPE}"
+        f"stream_type mismatch: producer={pp.LSL_STREAM_TYPE} consumer={LSL_STREAM_TYPE}"
     )
     print("layer-A1 constants: OK")
 
@@ -154,8 +151,9 @@ def main() -> int:
         assert guard.emit_once() is False  # second call is a no-op
 
         consumer.wait(timeout=30.0)
+        stderr_tail = consumer.stderr.read() if consumer.stderr is not None else "<no stderr>"
         assert consumer.returncode == 0, (
-            f"consumer exit={consumer.returncode}  stderr={consumer.stderr.read()!r}"
+            f"consumer exit={consumer.returncode}  stderr={stderr_tail!r}"
         )
     finally:
         if consumer.poll() is None:
@@ -164,9 +162,7 @@ def main() -> int:
     # Count FRAME events to be thorough.
     tail = consumer.stdout.read() if consumer.stdout else ""
     frames = [
-        ln
-        for ln in tail.splitlines()
-        if ln.strip().startswith("{") and '"event": "FRAME"' in ln
+        ln for ln in tail.splitlines() if ln.strip().startswith("{") and '"event": "FRAME"' in ln
     ]
     print(f"layer-B end-to-end:  OK  ({len(frames)} post-drain FRAMEs seen)")
     print("CONTRACT OK")

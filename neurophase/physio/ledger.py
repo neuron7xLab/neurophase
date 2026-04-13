@@ -34,7 +34,9 @@ The point here is reproducibility, not tamper-evidence.
 
 from __future__ import annotations
 
+import contextlib
 import json
+import os
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -43,6 +45,11 @@ from types import TracebackType
 from typing import IO, Any
 
 PHYSIO_LEDGER_SCHEMA_VERSION: str = "physio-ledger-v1"
+
+#: File permission bits applied to every ledger file at creation. RR
+#: traces are personal physiological data; default umask 022 would
+#: leave them group/world-readable. 0o600 is the deliberate floor.
+LEDGER_FILE_MODE: int = 0o600
 
 
 @dataclass(frozen=True)
@@ -119,11 +126,31 @@ class PhysioLedger:
         return self._session_id
 
     def __enter__(self) -> PhysioLedger:
+        # One PhysioLedger instance must be entered AT MOST once. A
+        # second __enter__ would silently re-open the file and
+        # overwrite the already-recorded session, which is exactly
+        # the kind of "silent drift" the operating contract forbids.
+        if self._fh is not None:
+            raise RuntimeError("PhysioLedger.__enter__ called twice on the same instance")
+        if self._closed:
+            raise RuntimeError("PhysioLedger.__enter__ called after close()")
         self._path.parent.mkdir(parents=True, exist_ok=True)
         # Fresh file per session. Two sessions that share a path
         # overwrite each other; that is intentional -- ledger paths
         # must include the session id / timestamp in the filename.
-        self._fh = self._path.open("w", encoding="utf-8")
+        # Open via os.open + chmod so the file is created with 0o600
+        # regardless of the caller's umask. RR data is personal.
+        fd = os.open(
+            self._path,
+            os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+            LEDGER_FILE_MODE,
+        )
+        with contextlib.suppress(OSError):
+            # On filesystems that do not honour chmod (e.g. some
+            # network mounts) we still emit the ledger but log nothing
+            # extra: the operator is responsible for the storage layer.
+            os.chmod(self._path, LEDGER_FILE_MODE)
+        self._fh = os.fdopen(fd, "w", encoding="utf-8")
         self._write_line(
             {
                 "event": "SESSION_HEADER",

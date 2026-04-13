@@ -428,6 +428,49 @@ class TestAbruptDisconnect:
 # =======================================================================
 
 
+class TestMalformedBurst:
+    """Malformed payloads that pass LSL transport but explode the
+    consumer's ingest validation. Distinct from spike_burst (which
+    only injects out-of-envelope but otherwise well-formed RRs)."""
+
+    def test_malformed_payloads_all_rejected(self) -> None:
+        stream = _unique_stream_name("malformed")
+        consumer = _spawn_module(
+            "neurophase.physio.live",
+            ["--stream-name", stream, "--max-frames", "30", "--stall-timeout-s", "4.0"],
+        )
+        try:
+            _wait_for_event(consumer, "LISTENING", timeout_s=_READY_TIMEOUT_S)
+            producer = _spawn_script(
+                _FAULT_TOOL,
+                [
+                    "--stream-name",
+                    stream,
+                    "--fault",
+                    "malformed_burst",
+                    "--inter-sample-s",
+                    "0.02",
+                ],
+            )
+            producer.wait(timeout=_PROC_JOIN_TIMEOUT_S)
+            events = _drain_events(consumer, timeout_s=_PROC_JOIN_TIMEOUT_S)
+        finally:
+            if consumer.poll() is None:
+                consumer.terminate()
+
+        _no_false_execute_allowed(events)
+        rejected = [e for e in events if e.get("event") == "INGEST_REJECTED"]
+        # Three structurally-malformed shapes injected: ts_inf, ts_negative,
+        # rr_inf. Each must surface as exactly one INGEST_REJECTED.
+        # ts_negative arrives via the monotonicity check; ts_inf and rr_inf
+        # via the RRSample finite-checks. All three must reject.
+        assert len(rejected) >= 3, (
+            f"expected >= 3 INGEST_REJECTED events for malformed_burst; got {len(rejected)}"
+        )
+        reasons = " | ".join(str(r.get("reason", "")) for r in rejected)
+        assert "not finite" in reasons or "non-monotonic" in reasons or "envelope" in reasons
+
+
 class TestCleanReference:
     def test_clean_mode_matches_happy_path(self) -> None:
         """Sanity check: fault_producer --fault clean should behave

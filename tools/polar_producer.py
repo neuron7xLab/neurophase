@@ -159,9 +159,7 @@ def parse_hrs_payload(data: bytes) -> HRSParseResult:
     if rr_present:
         remaining = data[offset:]
         if len(remaining) % 2 != 0:
-            raise HRSParseError(
-                f"RR region has odd byte count: {len(remaining)}"
-            )
+            raise HRSParseError(f"RR region has odd byte count: {len(remaining)}")
         for i in range(0, len(remaining), 2):
             rr_raw = int.from_bytes(remaining[i : i + 2], "little", signed=False)
             # Protected conversion: divide by 1024 (not 1000).
@@ -189,7 +187,7 @@ class SentinelGuard:
     land on a dead socket. This class enforces the one-shot invariant.
     """
 
-    __slots__ = ("_outlet", "_sent", "_on_emit")
+    __slots__ = ("_on_emit", "_outlet", "_sent")
 
     def __init__(
         self,
@@ -395,8 +393,7 @@ async def run_producer(args: argparse.Namespace) -> int:
             if not (RR_MIN_MS <= rr_ms <= RR_MAX_MS):
                 log_event(
                     "PACKET_REJECTED",
-                    reason=f"rr_ms={rr_ms!r} outside envelope "
-                    f"[{RR_MIN_MS}, {RR_MAX_MS}]",
+                    reason=f"rr_ms={rr_ms!r} outside envelope [{RR_MIN_MS}, {RR_MAX_MS}]",
                 )
                 continue
             try:
@@ -435,9 +432,7 @@ async def run_producer(args: argparse.Namespace) -> int:
 
     log_event("CONNECTING", address=target.address)
     try:
-        async with BleakClient(
-            target.address, disconnected_callback=_on_disconnected
-        ) as client:
+        async with BleakClient(target.address, disconnected_callback=_on_disconnected) as client:
             log_event("CONNECTED", address=target.address)
 
             # Locate the HRS measurement characteristic explicitly.
@@ -501,6 +496,7 @@ def _self_test_cases() -> Iterable[tuple[str, bool, Any]]:
     Each ``check`` is a zero-arg callable; it raises AssertionError on
     failure. The second tuple element is ignored (kept for symmetry).
     """
+
     # Fixture 1: HR only, no RR
     def f1() -> None:
         r = parse_hrs_payload(bytes([0x00, 75]))
@@ -619,7 +615,9 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--name", default=None, help="Name filter; default 'Polar H10'.")
     p.add_argument("--scan-timeout", type=float, default=10.0)
     p.add_argument("--source-id", default=None, help="LSL source_id override.")
-    p.add_argument("--debug", action="store_true", help="Include raw bytearray hex on rejected packets.")
+    p.add_argument(
+        "--debug", action="store_true", help="Include raw bytearray hex on rejected packets."
+    )
     p.add_argument(
         "--self-test",
         action="store_true",

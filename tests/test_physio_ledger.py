@@ -82,6 +82,43 @@ class TestLedgerStructuralGuarantees:
         with pytest.raises(RuntimeError, match="closed"):
             led.write_event({"event": "FRAME"})
 
+    def test_double_enter_rejected(self, tmp_path: Path) -> None:
+        """A single PhysioLedger instance must be __enter__ed at most
+        once. Re-entering would silently clobber the recorded session."""
+        path = tmp_path / "s4.jsonl"
+        led = PhysioLedger(path, config=_mk_config())
+        led.__enter__()
+        try:
+            with pytest.raises(RuntimeError, match="twice"):
+                led.__enter__()
+        finally:
+            led.__exit__(None, None, None)
+
+    def test_enter_after_close_rejected(self, tmp_path: Path) -> None:
+        path = tmp_path / "s5.jsonl"
+        led = PhysioLedger(path, config=_mk_config())
+        led.__enter__()
+        led.__exit__(None, None, None)
+        with pytest.raises(RuntimeError, match="after close"):
+            led.__enter__()
+
+    def test_file_mode_is_0o600(self, tmp_path: Path) -> None:
+        """Ledgers carry personal physiological data. The file mode
+        must be 0o600 regardless of the caller's umask. Validates the
+        privacy floor specified by LEDGER_FILE_MODE."""
+        import os
+        import stat
+
+        old_umask = os.umask(0o022)
+        try:
+            path = tmp_path / "private.jsonl"
+            with PhysioLedger(path, config=_mk_config()) as led:
+                led.write_event({"event": "FRAME"})
+            mode = stat.S_IMODE(path.stat().st_mode)
+            assert mode == 0o600, f"ledger file mode is {oct(mode)}, expected 0o600"
+        finally:
+            os.umask(old_umask)
+
 
 # --------------- Record-replay parity (the keystone test) --------------
 
@@ -256,6 +293,41 @@ class TestLedgerRobustness:
         report = replay_ledger(path)  # must NOT raise
         assert report.n_frames_recorded == 1
 
+    def test_partial_trailing_line_no_final_newline(self, tmp_path: Path) -> None:
+        """File with no trailing \\n at all: the writer-was-killed-mid-line
+        case. The reader must still tolerate it iff the malformed line
+        is the LAST one."""
+        path = tmp_path / "no-final-nl.jsonl"
+        header = json.dumps(
+            {
+                "event": "SESSION_HEADER",
+                "schema_version": PHYSIO_LEDGER_SCHEMA_VERSION,
+                "session_id": "xyz",
+                "config": {},
+            }
+        )
+        # Note: file deliberately ends with a partial line and no newline.
+        path.write_text(f"{header}\n" + '{"event": "FRAME", "tick_index": 0')
+        report = replay_ledger(path)
+        assert report.n_frames_recorded == 0  # the partial frame is dropped
+
+    def test_mid_file_malformed_line_raises(self, tmp_path: Path) -> None:
+        """A malformed JSON line in the MIDDLE of the file is a hard
+        failure -- only the trailing line is allowed to be truncated."""
+        path = tmp_path / "mid-bad.jsonl"
+        header = json.dumps(
+            {
+                "event": "SESSION_HEADER",
+                "schema_version": PHYSIO_LEDGER_SCHEMA_VERSION,
+                "session_id": "xyz",
+                "config": {},
+            }
+        )
+        good = json.dumps({"event": "FRAME", "tick_index": 0})
+        path.write_text(f"{header}\nthis is not json\n{good}\n")
+        with pytest.raises(LedgerReplayError, match="malformed JSON"):
+            replay_ledger(path)
+
 
 # --------------- CLI contract ------------------------------------------
 
@@ -297,6 +369,95 @@ class TestReplayCLI:
         assert rc == EXIT_OK
         assert payload["parity_ok"] is True
         assert payload["n_divergences"] == 0
+
+    def test_full_parity_catches_kernel_state_drift(self, tmp_path: Path) -> None:
+        """Default mode passes if gate_state matches; --full-parity
+        additionally catches kernel_state divergence even when the
+        user-visible decision happens to align."""
+        path = tmp_path / "drift.jsonl"
+        with PhysioLedger(path, config=_mk_config()) as led:
+            session = PhysioSession()
+            from neurophase.physio.replay import RRSample
+
+            t = 100.0
+            for i in range(16):
+                rr = 820.0 + (5 if i % 2 == 0 else -5)
+                t += rr / 1000.0
+                frame = session.step(
+                    RRSample(timestamp_s=t, rr_ms=rr, row_index=i),
+                    tick_index=i,
+                )
+                # Forge a wrong kernel_state on every record so the
+                # full-parity check has guaranteed divergences while
+                # the decision-only check sees none. Mapping rule:
+                # whatever the replay produces, store the OPPOSITE-ish
+                # legal kernel state.
+                replay_kernel = frame.decision.kernel_state.name
+                forged_kernel = "BLOCKED" if replay_kernel != "BLOCKED" else "READY"
+                evt = {
+                    "event": "FRAME",
+                    "tick_index": frame.tick_index,
+                    "timestamp_s": frame.timestamp_s,
+                    "rr_ms": frame.rr_ms,
+                    "gate_state": frame.decision.state.name,
+                    "execution_allowed": frame.decision.execution_allowed,
+                    "kernel_state": forged_kernel,
+                    "confidence": frame.decision.confidence,
+                }
+                led.write_event(evt)
+
+        # Decision parity passes -- gate_state and execution_allowed
+        # are byte-identical to what replay produces.
+        report_default = replay_ledger(path)
+        assert report_default.parity_ok
+
+        # Full parity fails -- kernel_state was forged on every frame.
+        report_full = replay_ledger(path, full_parity=True)
+        assert report_full.n_divergences > 0
+        assert all(d.field == "kernel_state" for d in report_full.divergences)
+        assert report_full.parity_ok is False
+
+    def test_full_parity_catches_confidence_drift(self, tmp_path: Path) -> None:
+        """A forged confidence value beyond CONFIDENCE_TOLERANCE must
+        be flagged under --full-parity. Sub-tolerance noise must NOT be."""
+        from neurophase.physio.session_replay import CONFIDENCE_TOLERANCE
+
+        path = tmp_path / "conf.jsonl"
+        with PhysioLedger(path, config=_mk_config()) as led:
+            session = PhysioSession()
+            from neurophase.physio.replay import RRSample
+
+            t = 100.0
+            for i in range(16):
+                rr = 820.0 + (5 if i % 2 == 0 else -5)
+                t += rr / 1000.0
+                frame = session.step(
+                    RRSample(timestamp_s=t, rr_ms=rr, row_index=i),
+                    tick_index=i,
+                )
+                # First half: noise inside tolerance (must NOT diverge).
+                # Second half: confidence forged by 0.1 (must diverge).
+                if i < 8:
+                    forged = frame.decision.confidence + CONFIDENCE_TOLERANCE / 10.0
+                else:
+                    forged = frame.decision.confidence + 0.1
+                led.write_event(
+                    {
+                        "event": "FRAME",
+                        "tick_index": frame.tick_index,
+                        "timestamp_s": frame.timestamp_s,
+                        "rr_ms": frame.rr_ms,
+                        "gate_state": frame.decision.state.name,
+                        "execution_allowed": frame.decision.execution_allowed,
+                        "kernel_state": frame.decision.kernel_state.name,
+                        "confidence": forged,
+                    }
+                )
+
+        report_full = replay_ledger(path, full_parity=True)
+        # Only the second-half noise should have produced divergences.
+        assert report_full.n_divergences == 8
+        assert all(d.field == "confidence" for d in report_full.divergences)
 
     def test_cli_strict_mode_returns_parity_fail(
         self, tmp_path: Path, capsys: pytest.CaptureFixture[str]

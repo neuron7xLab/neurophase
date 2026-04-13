@@ -94,6 +94,17 @@ class PhysioGate:
     kernel_gate
         The underlying :class:`ExecutionGate` instance that enforces the
         kernel invariants. Injected so tests can observe or replace it.
+    mode
+        ``"default"`` (illustrative repo thresholds) or ``"calibrated"``
+        (per-user profile thresholds). Honor-system flag: the constructor
+        does not verify that ``mode="calibrated"`` came from a real
+        :class:`PhysioProfile`. Use :meth:`from_profile` for the only
+        construction path that GUARANTEES profile provenance; bypassing
+        that classmethod is permitted but operationally meaningless --
+        the gate will trust the caller.
+    profile_user_id
+        Required when ``mode="calibrated"``; rejected when
+        ``mode="default"``. Recorded in :class:`PhysioDecision` for audit.
     """
 
     __slots__ = ("kernel_gate", "mode", "profile_user_id", "threshold_abstain", "threshold_allow")
@@ -118,6 +129,12 @@ class PhysioGate:
             raise ValueError(
                 "mode='calibrated' requires a non-empty profile_user_id; "
                 "construct via PhysioGate.from_profile(...) to enforce this"
+            )
+        if mode == "default" and profile_user_id is not None:
+            raise ValueError(
+                f"mode='default' must not carry a profile_user_id; "
+                f"got profile_user_id={profile_user_id!r}. Either set "
+                f"mode='calibrated' or omit profile_user_id."
             )
         self.threshold_allow: float = threshold_allow
         self.threshold_abstain: float = threshold_abstain
