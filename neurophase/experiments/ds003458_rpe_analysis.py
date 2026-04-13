@@ -73,7 +73,6 @@ def _extract_trial_alignment(subject: SubjectData) -> TrialAlignment:
     events = subject.events_df
     fs = subject.fs
 
-    trial_types = events["trial_type"].astype(str)
     fb_onsets: list[float] = []
     rewards: list[float] = []
     trial_indices: list[int] = []  # index into reward_prob_chosen
@@ -183,7 +182,7 @@ def _analyze_subject(
     fmtheta_power = fmtheta_power[valid]
     abs_rpe = abs_rpe[valid]
     rpe_trim = rpe_trim[valid]
-    n_valid = int(len(fmtheta_power))
+    n_valid = len(fmtheta_power)
 
     if n_valid < 20:
         return {
@@ -226,10 +225,14 @@ def run_rpe_analysis(
     subjects = [s for s in all_subjects if s not in SKIP_SUBJECTS]
     skipped = [s for s in all_subjects if s in SKIP_SUBJECTS]
 
-    print(f"Found {len(all_subjects)} subjects; skipping {len(skipped)} "
-          f"({', '.join(skipped)}); running {len(subjects)}")
-    print(f"Channel: {NEURAL_CHANNEL}  Band: {FMTHETA_BAND} Hz  "
-          f"Epoch: {EPOCH_MS} ms  Surrogates: {N_SURROGATES}")
+    print(
+        f"Found {len(all_subjects)} subjects; skipping {len(skipped)} "
+        f"({', '.join(skipped)}); running {len(subjects)}"
+    )
+    print(
+        f"Channel: {NEURAL_CHANNEL}  Band: {FMTHETA_BAND} Hz  "
+        f"Epoch: {EPOCH_MS} ms  Surrogates: {N_SURROGATES}"
+    )
     print()
 
     rng = np.random.default_rng(seed)
@@ -240,7 +243,7 @@ def run_rpe_analysis(
         try:
             subject = loader.load_subject(sid)
             row = _analyze_subject(subject, rng=rng)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             row = {"subject": sid, "status": "ERROR", "reason": str(exc)}
 
         per_subject.append(row)
@@ -251,7 +254,7 @@ def run_rpe_analysis(
                 f"{tag}  n={row['n_trials_used']}"
             )
         else:
-            print(f"{row['status']}: {row.get('reason','')}")
+            print(f"{row['status']}: {row.get('reason', '')}")
 
     valid = [r for r in per_subject if r.get("status") == "OK"]
     n_valid = len(valid)
@@ -281,7 +284,7 @@ def run_rpe_analysis(
             "band_hz": list(FMTHETA_BAND),
             "epoch_ms": list(EPOCH_MS),
             "statistic": "Spearman rho of trial FMθ power vs |RPE|",
-            "null": f"{N_SURROGATES}× |RPE| shuffle (two-sided)",
+            "null": f"{N_SURROGATES}x |RPE| shuffle (two-sided)",
             "alpha": ALPHA,
             "group_test": "one-sided binomial vs chance rate 0.05",
         },
@@ -307,7 +310,7 @@ def save_results(results: dict[str, Any], output_dir: str | Path = "results") ->
 
 def main() -> None:
     print("=" * 64)
-    print("  NEUROPHASE · ds003458 FMθ power × |RPE| — trial-locked")
+    print("  NEUROPHASE - ds003458 FMtheta power x |RPE| - trial-locked")
     print("=" * 64)
     print()
 

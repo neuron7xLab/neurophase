@@ -10,7 +10,10 @@ fails.
 Available entry points::
 
     from neurophase.experiments.ds003458_analysis import run_analysis
+    from neurophase.experiments.ds003458_csd_analysis import run_csd_analysis
     from neurophase.experiments.ds003458_delta_analysis import run_delta_analysis
+    from neurophase.experiments.ds003458_delta_q import run_delta_q_analysis
+    from neurophase.experiments.ds003458_rpe_analysis import run_rpe_analysis
     from neurophase.experiments.ds003458_scp_analysis import run_scp_analysis
     from neurophase.experiments.ds003458_trial_lme import run_trial_lme_analysis
     from neurophase.experiments.synthetic_plv_validation import run_sweep
@@ -27,7 +30,10 @@ from typing import TYPE_CHECKING
 # heavy scientific dependencies on package import.
 if TYPE_CHECKING:
     from neurophase.experiments.ds003458_analysis import run_analysis  # noqa: F401
+    from neurophase.experiments.ds003458_csd_analysis import run_csd_analysis  # noqa: F401
     from neurophase.experiments.ds003458_delta_analysis import run_delta_analysis  # noqa: F401
+    from neurophase.experiments.ds003458_delta_q import run_delta_q_analysis  # noqa: F401
+    from neurophase.experiments.ds003458_rpe_analysis import run_rpe_analysis  # noqa: F401
     from neurophase.experiments.ds003458_scp_analysis import run_scp_analysis  # noqa: F401
     from neurophase.experiments.ds003458_trial_lme import run_trial_lme_analysis  # noqa: F401
     from neurophase.experiments.synthetic_plv_validation import run_sweep  # noqa: F401

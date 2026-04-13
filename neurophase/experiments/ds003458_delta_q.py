@@ -105,8 +105,8 @@ class TrialEvents:
     resp_onsets_sec: FloatArray
     fb_onsets_sec: FloatArray
     fb_onsets_samples: IntArray
-    reward: FloatArray        # 0 or 1
-    chosen_stim: IntArray     # 0/1/2 (LO/MID/HI)
+    reward: FloatArray  # 0 or 1
+    chosen_stim: IntArray  # 0/1/2 (LO/MID/HI)
     n_trials: int
 
 
@@ -272,7 +272,9 @@ def _compute_behavioural_targets(events: TrialEvents) -> dict[str, FloatArray]:
     }
 
 
-def _quartile_masks(theta_t: FloatArray, valid: np.ndarray) -> tuple[np.ndarray, np.ndarray, float, float]:
+def _quartile_masks(
+    theta_t: FloatArray, valid: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, float, float]:
     """Return (low_mask, high_mask, q1, q3) over indices where *valid* is True."""
     vals = theta_t[valid]
     if vals.size < 4:
@@ -325,16 +327,14 @@ def _delta_higher_better(
 # --- Core subject-level benchmark ---------------------------------------
 
 
-def _analyze_subject(
-    subject: SubjectData, *, rng: np.random.Generator
-) -> dict[str, Any]:
+def _analyze_subject(subject: SubjectData, *, rng: np.random.Generator) -> dict[str, Any]:
     sid = subject.subject_id
     if NEURAL_CHANNEL not in subject.raw.ch_names:
         return {"subject": sid, "status": "SKIPPED", "reason": f"{NEURAL_CHANNEL} missing"}
 
     try:
         raw_csd = _apply_csd(subject.raw)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return {"subject": sid, "status": "ERROR", "reason": f"CSD: {exc}"}
 
     ev = _parse_trials_full(subject)
@@ -369,11 +369,7 @@ def _analyze_subject(
     adapt_target = np.where(adapt_valid, adapt_next, np.nan)
 
     # Main-metric validity: theta, value_loss, accuracy all finite.
-    valid_main = (
-        np.isfinite(theta_t)
-        & np.isfinite(value_loss_next)
-        & np.isfinite(accuracy_next)
-    )
+    valid_main = np.isfinite(theta_t) & np.isfinite(value_loss_next) & np.isfinite(accuracy_next)
     n_main = int(valid_main.sum())
     if n_main < MIN_TRIALS_REQUIRED:
         return {
@@ -405,9 +401,7 @@ def _analyze_subject(
     dq_ad, mad_lo, mad_hi = _delta_higher_better(adapt_target, low_a, high_a)
 
     # -- Mann–Whitney U tests + Cliff's δ -----------------------------
-    def _mwu_with_cliff(
-        target: FloatArray, lo_m: np.ndarray, hi_m: np.ndarray
-    ) -> dict[str, float]:
+    def _mwu_with_cliff(target: FloatArray, lo_m: np.ndarray, hi_m: np.ndarray) -> dict[str, float]:
         lo = target[lo_m]
         hi = target[hi_m]
         lo = lo[np.isfinite(lo)]
@@ -450,22 +444,38 @@ def _analyze_subject(
 
     # -- Null 2: shuffled theta (primary null) ------------------------
     sh_vl = _shuffled_theta_null(
-        theta_t, value_loss_next, valid_main,
-        kind="lower_better", observed=dq_vl, rng=rng,
+        theta_t,
+        value_loss_next,
+        valid_main,
+        kind="lower_better",
+        observed=dq_vl,
+        rng=rng,
     )
     sh_ac = _shuffled_theta_null(
-        theta_t, accuracy_next, valid_main,
-        kind="higher_better", observed=dq_ac, rng=rng,
+        theta_t,
+        accuracy_next,
+        valid_main,
+        kind="higher_better",
+        observed=dq_ac,
+        rng=rng,
     )
     sh_ad = _shuffled_theta_null(
-        theta_t, adapt_target, adapt_valid,
-        kind="higher_better", observed=dq_ad, rng=rng,
+        theta_t,
+        adapt_target,
+        adapt_valid,
+        kind="higher_better",
+        observed=dq_ad,
+        rng=rng,
     )
 
     # -- Behaviour-only reference -------------------------------------
     b1_vl = float(np.nanmean(value_loss_next[valid_main]))
     b1_ac = float(np.nanmean(accuracy_next[valid_main]))
-    b1_ad = float(np.nanmean(adapt_target[adapt_valid])) if adapt_valid.sum() >= MIN_STRATUM_SIZE else float("nan")
+    b1_ad = (
+        float(np.nanmean(adapt_target[adapt_valid]))
+        if adapt_valid.sum() >= MIN_STRATUM_SIZE
+        else float("nan")
+    )
 
     return {
         "subject": sid,
@@ -479,27 +489,43 @@ def _analyze_subject(
         "n_high": n_high,
         "n_low_adapt": n_low_a,
         "n_high_adapt": n_high_a,
-
         "behaviour_only": {"value_loss": b1_vl, "accuracy": b1_ac, "adaptation": b1_ad},
-
         "value_loss": {
-            "mean_low": mvl_lo, "mean_high": mvl_hi, "delta_q": dq_vl,
-            "mwu_u": mwu_vl["u"], "mwu_p": mwu_vl["p"], "cliff_delta": mwu_vl["cliff"],
-            "spearman_rho": sp_vl["rho"], "spearman_p": sp_vl["p"], "spearman_n": sp_vl["n"],
+            "mean_low": mvl_lo,
+            "mean_high": mvl_hi,
+            "delta_q": dq_vl,
+            "mwu_u": mwu_vl["u"],
+            "mwu_p": mwu_vl["p"],
+            "cliff_delta": mwu_vl["cliff"],
+            "spearman_rho": sp_vl["rho"],
+            "spearman_p": sp_vl["p"],
+            "spearman_n": sp_vl["n"],
             "null_shuffled_theta": sh_vl,
             "null_random_gate": rg_vl,
         },
         "accuracy": {
-            "mean_low": mac_lo, "mean_high": mac_hi, "delta_q": dq_ac,
-            "mwu_u": mwu_ac["u"], "mwu_p": mwu_ac["p"], "cliff_delta": mwu_ac["cliff"],
-            "spearman_rho": sp_ac["rho"], "spearman_p": sp_ac["p"], "spearman_n": sp_ac["n"],
+            "mean_low": mac_lo,
+            "mean_high": mac_hi,
+            "delta_q": dq_ac,
+            "mwu_u": mwu_ac["u"],
+            "mwu_p": mwu_ac["p"],
+            "cliff_delta": mwu_ac["cliff"],
+            "spearman_rho": sp_ac["rho"],
+            "spearman_p": sp_ac["p"],
+            "spearman_n": sp_ac["n"],
             "null_shuffled_theta": sh_ac,
             "null_random_gate": rg_ac,
         },
         "adaptation": {
-            "mean_low": mad_lo, "mean_high": mad_hi, "delta_q": dq_ad,
-            "mwu_u": mwu_ad["u"], "mwu_p": mwu_ad["p"], "cliff_delta": mwu_ad["cliff"],
-            "spearman_rho": sp_ad["rho"], "spearman_p": sp_ad["p"], "spearman_n": sp_ad["n"],
+            "mean_low": mad_lo,
+            "mean_high": mad_hi,
+            "delta_q": dq_ad,
+            "mwu_u": mwu_ad["u"],
+            "mwu_p": mwu_ad["p"],
+            "cliff_delta": mwu_ad["cliff"],
+            "spearman_rho": sp_ad["rho"],
+            "spearman_p": sp_ad["p"],
+            "spearman_n": sp_ad["n"],
             "null_shuffled_theta": sh_ad,
             "null_random_gate": rg_ad,
         },
@@ -717,7 +743,9 @@ def _classify_interpretation(group: dict[str, Any]) -> dict[str, str]:
     signs = {m: verdicts[m].split()[0] for m in verdicts}
     agreed = len(set(signs.values())) == 1
     verdicts["_across_metrics"] = (
-        "CONSISTENT" if agreed else "DISAGREEMENT across primary metrics — do not collapse into one sentence"
+        "CONSISTENT"
+        if agreed
+        else "DISAGREEMENT across primary metrics — do not collapse into one sentence"
     )
     return verdicts
 
@@ -735,9 +763,7 @@ def run_delta_q_analysis(
     subjects = [s for s in all_subjects if s not in SKIP_SUBJECTS]
     skipped = [s for s in all_subjects if s in SKIP_SUBJECTS]
 
-    print(
-        f"Found {len(all_subjects)} subjects; skipping {len(skipped)}; running {len(subjects)}"
-    )
+    print(f"Found {len(all_subjects)} subjects; skipping {len(skipped)}; running {len(subjects)}")
     print(
         f"Neural feature: {NEURAL_CHANNEL} CSD + Morlet {THETA_BAND} Hz, "
         f"{POWER_WINDOW_MS} ms window (reused from ds003458_csd_analysis)"
@@ -755,7 +781,7 @@ def run_delta_q_analysis(
         try:
             subject = loader.load_subject(sid)
             row = _analyze_subject(subject, rng=rng)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             row = {"subject": sid, "status": "ERROR", "reason": str(exc)}
         per_subject.append(row)
 
@@ -772,7 +798,7 @@ def run_delta_q_analysis(
                 f"n_low/high={row['n_low']}/{row['n_high']}"
             )
         else:
-            print(f"{row['status']}: {row.get('reason','')}")
+            print(f"{row['status']}: {row.get('reason', '')}")
 
     group = _aggregate_group(per_subject)
     interp = _classify_interpretation(group)
@@ -797,11 +823,11 @@ def run_delta_q_analysis(
         "values are not used for these metrics to avoid circularity with the "
         "same Q-learning model that generated RPE.",
         "Adaptation metric assumes RT ~ post-feedback motor readiness; RT was "
-        "derived from (Response.onset − Stimulus.onset) because response_time "
+        "derived from (Response.onset - Stimulus.onset) because response_time "
         "column in events.tsv is 'n/a'.",
         "Trial indexing uses the i-th completed (Stim, Resp, Feedback) triple; "
         "subjects with missed responses may have minor misalignment against "
-        "the 480-trial oscillating schedule (typically 0–2 trials).",
+        "the 480-trial oscillating schedule (typically 0-2 trials).",
         "Group null via pooled subject-level shuffled-theta p-values + BH-FDR. "
         "No full cross-subject permutation was run.",
     ]
@@ -832,22 +858,22 @@ def run_delta_q_analysis(
                 "excluded": "middle 50% in quartile contrast",
             },
             "metrics": {
-                "value_loss": "best_arm_value(t+1) − chosen_arm_value(t+1), lower better; "
-                              "ΔQ = mean_low − mean_high (positive = HIGH theta helps)",
+                "value_loss": "best_arm_value(t+1) - chosen_arm_value(t+1), lower better; "
+                "delta_q = mean_low - mean_high (positive = HIGH theta helps)",
                 "accuracy": "1[chosen(t+1) == argmax_arm(t+1)], higher better; "
-                            "ΔQ = mean_high − mean_low (positive = HIGH theta helps)",
-                "adaptation": "−(zRT(t+1) − zRT(t)) | RPE(t)<0, higher=faster; "
-                              "ΔQ = mean_high − mean_low (positive = HIGH theta helps)",
+                "delta_q = mean_high - mean_low (positive = HIGH theta helps)",
+                "adaptation": "-(zRT(t+1) - zRT(t)) | RPE(t)<0, higher=faster; "
+                "delta_q = mean_high - mean_low (positive = HIGH theta helps)",
             },
             "statistical_tests": [
-                "Mann–Whitney U (two-sided) on LOW vs HIGH per metric",
-                "Cliff's δ on LOW vs HIGH per metric",
-                "Spearman ρ (continuous secondary)",
-                "Shuffled-theta empirical p (primary null, 1000×)",
-                "Random 50/50-gate empirical p (secondary null, 1000×)",
-                "Wilcoxon signed-rank on subject Δs vs 0 (group)",
-                "Two-sided binomial on sign of subject Δs (group)",
-                "Benjamini–Hochberg FDR on shuffled-theta subject p-values",
+                "Mann-Whitney U (two-sided) on LOW vs HIGH per metric",
+                "Cliff delta on LOW vs HIGH per metric",
+                "Spearman rho (continuous secondary)",
+                "Shuffled-theta empirical p (primary null, 1000x)",
+                "Random 50/50-gate empirical p (secondary null, 1000x)",
+                "Wilcoxon signed-rank on subject deltas vs 0 (group)",
+                "Two-sided binomial on sign of subject deltas (group)",
+                "Benjamini-Hochberg FDR on shuffled-theta subject p-values",
             ],
             "n_random_splits": N_RANDOM_SPLITS,
             "n_theta_shuffles": N_THETA_SHUFFLES,

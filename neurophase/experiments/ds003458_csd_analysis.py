@@ -64,7 +64,7 @@ SKIP_SUBJECTS: frozenset[str] = frozenset(
 @dataclass(frozen=True)
 class TrialEvents:
     fb_onsets_samples: npt.NDArray[np.int64]
-    reward: FloatArray           # per trial: 1 = Win, 0 = Loss
+    reward: FloatArray  # per trial: 1 = Win, 0 = Loss
     chosen_stim: npt.NDArray[np.int64]  # per trial: 0/1/2 (LO/MID/HI)
     n_trials: int
 
@@ -178,14 +178,14 @@ def _induced_theta_power_per_trial(
     edge_buffer_sec = 1.0
     pre_sec = -EPOCH_SEC[0] + edge_buffer_sec
     post_sec = EPOCH_SEC[1] + edge_buffer_sec
-    pre = int(round(pre_sec * fs))
-    post = int(round(post_sec * fs))
+    pre = round(pre_sec * fs)
+    post = round(post_sec * fs)
     epoch_len = pre + post
 
     # Time axis of wide epoch (milliseconds relative to feedback).
     t_epoch_ms = (np.arange(epoch_len) - pre) / fs * 1000.0
     window_mask = (t_epoch_ms >= POWER_WINDOW_MS[0]) & (t_epoch_ms <= POWER_WINDOW_MS[1])
-    freq_mask = (MORLET_FREQS >= THETA_BAND[0]) & (MORLET_FREQS <= THETA_BAND[1])
+    freq_mask = (THETA_BAND[0] <= MORLET_FREQS) & (THETA_BAND[1] >= MORLET_FREQS)
 
     epochs: list[FloatArray] = []
     kept_idx: list[int] = []
@@ -238,9 +238,7 @@ def _apply_csd(raw: mne.io.BaseRaw) -> mne.io.BaseRaw:
     if drop:
         raw.drop_channels(drop)
     raw.set_montage(montage, match_case=False, on_missing="raise", verbose=False)
-    return mne.preprocessing.compute_current_source_density(
-        raw, sphere=CSD_SPHERE, verbose=False
-    )
+    return mne.preprocessing.compute_current_source_density(raw, sphere=CSD_SPHERE, verbose=False)
 
 
 def _surrogate_p_value(
@@ -271,7 +269,7 @@ def _analyze_subject(subject: SubjectData, *, rng: np.random.Generator) -> dict[
 
     try:
         raw_csd = _apply_csd(raw)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return {"subject": subject.subject_id, "status": "ERROR", "reason": f"CSD: {exc}"}
 
     events = _parse_feedback_trials(subject)
@@ -283,14 +281,12 @@ def _analyze_subject(subject: SubjectData, *, rng: np.random.Generator) -> dict[
         }
 
     rpe = _q_learning_rpe(events.reward, events.chosen_stim)
-    theta_power = _induced_theta_power_per_trial(
-        raw_csd, events.fb_onsets_samples, fs=subject.fs
-    )
+    theta_power = _induced_theta_power_per_trial(raw_csd, events.fb_onsets_samples, fs=subject.fs)
 
     valid = np.isfinite(theta_power) & np.isfinite(rpe)
     theta_power = theta_power[valid]
     rpe = rpe[valid]
-    n_valid = int(len(theta_power))
+    n_valid = len(theta_power)
     if n_valid < 20:
         return {
             "subject": subject.subject_id,
@@ -300,9 +296,7 @@ def _analyze_subject(subject: SubjectData, *, rng: np.random.Generator) -> dict[
 
     rho, _ = spearmanr(theta_power, rpe)
     rho_f = float(rho) if np.isfinite(rho) else 0.0
-    p_surr = _surrogate_p_value(
-        theta_power, rpe, rho_f, n_surrogates=N_SURROGATES, rng=rng
-    )
+    p_surr = _surrogate_p_value(theta_power, rpe, rho_f, n_surrogates=N_SURROGATES, rng=rng)
 
     return {
         "subject": subject.subject_id,
@@ -346,7 +340,7 @@ def run_csd_analysis(
         try:
             subject = loader.load_subject(sid)
             row = _analyze_subject(subject, rng=rng)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             row = {"subject": sid, "status": "ERROR", "reason": str(exc)}
         per_subject.append(row)
 
@@ -357,7 +351,7 @@ def run_csd_analysis(
                 f"{tag}  n={row['n_trials_used']}"
             )
         else:
-            print(f"{row['status']}: {row.get('reason','')}")
+            print(f"{row['status']}: {row.get('reason', '')}")
 
     valid = [r for r in per_subject if r.get("status") == "OK"]
     n_valid = len(valid)
@@ -391,7 +385,7 @@ def run_csd_analysis(
             "band_hz": list(THETA_BAND),
             "rpe_model": f"delta-rule, alpha={Q_LEARNING_RATE}, V0={Q_INIT}, per-arm",
             "statistic": "Spearman rho of trial θ-power vs RPE",
-            "null": f"{N_SURROGATES}× RPE shuffle (two-sided)",
+            "null": f"{N_SURROGATES}x RPE shuffle (two-sided)",
             "alpha": ALPHA,
             "group_test": "one-sided binomial vs chance rate 0.05",
         },
