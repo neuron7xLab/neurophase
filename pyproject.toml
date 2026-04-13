@@ -106,7 +106,7 @@ no_implicit_reexport = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "pywt.*", "networkx.*", "sklearn.*", "pandas.*", "yaml.*", "neurodsp.*", "tensorpac.*", "mne.*", "pylsl.*"]
+module = ["scipy.*", "pywt.*", "networkx.*", "sklearn.*", "pandas.*", "yaml.*", "neurodsp.*", "tensorpac.*", "mne.*", "pylsl.*", "bleak.*"]
 ignore_missing_imports = true
 
 # The external ``neosynaptex`` witness is an optional dependency — the
