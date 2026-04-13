@@ -44,5 +44,23 @@ jobs:
           # transitive CVE.
           pip install -r tools/requirements.txt
 
+      - name: Resolve third-party dependency tree
+        # pip-audit audits transitive third-party deps against the PyPI
+        # vulnerability DB. First-party packages that are not published
+        # to PyPI — neurophase itself (editable) and the optional
+        # ``neosynaptex`` witness (installed from git) — have their own
+        # CI security pipelines and must be excluded from the manifest,
+        # otherwise pip-audit fails with "Dependency not found on PyPI".
+        run: |
+          pip freeze --exclude neurophase --exclude neosynaptex \
+            > /tmp/audit-requirements.txt
+          echo "::group::Resolved audit manifest"
+          cat /tmp/audit-requirements.txt
+          echo "::endgroup::"
+
       - name: Run pip-audit (fail on any known vulnerability)
-        run: pip-audit --strict --progress-spinner off
+        run: |
+          pip-audit \
+            --strict \
+            --progress-spinner off \
+            --requirement /tmp/audit-requirements.txt
