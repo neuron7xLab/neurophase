@@ -10,9 +10,10 @@
 
 **Phase synchronization as execution gate: a Kuramoto model of the market–trader system.**
 
+[![CI](https://github.com/neuron7xLab/neurophase/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/neuron7xLab/neurophase/actions/workflows/ci.yml)
 [![status](https://img.shields.io/badge/status-experimental-blueviolet?style=flat-square)](#status)
 [![invariants](https://img.shields.io/badge/invariants-4_hard_%2B_B%E2%82%81-critical?style=flat-square)](#invariants)
-[![tests](https://img.shields.io/badge/tests-1354-brightgreen?style=flat-square)](tests/)
+[![tests](https://img.shields.io/badge/tests-1602-brightgreen?style=flat-square)](tests/)
 [![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=flat-square)](pyproject.toml)
 [![doctor](https://img.shields.io/badge/doctor-11%2F11-00C853?style=flat-square)](#governance)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
