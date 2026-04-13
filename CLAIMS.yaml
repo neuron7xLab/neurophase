@@ -142,11 +142,10 @@ claims:
 
   - id: C5
     statement: >-
-      Cognitive control under high prediction-error load is mediated by
-      anterior-cingulate / prefrontal circuits whose engagement is
-      observable as transient changes in EEG theta-band power, and is
-      a candidate biomarker for the readiness signal that gates the
-      execution-permission decision.
+      Frontal-midline theta (FMθ) at FCz co-varies trial-by-trial with
+      reward-prediction-error magnitude on a three-armed bandit task.
+      This is an observation about a neural covariate — NOT a claim
+      that FMθ is a usable gating primitive for execution permission.
     status: hypothesis
     evidence:
       - source: "Cavanagh & Frank 2014"
@@ -155,37 +154,49 @@ claims:
         summary: >-
           Frontal midline theta as a mechanism of cognitive control
           and its relationship to conflict, error, and adjustment.
-      - source: "Internal replication on OpenNeuro ds003458 (Cavanagh 2021) — 2026-04-13"
+      - source: "Internal existence replication on OpenNeuro ds003458 (Cavanagh 2021) — 2026-04-13"
         doi: ""
         supports: true
         summary: >-
-          Cavanagh-style pipeline (FCz, CSD, Morlet θ power 4–8 Hz, 200–500 ms
-          post-feedback) vs trial-wise Q-learning RPE, 17 subjects, 1000×
-          label-shuffle surrogate. 9 / 17 subjects individually significant
-          at α=0.05 (binomial vs chance 0.05: p = 3.29e-8). Confirms a
-          trial-level FMθ ↔ RPE relationship exists above chance at the
-          group level. DOES NOT confirm direction: among the 9 significant
-          subjects, 5 show ρ<0 and 4 show ρ>0, so the sign of the coupling
-          is heterogeneous across participants. See
-          results/ds003458_csd_20260413.json.
+          Cavanagh-style pipeline (FCz, CSD, Morlet theta power 4-8 Hz,
+          200-500 ms post-feedback) vs trial-wise Q-learning RPE,
+          17 subjects, 1000x label-shuffle surrogate. 9 / 17 subjects
+          individually significant at alpha=0.05 (binomial vs chance 0.05:
+          p = 3.29e-8). Confirms a trial-level FMtheta <-> RPE relationship
+          exists above chance. Direction is heterogeneous across
+          participants (5 negative / 4 positive rho among the 9 significant
+          subjects). See results/ds003458_csd_20260413.json.
+      - source: "Internal utility benchmark on ds003458 (delta_q) — 2026-04-13"
+        doi: ""
+        supports: false
+        summary: >-
+          Predictive utility test: theta(t) vs next-trial value_loss,
+          accuracy, and adaptation-after-loss. Quartile split + shuffled-theta
+          null (1000x) + Wilcoxon + Benjamini-Hochberg FDR on 17 subjects.
+          Result NULL on all three primary metrics (mean delta_q = +0.011,
+          -0.003, +0.073; 0 / 0 / 2 FDR-significant subjects respectively;
+          group Wilcoxon p = 0.306, 0.831, 0.548). Continuous regression
+          follow-up on adaptation also NULL (mean rho = +0.008, Wilcoxon
+          p = 0.818, 0 / 17 FDR-significant). See
+          results/ds003458_delta_q_20260413.json and
+          ds003458_adaptation_regression_20260413.json. This is a
+          CONTRADICTING citation for the "FMtheta is a useful gating
+          primitive" reading of C5; the claim survives only in its
+          narrowed existence-of-covariate form.
     related_invariants:
       - HN1
     introduced_in: "C8 PR"
     notes: >-
-      Status held at HYPOTHESIS despite the internal replication above.
-      Rationale: the replication confirms only the existence of a
-      trial-wise FMθ ↔ RPE relationship, not its direction. The
-      product-critical part of this claim — that FMθ is a usable
-      *biomarker for the readiness signal* — requires a direction-
-      consistent effect, which is not present in the ds003458 data
-      (5 negative / 4 positive ρ among the 9 significant subjects).
-      Until that heterogeneity is explained (e.g. by strategy,
-      task-phase, or electrode-referencing differences) and replicated
-      in a peer-reviewed study with a prespecified direction, this
-      claim is NOT suitable as a gating primitive. Promotion to
-      THEORY requires (a) an independent peer-reviewed replication
-      on a comparable task and (b) a resolved, directional prediction.
-      In the evidence-labeling-style-guide vocabulary this sits
-      between "Tentative" and "Strongly Plausible": existence-of-
-      coupling is Strongly Plausible, direction-of-coupling is
-      Tentative.
+      Status held at HYPOTHESIS. The FMtheta <-> RPE covariate
+      relationship exists on ds003458; its direction is heterogeneous,
+      and on the same dataset FMtheta at trial t does not predict better
+      decisions on trial t+1 under the prespecified quartile and
+      continuous tests. FMtheta is therefore NOT an active gating
+      primitive in neurophase and must not be described as one.
+      The production gate in this repository runs on the market-side
+      order parameter R(t) (existing Kuramoto path) or on a
+      physiological signal-quality score (physio replay slice); neither
+      of those is EEG. Any future promotion of FMtheta toward a gating
+      role requires (a) an independent peer-reviewed utility replication
+      with a prespecified direction and (b) a mechanism explaining the
+      direction heterogeneity observed in the existence benchmark.

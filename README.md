@@ -29,22 +29,30 @@
 
 ## Abstract
 
-**neurophase** treats a biological trader and a financial market as coupled
-phase oscillators and computes a joint Kuramoto order parameter `R(t)` that
-quantifies the accumulated prediction error between them. When `R(t)` falls
-below a calibrated threshold, the system is desynchronized and execution is
-blocked at the type boundary. The predicate
-
-```
-PLV( φ_neural , φ_market ) > 0    on held-out intraday horizons
-```
-
-is binary and falsifiable on the first run against human-in-the-loop data.
-The library ships the complete measurement stack, a five-state execution
-gate whose invariants are enforced at construction time, an append-only
-audit ledger with byte-identical replay, and a governance layer of
-machine-readable contracts covering invariants, claims, and state
+**neurophase** is a fail-closed execution-gating framework: a typed, audit-
+backed kernel that either admits or refuses an action under measured signal
+quality. The strongest validated contribution is the kernel itself — a
+five-state execution gate whose invariants (``I₁…I₄``) are enforced at the
+type boundary, a byte-identically replayable append-only ledger, and a
+governance layer of machine-readable invariants, claims, and state
 transitions.
+
+The kernel is independent of which signal drives it. Two input paths ship
+today:
+
+* a **Kuramoto / market-side** path that computes a joint order parameter
+  ``R(t)`` between trader and market oscillators; used for historical PLV
+  analyses on ds003458 (see `Status` below — those analyses are null);
+* a **minimal replay-first physiological path** that turns timestamped
+  RR-interval input into HRV-style signal-quality features and gate
+  decisions, explicitly labeled as replay (no live device driver ships in
+  this repository).
+
+What the library is **not** today: a live-device cognitive-state monitor,
+a medically validated readiness estimator, a trading-alpha signal.  EEG
+results on ds003458 are consistent with a trial-wise FMθ ↔ RPE existence
+effect but explicitly **not** with FMθ being a useful gating primitive —
+see C5 in `CLAIMS.yaml`.
 
 ---
 
@@ -129,30 +137,22 @@ System-scale evidence chain: [`docs/theory/scientific_basis.md`](docs/theory/sci
 
 ---
 
-## Falsification predicate
+## Falsification predicate (historical)
 
-The system admits a single, binary, pre-registered predicate:
+Earlier versions of this repository centred a single binary predicate,
 
 ```
 PLV( φ_neural , φ_market ) > 0    on held-out intraday horizons
 ```
 
-where
-
-```
-         | mean[ exp(i·(φ_x − φ_y)) ] |
-PLV  =   ─────────────────────────────     ∈ [0, 1]
-
-    PLV = 0   random phase difference
-    PLV = 1   perfect phase locking
-```
-
-Significance is assessed with `N = 1000` random cyclic shifts of `φ_y`,
-which preserves the autocorrelation of the second signal while destroying
-its cross-signal phase relationship (Lachaux et al. 1999). A PLV held-out
-split prevents in-sample leakage (enforced by `HeldOutViolation`). A
-rejection disconfirms the hypothesis on the public record in a single
-commit; a confirmation is a falsifiable structural result.
+assessed with `N = 1000` random cyclic shifts of `φ_y` (Lachaux et al. 1999)
+and an enforced held-out split (`HeldOutViolation`). That predicate was
+tested directly on OpenNeuro ds003458 and **was not confirmed** (0 / 23
+subjects held out; see `Status` below). It remains in the repository as a
+well-defined, runnable algorithm — not as an active product claim. The
+measurement machinery (PLV, surrogate null, held-out split) is load-bearing
+for any future held-out phase analysis, so it is preserved; the specific
+market-vs-FMθ predicate is demoted to **exploratory / historical**.
 
 ---
 
@@ -615,42 +615,66 @@ print(size.fraction, size.reason)
 
 ### Empirical results (ds003458 — Cavanagh 2021, 23 subjects)
 
-| Analysis | Metric | N | Significant | Verdict |
-| :--- | :--- | :---: | :---: | :--- |
-| FMθ (4–8 Hz) vs market | PLV held-out | 17 | 0 / 17 | NULL — frequency mismatch (0.001 Hz vs 4–8 Hz) |
-| Delta (1–4 Hz) × price | xcorr | 23 | 2 / 23 | NULL — mixed signs, no systematic effect |
-| SCP (0.01–0.1 Hz) × reward | xcorr | 23 | 0 / 23 | NULL — no signal detected |
-| Trial theta power | LME (Toma) | 23 | p = 0.935 | NULL — deterministic rewards |
-| Fz Hilbert θ-power × \|RPE\| | trial Spearman + surrogate | 17 | 0 / 17 | NULL — wrong preprocessing |
-| **FCz CSD + Morlet θ × RPE (Q-learn)** | trial Spearman + surrogate | 17 | **9 / 17** | **Coupling exists (binomial p = 3.3e-8); direction unresolved (5 ρ<0, 4 ρ>0)** |
-| Synthetic PLV bridge | PPC sweep | — | confirmed | Methodology verified at known c ∈ {0, 1} |
+All ds003458 analyses in this repository are **committed verbatim regardless of
+outcome**. The table below is the honest state as of 2026-04-13.
 
-The CSD+Morlet pipeline (Cavanagh 2010 method) is the first ds003458 analysis
-on this codebase to clear group-level surrogate chance. It establishes that a
-trial-locked FMθ ↔ RPE relationship *exists* on this dataset. It does **not**
-establish its direction: among the 9 significant subjects, 5 show a negative
-Spearman ρ and 4 show a positive one, so the sign of the coupling is
-heterogeneous across participants.
+| Analysis | N | Significant | Verdict |
+| :--- | :---: | :---: | :--- |
+| FMθ (4–8 Hz) vs market, PLV held-out | 17 | 0 / 17 | NULL — frequency mismatch |
+| Delta (1–4 Hz) × price, xcorr | 23 | 2 / 23 | NULL — mixed signs |
+| SCP (0.01–0.1 Hz) × reward, xcorr | 23 | 0 / 23 | NULL |
+| Trial theta power, LME (Toma) | 23 | p = 0.935 | NULL |
+| Fz Hilbert θ × \|RPE\|, trial Spearman | 17 | 0 / 17 | NULL |
+| FCz CSD + Morlet θ × RPE, trial Spearman **(existence)** | 17 | **9 / 17** | Coupling exists (binomial p = 3.3e-8); direction heterogeneous (5 ρ<0, 4 ρ>0) |
+| FCz CSD θ(t) → quality(t+1), ΔQ_gate quartile **(utility)** | 17 | 0 / 17 | **NULL on all three primary metrics** |
+| FCz CSD θ(t) → adaptation(t+1), continuous regression | 17 | 0 / 17 | NULL (mean ρ = +0.008) |
+| Synthetic PLV bridge, PPC sweep | — | confirmed | Methodology verified at known c ∈ {0, 1} |
 
-Per `CLAIMS.yaml` C5 and `docs/validation/evidence_labeling_style_guide.md`:
-existence-of-coupling is **Strongly Plausible**, direction-of-coupling is
-**Tentative**. Until the direction heterogeneity is explained and replicated
-in a peer-reviewed study with a prespecified directional prediction, this
-result is **not yet a gating primitive** — the gate still runs on the
-market-side order parameter R(t) only. All results are committed verbatim to
-`results/`: `ds003458_csd_20260413.json`, `ds003458_rpe_20260413.json`,
+**What this means.**  On ds003458 the FMθ ↔ RPE *existence* signal is real (one
+pass, replicates Cavanagh-style). The *utility* of FMθ as a gating signal is
+null: θ(t) does not predict better decisions on trial t+1 under either a
+quartile split + shuffled-θ null or a continuous Spearman regression.
+Therefore **FMθ is not an active gating primitive in neurophase and must not
+be described as one**. The production gate in this repository runs on either
+the market-side order parameter R(t) (Kuramoto path) or the physio replay
+quality-score path (below); neither of those is EEG.
+
+Result JSONs: `results/ds003458_csd_20260413.json`, `ds003458_rpe_20260413.json`,
+`ds003458_delta_q_20260413.json`, `ds003458_adaptation_regression_20260413.json`,
 `ds003458_verdict_20260412.json`.
 
 </div>
 
-### Open hardware dependency
+### Replay-first physiological path (v1)
 
-Bio-sensor adapters implementing `NeuralPhaseExtractor` are declared as a
-`Protocol` with a `NullNeuralExtractor` contract fixture; concrete
-implementations (Tobii → pupil phase, OpenBCI → EEG phase, Polar → HRV) are
-out of scope for this repository and gated by physical hardware availability.
-Scientific grounding and the bridge contract are documented in
-[`docs/theory/sensory_basis.md`](docs/theory/sensory_basis.md).
+A minimal runnable vertical slice that turns a timestamped RR-interval CSV
+into fail-closed gate decisions, reusing the existing `ExecutionGate` as the
+admission kernel. Explicitly labeled as replay — no live device driver ships
+in this repository.
+
+```bash
+python -m neurophase.physio.demo
+```
+
+Input: `examples/data/physio_replay_sample.csv` (142 samples, four regimes).
+Pipeline: CSV ingest + validation → rolling HRV-style features (RMSSD,
+stability, continuity, confidence) → `PhysioGate` → four-state physio
+decision (EXECUTE_ALLOWED / EXECUTE_REDUCED / ABSTAIN / SENSOR_DEGRADED).
+
+Fail-closed guarantees (enforced at the type boundary and covered by the
+`tests/test_physio_*.py` suite):
+
+* malformed, non-monotonic, or physiologically impossible RR values raise
+  `ReplayIngestError` at ingest — the kernel never sees bad data;
+* an insufficient buffer, a flatlined RR series, or an RMSSD outside the
+  plausibility envelope emits `SENSOR_DEGRADED` with `execution_allowed=False`;
+* `execution_allowed=True` is legal only when `state==EXECUTE_ALLOWED`,
+  enforced in `PhysioDecision.__post_init__`.
+
+**Honest limits.** HRV features here are *signal-quality* indicators, not a
+clinical readiness estimator or a trading-alpha signal. The thresholds
+(`threshold_allow=0.80`, `threshold_abstain=0.50`) are illustrative defaults;
+any real deployment needs its own calibration.
 
 ---
 
