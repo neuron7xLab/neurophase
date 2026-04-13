@@ -1,0 +1,230 @@
+{
+  "experiment": "ds003458_csd_analysis",
+  "timestamp": "2026-04-13T07:02:25.651922+00:00",
+  "dataset": "OpenNeuro ds003458 v1.1.0",
+  "hypothesis": "Induced FM\u03b8 power at FCz (CSD) ~ trial-wise RPE (Q-learning)",
+  "method": {
+    "channel": "FCz",
+    "preprocessing": "CSD (standard_1005 montage, sphere=(0,0,0,0.095))",
+    "time_frequency": "Morlet wavelet, freqs=arange(4,9), n_cycles=3",
+    "epoch_sec": [
+      -0.2,
+      0.8
+    ],
+    "power_window_ms": [
+      200.0,
+      500.0
+    ],
+    "band_hz": [
+      4.0,
+      8.0
+    ],
+    "rpe_model": "delta-rule, alpha=0.1, V0=0.5, per-arm",
+    "statistic": "Spearman rho of trial \u03b8-power vs RPE",
+    "null": "1000\u00d7 RPE shuffle (two-sided)",
+    "alpha": 0.05,
+    "group_test": "one-sided binomial vs chance rate 0.05"
+  },
+  "skip_subjects": [
+    "sub-006",
+    "sub-017",
+    "sub-020",
+    "sub-021",
+    "sub-022",
+    "sub-023"
+  ],
+  "n_subjects_run": 17,
+  "n_subjects_valid": 17,
+  "n_significant": 9,
+  "group_p": 3.2871422722486115e-08,
+  "verdict": "CONFIRMED",
+  "per_subject": [
+    {
+      "subject": "sub-001",
+      "status": "OK",
+      "n_trials_used": 479,
+      "mean_rpe": 0.010414998321485076,
+      "mean_abs_rpe": 0.3714524022525714,
+      "mean_theta_power_csd": 0.0041255519998059376,
+      "spearman_rho": -0.1499516377145357,
+      "surrogate_p": 0.002997002997002997,
+      "significant": true
+    },
+    {
+      "subject": "sub-002",
+      "status": "OK",
+      "n_trials_used": 478,
+      "mean_rpe": 0.01984889943397531,
+      "mean_abs_rpe": 0.3107901113150904,
+      "mean_theta_power_csd": 0.0037248304856463015,
+      "spearman_rho": -0.0543522151214797,
+      "surrogate_p": 0.25274725274725274,
+      "significant": false
+    },
+    {
+      "subject": "sub-003",
+      "status": "OK",
+      "n_trials_used": 480,
+      "mean_rpe": 0.016907487847461412,
+      "mean_abs_rpe": 0.2972836537434746,
+      "mean_theta_power_csd": 0.030165666032928282,
+      "spearman_rho": 0.04435951448247158,
+      "surrogate_p": 0.33766233766233766,
+      "significant": false
+    },
+    {
+      "subject": "sub-004",
+      "status": "OK",
+      "n_trials_used": 478,
+      "mean_rpe": 0.016755601121498164,
+      "mean_abs_rpe": 0.27386092173504484,
+      "mean_theta_power_csd": 0.0028046397233342075,
+      "spearman_rho": 0.11127470608460742,
+      "surrogate_p": 0.017982017982017984,
+      "significant": true
+    },
+    {
+      "subject": "sub-005",
+      "status": "OK",
+      "n_trials_used": 480,
+      "mean_rpe": 0.010720632526056647,
+      "mean_abs_rpe": 0.33008893558096847,
+      "mean_theta_power_csd": 0.004633928372040938,
+      "spearman_rho": -0.10423484437348679,
+      "surrogate_p": 0.02097902097902098,
+      "significant": true
+    },
+    {
+      "subject": "sub-007",
+      "status": "OK",
+      "n_trials_used": 479,
+      "mean_rpe": 0.008853401059599296,
+      "mean_abs_rpe": 0.33699124340489583,
+      "mean_theta_power_csd": 0.0018727464093789218,
+      "spearman_rho": 0.1560275874388433,
+      "surrogate_p": 0.000999000999000999,
+      "significant": true
+    },
+    {
+      "subject": "sub-008",
+      "status": "OK",
+      "n_trials_used": 478,
+      "mean_rpe": 0.02274408191557046,
+      "mean_abs_rpe": 0.2721902869785227,
+      "mean_theta_power_csd": 0.0042092832432520325,
+      "spearman_rho": 0.07271419358394404,
+      "surrogate_p": 0.12087912087912088,
+      "significant": false
+    },
+    {
+      "subject": "sub-009",
+      "status": "OK",
+      "n_trials_used": 479,
+      "mean_rpe": 0.01808306448486594,
+      "mean_abs_rpe": 0.35476989177352014,
+      "mean_theta_power_csd": 0.0023524105348123664,
+      "spearman_rho": 0.016794545884896834,
+      "surrogate_p": 0.7432567432567433,
+      "significant": false
+    },
+    {
+      "subject": "sub-010",
+      "status": "OK",
+      "n_trials_used": 477,
+      "mean_rpe": 0.023541864239435297,
+      "mean_abs_rpe": 0.24205155157850805,
+      "mean_theta_power_csd": 0.0013901687131968406,
+      "spearman_rho": -0.12190325270916284,
+      "surrogate_p": 0.008991008991008992,
+      "significant": true
+    },
+    {
+      "subject": "sub-011",
+      "status": "OK",
+      "n_trials_used": 480,
+      "mean_rpe": 0.02348807275367067,
+      "mean_abs_rpe": 0.2629502310482913,
+      "mean_theta_power_csd": 0.04547470516655161,
+      "spearman_rho": -0.11975015296834615,
+      "surrogate_p": 0.008991008991008992,
+      "significant": true
+    },
+    {
+      "subject": "sub-012",
+      "status": "OK",
+      "n_trials_used": 480,
+      "mean_rpe": 0.01671910985615853,
+      "mean_abs_rpe": 0.3056346959916357,
+      "mean_theta_power_csd": 0.0021072320673737174,
+      "spearman_rho": 0.030109019850538172,
+      "surrogate_p": 0.5204795204795205,
+      "significant": false
+    },
+    {
+      "subject": "sub-013",
+      "status": "OK",
+      "n_trials_used": 479,
+      "mean_rpe": 0.016681863744518265,
+      "mean_abs_rpe": 0.2768694550309276,
+      "mean_theta_power_csd": 0.0031527627592362827,
+      "spearman_rho": -0.035049984152662236,
+      "surrogate_p": 0.44455544455544455,
+      "significant": false
+    },
+    {
+      "subject": "sub-014",
+      "status": "OK",
+      "n_trials_used": 479,
+      "mean_rpe": 0.013601682844792082,
+      "mean_abs_rpe": 0.28109858206011706,
+      "mean_theta_power_csd": 0.008488476042946133,
+      "spearman_rho": -0.12808059460088347,
+      "surrogate_p": 0.004995004995004995,
+      "significant": true
+    },
+    {
+      "subject": "sub-015",
+      "status": "OK",
+      "n_trials_used": 480,
+      "mean_rpe": 0.015402027547510178,
+      "mean_abs_rpe": 0.329017694592718,
+      "mean_theta_power_csd": 0.0030047530500024668,
+      "spearman_rho": 0.2766857544799691,
+      "surrogate_p": 0.000999000999000999,
+      "significant": true
+    },
+    {
+      "subject": "sub-016",
+      "status": "OK",
+      "n_trials_used": 480,
+      "mean_rpe": 0.022838517996902133,
+      "mean_abs_rpe": 0.2642119565612998,
+      "mean_theta_power_csd": 0.0028090332729762634,
+      "spearman_rho": 0.0762870710548706,
+      "surrogate_p": 0.0919080919080919,
+      "significant": false
+    },
+    {
+      "subject": "sub-018",
+      "status": "OK",
+      "n_trials_used": 478,
+      "mean_rpe": 0.023106275827551738,
+      "mean_abs_rpe": 0.3005934986146878,
+      "mean_theta_power_csd": 0.004723191631739302,
+      "spearman_rho": 0.153694652889094,
+      "surrogate_p": 0.000999000999000999,
+      "significant": true
+    },
+    {
+      "subject": "sub-019",
+      "status": "OK",
+      "n_trials_used": 479,
+      "mean_rpe": 0.018476299561185183,
+      "mean_abs_rpe": 0.30639603608385435,
+      "mean_theta_power_csd": 0.002226691601388217,
+      "spearman_rho": -0.019125176646446588,
+      "surrogate_p": 0.6763236763236763,
+      "significant": false
+    }
+  ]
+}

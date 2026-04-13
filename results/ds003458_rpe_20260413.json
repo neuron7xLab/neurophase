@@ -1,0 +1,240 @@
+{
+  "experiment": "ds003458_rpe_analysis",
+  "timestamp": "2026-04-13T06:46:12.312437+00:00",
+  "dataset": "OpenNeuro ds003458 v1.1.0",
+  "hypothesis": "FM\u03b8_power ~ |RPE| trial-by-trial",
+  "method": {
+    "channel": "Fz",
+    "band_hz": [
+      4.0,
+      8.0
+    ],
+    "epoch_ms": [
+      -200.0,
+      800.0
+    ],
+    "statistic": "Spearman rho of trial FM\u03b8 power vs |RPE|",
+    "null": "1000\u00d7 |RPE| shuffle (two-sided)",
+    "alpha": 0.05,
+    "group_test": "one-sided binomial vs chance rate 0.05"
+  },
+  "skip_subjects": [
+    "sub-006",
+    "sub-017",
+    "sub-020",
+    "sub-021",
+    "sub-022",
+    "sub-023"
+  ],
+  "n_subjects_run": 17,
+  "n_subjects_valid": 17,
+  "n_significant": 0,
+  "group_p": 1.0,
+  "verdict": "REJECTED",
+  "per_subject": [
+    {
+      "subject": "sub-001",
+      "status": "OK",
+      "n_trials_used": 478,
+      "n_wins": 359,
+      "n_losses": 119,
+      "mean_abs_rpe": 0.5389417021787535,
+      "mean_fmtheta_power": 1.1125092682949732e-10,
+      "spearman_rho": -0.08919584303864748,
+      "surrogate_p": 0.053946053946053944,
+      "significant": false
+    },
+    {
+      "subject": "sub-002",
+      "status": "OK",
+      "n_trials_used": 476,
+      "n_wins": 386,
+      "n_losses": 90,
+      "mean_abs_rpe": 0.461150108011761,
+      "mean_fmtheta_power": 6.097450869000831e-11,
+      "spearman_rho": -0.015357140741166973,
+      "surrogate_p": 0.7252747252747253,
+      "significant": false
+    },
+    {
+      "subject": "sub-003",
+      "status": "OK",
+      "n_trials_used": 480,
+      "n_wins": 394,
+      "n_losses": 86,
+      "mean_abs_rpe": 0.5656844424053671,
+      "mean_fmtheta_power": 1.7359488792217261e-10,
+      "spearman_rho": -0.008544722230950041,
+      "surrogate_p": 0.8561438561438561,
+      "significant": false
+    },
+    {
+      "subject": "sub-004",
+      "status": "OK",
+      "n_trials_used": 476,
+      "n_wins": 400,
+      "n_losses": 76,
+      "mean_abs_rpe": 0.47471380571170174,
+      "mean_fmtheta_power": 8.27804489057832e-11,
+      "spearman_rho": -0.06575522122781895,
+      "surrogate_p": 0.13586413586413587,
+      "significant": false
+    },
+    {
+      "subject": "sub-005",
+      "status": "OK",
+      "n_trials_used": 480,
+      "n_wins": 379,
+      "n_losses": 101,
+      "mean_abs_rpe": 0.5598473647949153,
+      "mean_fmtheta_power": 4.883017088404671e-11,
+      "spearman_rho": -0.06568428650484746,
+      "surrogate_p": 0.15784215784215785,
+      "significant": false
+    },
+    {
+      "subject": "sub-007",
+      "status": "OK",
+      "n_trials_used": 478,
+      "n_wins": 375,
+      "n_losses": 103,
+      "mean_abs_rpe": 0.5082215902558829,
+      "mean_fmtheta_power": 3.087923258348074e-11,
+      "spearman_rho": -0.031693191243253115,
+      "surrogate_p": 0.5124875124875125,
+      "significant": false
+    },
+    {
+      "subject": "sub-008",
+      "status": "OK",
+      "n_trials_used": 476,
+      "n_wins": 402,
+      "n_losses": 74,
+      "mean_abs_rpe": 0.48387045268560924,
+      "mean_fmtheta_power": 8.802615462450521e-11,
+      "spearman_rho": -0.042527628627823603,
+      "surrogate_p": 0.36063936063936064,
+      "significant": false
+    },
+    {
+      "subject": "sub-009",
+      "status": "OK",
+      "n_trials_used": 478,
+      "n_wins": 368,
+      "n_losses": 110,
+      "mean_abs_rpe": 0.5053011164158361,
+      "mean_fmtheta_power": 3.401249051228187e-11,
+      "spearman_rho": -0.010873007486352802,
+      "surrogate_p": 0.8061938061938062,
+      "significant": false
+    },
+    {
+      "subject": "sub-010",
+      "status": "OK",
+      "n_trials_used": 474,
+      "n_wins": 410,
+      "n_losses": 64,
+      "mean_abs_rpe": 0.47626587940459464,
+      "mean_fmtheta_power": 2.571700501649107e-11,
+      "spearman_rho": 0.02724051133858064,
+      "surrogate_p": 0.5424575424575424,
+      "significant": false
+    },
+    {
+      "subject": "sub-011",
+      "status": "OK",
+      "n_trials_used": 480,
+      "n_wins": 408,
+      "n_losses": 72,
+      "mean_abs_rpe": 0.5798926243081356,
+      "mean_fmtheta_power": 2.970544773124221e-11,
+      "spearman_rho": -0.014215298066281239,
+      "surrogate_p": 0.7752247752247752,
+      "significant": false
+    },
+    {
+      "subject": "sub-012",
+      "status": "OK",
+      "n_trials_used": 480,
+      "n_wins": 390,
+      "n_losses": 90,
+      "mean_abs_rpe": 0.5460579703599732,
+      "mean_fmtheta_power": 2.3911842824668405e-11,
+      "spearman_rho": 0.04304243813135674,
+      "surrogate_p": 0.35564435564435565,
+      "significant": false
+    },
+    {
+      "subject": "sub-013",
+      "status": "OK",
+      "n_trials_used": 478,
+      "n_wins": 399,
+      "n_losses": 79,
+      "mean_abs_rpe": 0.44724309914418486,
+      "mean_fmtheta_power": 3.4430273152647574e-11,
+      "spearman_rho": 0.07047093806292687,
+      "surrogate_p": 0.12087912087912088,
+      "significant": false
+    },
+    {
+      "subject": "sub-014",
+      "status": "OK",
+      "n_trials_used": 478,
+      "n_wins": 399,
+      "n_losses": 79,
+      "mean_abs_rpe": 0.5530960725282876,
+      "mean_fmtheta_power": 3.016458985995157e-11,
+      "spearman_rho": -0.023876834351734412,
+      "surrogate_p": 0.6133866133866134,
+      "significant": false
+    },
+    {
+      "subject": "sub-015",
+      "status": "OK",
+      "n_trials_used": 480,
+      "n_wins": 383,
+      "n_losses": 97,
+      "mean_abs_rpe": 0.5545342334636805,
+      "mean_fmtheta_power": 3.4524925444115365e-11,
+      "spearman_rho": -0.07522621649640705,
+      "surrogate_p": 0.12687312687312688,
+      "significant": false
+    },
+    {
+      "subject": "sub-016",
+      "status": "OK",
+      "n_trials_used": 480,
+      "n_wins": 409,
+      "n_losses": 71,
+      "mean_abs_rpe": 0.5597116084208998,
+      "mean_fmtheta_power": 4.799684666294325e-11,
+      "spearman_rho": -0.001736830681970984,
+      "surrogate_p": 0.97002997002997,
+      "significant": false
+    },
+    {
+      "subject": "sub-018",
+      "status": "OK",
+      "n_trials_used": 476,
+      "n_wins": 388,
+      "n_losses": 88,
+      "mean_abs_rpe": 0.4412766494014662,
+      "mean_fmtheta_power": 3.395376232299818e-11,
+      "spearman_rho": 0.034534766965878545,
+      "surrogate_p": 0.47052947052947053,
+      "significant": false
+    },
+    {
+      "subject": "sub-019",
+      "status": "OK",
+      "n_trials_used": 478,
+      "n_wins": 388,
+      "n_losses": 90,
+      "mean_abs_rpe": 0.43816415294314714,
+      "mean_fmtheta_power": 2.366563561398761e-11,
+      "spearman_rho": -0.03066079133497055,
+      "surrogate_p": 0.5244755244755245,
+      "significant": false
+    }
+  ]
+}
