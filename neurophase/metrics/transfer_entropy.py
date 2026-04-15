@@ -164,13 +164,15 @@ def _plug_in_te(source: IntArray, target: IntArray, k: int, n_levels: int) -> fl
     p_yhx = c_yhx[nz].astype(np.float64) / float(n_samples)
     # log( p(y | h_y, h_x) / p(y | h_y) ) = log( c_yhx · c_h / (c_yh · c_hx) ).
     # All four counts are strictly positive on the observed support ``nz``.
-    log_ratio = (
-        np.log(c_yhx[nz].astype(np.float64))
-        + np.log(c_h[tgt_code].astype(np.float64))
-        - np.log(c_yh[yh_codes].astype(np.float64))
-        - np.log(c_hx[hx_codes].astype(np.float64))
+    # The combined-ratio form collapses to log(1) ≡ 0 exactly when the
+    # numerator equals the denominator (self-TE); the arithmetically
+    # separated log-sum form leaks ~1e-16 per cell from summation noise.
+    ratio = (
+        c_yhx[nz].astype(np.float64)
+        * c_h[tgt_code].astype(np.float64)
+        / (c_yh[yh_codes].astype(np.float64) * c_hx[hx_codes].astype(np.float64))
     )
-    te = float(np.sum(p_yhx * log_ratio))
+    te = float(np.sum(p_yhx * np.log(ratio)))
     # Plug-in TE is non-negative in expectation; clamp numerical noise.
     return max(te, 0.0)
 

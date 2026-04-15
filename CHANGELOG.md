@@ -8,6 +8,38 @@ adheres to semantic versioning.
 
 First falsifiable PLV pipeline and first real-data confrontation.
 
+### 2026-04-15 — Directional coupling + criticality coordinate (singularity pass)
+
+First **directional** coupling metric and first **dynamical-regime** coordinate
+land in `neurophase.metrics`, plus a kernel-side integration layer that consumes
+both. All invariants verified by Hypothesis property tests.
+
+#### Added
+
+- **`neurophase.metrics.transfer_entropy`** — plug-in TE(X→Y) on quantile-binned
+  symbol sequences, vectorised via `np.bincount`. Bidirectional entry point
+  with circular-shift surrogate bias correction and (count+1)/(N+1) Laplace-
+  smoothed one-sided p-values. Honest-null on degenerate inputs.
+- **`neurophase.metrics.branching_ratio`** — one-shot σ + streaming
+  `BranchingRatioEMA` with symmetric-ε guard; closed `[0.95, 1.05]` critical
+  band classifier `critical_phase`.
+- **`neurophase.sync.coupling_direction`** — `analyse_coupling(ψ_brain, ψ_market,
+  R)` returns a frozen `CouplingDirection` carrying TE flow + p-values + σ_R +
+  critical phase. Layered diagnostic on top of `CoupledBrainMarketSystem`;
+  pure read-only, does not drive the gate.
+
+#### Hardened
+
+- **Hypothesis property fuzz** for both new metrics — locks in non-negativity,
+  self-TE = 0 exactly, rank invariance under monotonic transforms, swap
+  antisymmetry of net flow, scale invariance of σ, geometric contraction of
+  EMA toward critical, classifier monotonicity, byte-identical determinism
+  under shared seed. Two real bugs were caught and fixed during the fuzz pass:
+  (1) self-TE leaked ~1e-16 from log-sum decomposition — switched to single
+  `log(ratio)`, now exact 0; (2) symmetric-ε zero-anchor invariant was
+  mis-stated — corrected to geometric contraction.
+- **Coverage:** 100% on `branching_ratio`, 98% on `transfer_entropy`.
+
 ### 2026-04-12 — ds003458 delta power analysis (in progress)
 
 - Delta power envelope (1-4 Hz, FC5) x reward probability returns
