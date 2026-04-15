@@ -44,6 +44,11 @@ both. All invariants verified by Hypothesis property tests.
   `window` (samples held) and `hop` (emission cadence). Pure read-only,
   byte-identical under shared seed, validated end-to-end against a real
   `CoupledBrainMarketSystem` run.
+- **Surrogate p-value calibration test** — KS-test against `Uniform(0, 1)`
+  on 60 independent Gaussian pairs (120 p-values total) sharpens the
+  significance contract from "p > 0.05 on null" to "p-value distribution
+  is statistically indistinguishable from uniform under the null".
+  Plus 4·SE bounds on mean and false-positive rate.
 
 ### 2026-04-12 — ds003458 delta power analysis (in progress)
 

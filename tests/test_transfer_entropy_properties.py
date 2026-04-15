@@ -44,12 +44,9 @@ from neurophase.metrics.transfer_entropy import (
 # Strategies
 # ---------------------------------------------------------------------------
 
-_FINITE: dict[str, float | bool] = {
-    "allow_nan": False,
-    "allow_infinity": False,
-    "min_value": -1e6,
-    "max_value": 1e6,
-}
+_FINITE_FLOAT: st.SearchStrategy[float] = st.floats(
+    allow_nan=False, allow_infinity=False, min_value=-1e6, max_value=1e6
+)
 
 
 def _series(min_size: int = 50, max_size: int = 400) -> st.SearchStrategy[np.ndarray]:
@@ -57,7 +54,7 @@ def _series(min_size: int = 50, max_size: int = 400) -> st.SearchStrategy[np.nda
     return hnp.arrays(
         dtype=np.float64,
         shape=st.integers(min_value=min_size, max_value=max_size),
-        elements=st.floats(**_FINITE),
+        elements=_FINITE_FLOAT,
     )
 
 
@@ -67,8 +64,8 @@ def _paired_series(
     """Two series that share the same length."""
     return st.integers(min_value=min_size, max_value=max_size).flatmap(
         lambda n: st.tuples(
-            hnp.arrays(np.float64, shape=n, elements=st.floats(**_FINITE)),
-            hnp.arrays(np.float64, shape=n, elements=st.floats(**_FINITE)),
+            hnp.arrays(np.float64, shape=n, elements=_FINITE_FLOAT),
+            hnp.arrays(np.float64, shape=n, elements=_FINITE_FLOAT),
         )
     )
 
@@ -194,7 +191,7 @@ def test_te_net_flips_on_swap(pair: tuple[np.ndarray, np.ndarray], seed: int) ->
 
 @settings(max_examples=50, deadline=None)
 @given(
-    constant=st.floats(**_FINITE),
+    constant=_FINITE_FLOAT,
     length=st.integers(min_value=3, max_value=500),
     k=st.integers(min_value=1, max_value=3),
 )
@@ -259,3 +256,61 @@ def test_result_fields_are_well_formed(pair: tuple[np.ndarray, np.ndarray], seed
     assert r.n_surrogates == 20
     assert r.k == 1
     assert r.n_levels == 2
+
+
+# ---------------------------------------------------------------------------
+# Surrogate-p calibration — KS test against uniform under the null
+# ---------------------------------------------------------------------------
+#
+# This is the sharpest epistemic claim on the significance machinery: under
+# genuinely independent Gaussian pairs, the empirical distribution of TE
+# p-values must be statistically indistinguishable from uniform on [0, 1].
+# A miscalibrated surrogate (wrong shift range, biased estimator, broken
+# Laplace correction) would warp the p-value distribution and the
+# Kolmogorov-Smirnov test against ``uniform(0, 1)`` would catch it.
+#
+# Compute budget: K_PAIRS · N_SURROGATES · 2 directions · O(T) plug-in
+# evaluations. With the values below the test stays under ~10s on CI.
+
+
+def test_surrogate_p_value_is_well_calibrated_under_independent_null() -> None:
+    """KS-calibrated: under independent Gaussian pairs, the surrogate
+    p-values from both directions follow ``Uniform(0, 1)`` to within
+    Monte-Carlo tolerance."""
+    from scipy import stats  # local import keeps module load light
+
+    k_pairs = 60
+    n_samples = 600
+    n_surrogates = 80
+    rng = np.random.default_rng(20260415)
+    p_values: list[float] = []
+    for _ in range(k_pairs):
+        x = rng.standard_normal(n_samples)
+        y = rng.standard_normal(n_samples)
+        result = transfer_entropy_with_significance(
+            x, y, n_surrogates=n_surrogates, seed=int(rng.integers(0, 2**31 - 1))
+        )
+        p_values.append(result.p_xy)
+        p_values.append(result.p_yx)
+
+    p_array = np.asarray(p_values, dtype=np.float64)
+
+    # 1. KS test against the continuous Uniform(0, 1). With 120 samples and
+    #    N=80 discrete surrogate levels the empirical CDF is necessarily
+    #    step-shaped, so we set a permissive threshold (KS p > 0.001) that
+    #    detects gross miscalibration without flagging the legitimate
+    #    discreteness of the (count + 1) / (N + 1) Laplace correction.
+    ks_stat, ks_p = stats.kstest(p_array, "uniform")
+    assert ks_p > 1e-3, f"surrogate p-values failed KS uniform test: D={ks_stat:.3f}, p={ks_p:.3g}"
+
+    # 2. Sharper sanity bounds: the mean of a Uniform(0, 1) is 0.5 and the
+    #    fraction below 0.05 is by definition 0.05. With 120 samples the
+    #    standard error on the mean is √(1/12) / √120 ≈ 0.026 and on the
+    #    α = 0.05 rate is √(0.05·0.95/120) ≈ 0.020, so 4 · SE bands give
+    #    plenty of headroom while still rejecting an order-of-magnitude
+    #    miscalibration (e.g. p concentrated at 0 or 1).
+    mean_p = float(np.mean(p_array))
+    frac_below_alpha = float(np.mean(p_array < 0.05))
+    assert 0.4 < mean_p < 0.6, f"mean p-value {mean_p:.3f} far from 0.5"
+    msg = f"false-positive rate {frac_below_alpha:.3f} exceeds 4·SE band around alpha=0.05"
+    assert frac_below_alpha < 0.15, msg
