@@ -39,6 +39,11 @@ both. All invariants verified by Hypothesis property tests.
   `log(ratio)`, now exact 0; (2) symmetric-ε zero-anchor invariant was
   mis-stated — corrected to geometric contraction.
 - **Coverage:** 100% on `branching_ratio`, 98% on `transfer_entropy`.
+- **`neurophase.sync.coupling_observer`** — sliding-window streaming
+  consumer of `CouplingDirection` for online pipelines. Configurable
+  `window` (samples held) and `hop` (emission cadence). Pure read-only,
+  byte-identical under shared seed, validated end-to-end against a real
+  `CoupledBrainMarketSystem` run.
 
 ### 2026-04-12 — ds003458 delta power analysis (in progress)
 
