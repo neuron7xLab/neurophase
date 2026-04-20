@@ -266,6 +266,17 @@ def _check_invariant_registry_schema() -> DoctorCheckResult:
             f"{len(missing_paths)} enforced_in path(s) missing on disk",
             warnings=tuple(missing_paths[:5]),
         )
+    try:
+        from neurophase.governance.owner_manifest import load_owner_manifest
+
+        manifest = load_owner_manifest()
+    except Exception as exc:
+        return DoctorCheckResult(
+            "INVARIANT_REGISTRY_SCHEMA",
+            False,
+            f"artifact_owner_declared failed: {type(exc).__name__}: {exc}",
+        )
+    warnings.append(f"artifact_owner_declared: owner={manifest.owner} date={manifest.date}")
     return DoctorCheckResult(
         "INVARIANT_REGISTRY_SCHEMA",
         True,
@@ -317,6 +328,10 @@ def _check_state_machine_schema() -> DoctorCheckResult:
 
 def _check_claim_registry_schema() -> DoctorCheckResult:
     """Check 3: CLAIMS.yaml loads with mechanical promotion rule."""
+    from neurophase.governance.checklist import (
+        GovernanceChecklistError,
+        load_checklist,
+    )
     from neurophase.governance.claims import ClaimRegistryError, load_claims
 
     try:
@@ -327,10 +342,19 @@ def _check_claim_registry_schema() -> DoctorCheckResult:
             False,
             f"claim registry failed to load: {exc}",
         )
+    try:
+        checklist = load_checklist()
+    except GovernanceChecklistError as exc:
+        return DoctorCheckResult(
+            "CLAIM_REGISTRY_SCHEMA",
+            False,
+            f"claim_status_applied failed: {exc}",
+        )
     return DoctorCheckResult(
         "CLAIM_REGISTRY_SCHEMA",
         True,
-        f"{len(registry.claims)} claims, {len(registry.linked_invariants())} linked HN ids",
+        f"{len(registry.claims)} claims, {len(registry.linked_invariants())} linked HN ids; "
+        f"claim_status_applied={checklist.by_id('gov_2').status}",
     )
 
 

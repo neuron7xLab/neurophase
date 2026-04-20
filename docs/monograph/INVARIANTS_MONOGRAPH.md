@@ -5,9 +5,9 @@
 **Schema version:** 1  
 **Hard invariants:** 21  
 **Advisory invariants:** 5  
-**Honest-naming contracts:** 39  
+**Honest-naming contracts:** 41  
 **Gate states:** 5  
-**Gate transitions:** 8
+**Gate transitions:** 9
 
 ## Table of contents
 
@@ -79,6 +79,8 @@
   - [HN36](#hn36)
   - [HN37](#hn37)
   - [HN38](#hn38)
+  - [HN39](#hn39)
+  - [HN40](#hn40)
   - [HN_SEED](#hn_seed)
 
 ## Gate state machine
@@ -98,6 +100,7 @@
 | Priority | From | Trigger | → To | Invariant |
 |---|---|---|---|---|
 | 0 | `*` | time_quality is supplied and quality != VALID | `DEGRADED` | B1 |
+| 0 | `BLOCKED` | governance checklist validated and verdict is DONE | `READY` | HN39 |
 | 1 | `*` | sensor_present == False | `SENSOR_ABSENT` | I2 |
 | 2 | `*` | R is None / NaN / out-of-range | `DEGRADED` | I3 |
 | 3 | `*` | R < threshold | `BLOCKED` | I1 |
@@ -1756,6 +1759,40 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
+
+### HN39
+
+**Statement.** Governance closure is machine-enforced: a transition to READY is permitted only if GOVERNANCE_CHECKLIST.yaml has verdict=DONE, owner_manifest.yaml hash is valid, and ablation-policy bindings are satisfied. Any missing or invalid artifact forces BLOCKED (fail-closed).
+
+**Enforcement sites:**
+
+- `neurophase/governance/checklist.py::governance_closure_valid`
+- `neurophase/governance/owner_manifest.py::OwnerManifest.__post_init__`
+- `neurophase/governance/ablation.py::load_ablation_policy`
+
+**Bound tests** (1):
+
+- `tests/test_governance_verification_gate.py::test_hn39_blocks_on_any_failure`
+
+**Documentation:**
+
+- `mechanical_governance_audit_2026-04-20.yaml`
+
+### HN40
+
+**Statement.** No path to READY may bypass governance_closure_valid(); when governance closure is false, high-R evaluations remain BLOCKED.
+
+**Enforcement sites:**
+
+- `neurophase/gate/execution_gate.py::ExecutionGate._classify_ready`
+
+**Bound tests** (1):
+
+- `tests/test_governance_verification_gate.py::test_no_path_to_ready_bypasses_governance`
+
+**Documentation:**
+
+- `STATE_MACHINE.yaml`
 
 ### HN_SEED
 

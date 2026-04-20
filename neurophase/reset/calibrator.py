@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from importlib import import_module
+from typing import Any
 
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 
 from neurophase.reset.config import (
     LOCKIN_WEIGHT_DIVERSITY,
@@ -37,6 +38,10 @@ class LockinScoreCalibrator:
         labeled = [e for e in ledger if e.decision in {"SUCCESS", "ROLLBACK"}]
         if len(labeled) < self.min_samples:
             return CalibrationResult(self.default_weights, (0.0, 0.0), len(labeled))
+        try:
+            linear_model_mod: Any = import_module("sklearn.linear_model")
+        except ImportError:
+            return CalibrationResult(self.default_weights, (0.0, 0.0), len(labeled))
 
         x = np.array(
             [
@@ -52,7 +57,10 @@ class LockinScoreCalibrator:
         )
         y = np.array([1 if e.decision == "ROLLBACK" else 0 for e in labeled], dtype=np.int64)
 
-        model = LogisticRegression(max_iter=500, solver="lbfgs")
+        logistic_cls: Any = getattr(linear_model_mod, "LogisticRegression", None)
+        if logistic_cls is None:
+            return CalibrationResult(self.default_weights, (0.0, 0.0), len(labeled))
+        model = logistic_cls(max_iter=500, solver="lbfgs")
         model.fit(x, y)
         coefs = np.abs(model.coef_[0])
         norm: float = float(np.sum(coefs))

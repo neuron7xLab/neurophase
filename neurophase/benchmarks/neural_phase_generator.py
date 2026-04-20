@@ -171,7 +171,7 @@ def generate_neural_phase_trace(
         phi[t + 1] = p + (dt / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4)
 
     # Wrap to (-π, π]
-    phi = ((phi + np.pi) % (2.0 * np.pi)) - np.pi
+    phi[:] = np.asarray(((phi + np.pi) % (2.0 * np.pi)) - np.pi, dtype=np.float64)
 
     # Step 3: Construct signal x(t) = A·sin(φ(t)) + noise(t)
     signal = signal_amplitude * np.sin(phi) + noise

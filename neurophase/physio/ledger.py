@@ -39,10 +39,12 @@ import json
 import os
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import TracebackType
 from typing import IO, Any
+
+UTC = getattr(datetime, "UTC", timezone(timedelta(0)))
 
 PHYSIO_LEDGER_SCHEMA_VERSION: str = "physio-ledger-v1"
 

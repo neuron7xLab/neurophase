@@ -1327,3 +1327,27 @@ honest_naming:
       - tests/test_surrogate_seed_contract.py::test_reproducibility_warning_is_user_warning
     docs:
       - docs/monograph/INVARIANTS_MONOGRAPH.md
+
+  - id: HN39
+    statement: "Governance closure is machine-enforced: a transition to READY is permitted only if GOVERNANCE_CHECKLIST.yaml has verdict=DONE, owner_manifest.yaml hash is valid, and ablation-policy bindings are satisfied. Any missing or invalid artifact forces BLOCKED (fail-closed)."
+    enforced_in:
+      - path: neurophase/governance/checklist.py
+        symbol: governance_closure_valid
+      - path: neurophase/governance/owner_manifest.py
+        symbol: OwnerManifest.__post_init__
+      - path: neurophase/governance/ablation.py
+        symbol: load_ablation_policy
+    tests:
+      - tests/test_governance_verification_gate.py::test_hn39_blocks_on_any_failure
+    docs:
+      - mechanical_governance_audit_2026-04-20.yaml
+
+  - id: HN40
+    statement: "No path to READY may bypass governance_closure_valid(); when governance closure is false, high-R evaluations remain BLOCKED."
+    enforced_in:
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate._classify_ready
+    tests:
+      - tests/test_governance_verification_gate.py::test_no_path_to_ready_bypasses_governance
+    docs:
+      - STATE_MACHINE.yaml

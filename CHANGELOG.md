@@ -8,6 +8,24 @@ adheres to semantic versioning.
 
 First falsifiable PLV pipeline and first real-data confrontation.
 
+### 2026-04-20 — Governance hardening v2 (HN39/HN40 fail-closed path)
+
+#### Added
+
+- `docs/PR62_HARDENING_PLAN.md` execution log for the PR62 hardening cycle.
+- `HN40` invariant: no READY path may bypass governance closure validation.
+- `governance_closure_valid()` helper in `neurophase.governance.checklist`.
+
+#### Changed
+
+- `HN39` text now explicitly encodes fail-closed failure modes and binds
+  verification to dedicated governance failure-mode tests.
+- `ExecutionGate` now applies governance closure checks at READY
+  classification time and degrades to `BLOCKED` when governance closure is
+  invalid.
+- `owner_manifest.yaml` extended with explicit ownership entries for each
+  critical governance artifact.
+
 ### 2026-04-15 — Directional coupling + criticality coordinate (singularity pass)
 
 First **directional** coupling metric and first **dynamical-regime** coordinate

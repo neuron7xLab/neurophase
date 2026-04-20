@@ -218,6 +218,18 @@ architecture. The additions are structural, not another research layer.
   package now exposes only `__version__` plus a PEP 562 lazy
   accessor (`KLRConfig` backward-compat). Heavy modules load only when
   their subpackage is reached directly.
+
+---
+
+## 9. Governance closure layer (HN39/HN40)
+
+- `neurophase.governance.checklist.governance_closure_valid()` is the
+  canonical fail-closed predicate for governance readiness.
+- `ExecutionGate` evaluates this predicate before any `READY` output;
+  when governance artifacts are missing/invalid, the gate returns
+  `BLOCKED` even if `R(t)` exceeds threshold.
+- `owner_manifest.yaml` now includes explicit per-artifact ownership
+  records for critical governance files.
 * `neurophase.api` is the blessed public façade — 32 load-bearing
   runtime symbols, pinned by `tests/test_public_api.py`,
   documented at `docs/PUBLIC_API.md`.

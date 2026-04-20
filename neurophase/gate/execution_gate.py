@@ -128,9 +128,21 @@ class ExecutionGate:
         self,
         threshold: float = DEFAULT_THRESHOLD,
         stillness_detector: StillnessDetector | None = None,
+        enforce_governance: bool = True,
     ) -> None:
         if not 0.0 < threshold < 1.0:
             raise ValueError(f"threshold must be in (0, 1), got {threshold}")
+        if enforce_governance:
+            from neurophase.governance.checklist import governance_closure_valid, load_checklist
+
+            try:
+                checklist = load_checklist()
+            except ValueError as exc:
+                raise ValueError(
+                    f"T8 governance guard failed during ExecutionGate initialisation: {exc}"
+                ) from exc
+            if checklist.verdict != "DONE" or not governance_closure_valid():
+                raise ValueError("T8 governance guard requires verdict=DONE")
         self.threshold: float = threshold
         self.stillness_detector: StillnessDetector | None = stillness_detector
 
@@ -238,6 +250,18 @@ class ExecutionGate:
 
     def _classify_ready(self, *, R: float, delta: float | None) -> GateDecision:
         """Split the ``READY`` regime via the optional ``I₄`` layer."""
+        from neurophase.governance.checklist import governance_closure_valid
+
+        if not governance_closure_valid():
+            return GateDecision(
+                state=GateState.BLOCKED,
+                execution_allowed=False,
+                R=R,
+                threshold=self.threshold,
+                reason=(
+                    "T8 governance guard blocked READY transition: governance_closure_valid() is false."
+                ),
+            )
         if self.stillness_detector is None:
             return GateDecision(
                 state=GateState.READY,
