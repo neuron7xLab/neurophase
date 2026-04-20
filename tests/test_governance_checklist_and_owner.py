@@ -36,7 +36,7 @@ def test_owner_manifest_rejects_wrong_hash(tmp_path: Path) -> None:
         yaml.safe_dump({"owner": "neuron7x", "date": "2026-04-19", "hash": "bad"}),
         encoding="utf-8",
     )
-    with pytest.raises(OwnerManifestError, match="sha256 hex digest|hash mismatch"):
+    with pytest.raises(OwnerManifestError, match=r"sha256 hex digest|hash mismatch"):
         load_owner_manifest(path)
 
 

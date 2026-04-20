@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-hypothesis = pytest.importorskip("hypothesis")
-given = hypothesis.given
-st = hypothesis.strategies
-
 from neurophase.gate.execution_gate import ExecutionGate
 from neurophase.governance.ablation import load_ablation_policy
 from neurophase.governance.checklist import load_checklist
+
+hypothesis = pytest.importorskip("hypothesis")
+given = hypothesis.given
+st = hypothesis.strategies
 
 
 def _repo_root() -> Path:
@@ -34,7 +34,7 @@ def test_t8_transition_blocks_gate_on_failed_governance(monkeypatch: pytest.Monk
     def _boom() -> object:
         raise ValueError("broken checklist")
 
-    monkeypatch.setattr("neurophase.gate.execution_gate.load_checklist", _boom)
+    monkeypatch.setattr("neurophase.governance.checklist.load_checklist", _boom)
     with pytest.raises(ValueError, match="T8 governance guard failed"):
         ExecutionGate()
 
