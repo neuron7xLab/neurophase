@@ -1343,4 +1343,4 @@ honest_naming:
       - tests/test_governance_checklist_and_owner.py::test_owner_manifest_loads_and_hash_matches
       - tests/test_governance_checklist_and_owner.py::test_ablation_policy_loads_and_is_mechanically_bound
     docs:
-      - openai_gpt_2026_audit_2026-04-19.md
+      - mechanical_governance_audit_2026-04-20.yaml

@@ -1778,7 +1778,7 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 
 **Documentation:**
 
-- `openai_gpt_2026_audit_2026-04-19.md`
+- `mechanical_governance_audit_2026-04-20.yaml`
 
 ### HN_SEED
 

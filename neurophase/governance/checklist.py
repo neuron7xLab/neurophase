@@ -76,6 +76,16 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     payload = yaml.safe_load(checklist_path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise GovernanceChecklistError("checklist root must be a mapping")
+    expected_keys = {
+        "version",
+        "verdict",
+        "source_checklist_path",
+        "required_source_items",
+        "source_items_count",
+        "items",
+    }
+    if set(payload.keys()) != expected_keys:
+        raise GovernanceChecklistError(f"checklist keys must be exactly {sorted(expected_keys)}")
 
     version = payload.get("version")
     verdict = payload.get("verdict")
@@ -101,6 +111,8 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     for raw in items_raw:
         if not isinstance(raw, dict):
             raise GovernanceChecklistError("each checklist item must be a mapping")
+        if set(raw.keys()) != {"id", "status", "note"}:
+            raise GovernanceChecklistError("each checklist item must define only id/status/note")
         item_id = raw.get("id")
         status = raw.get("status")
         note = raw.get("note", "")
@@ -147,6 +159,9 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     for raw in source_items:
         if not isinstance(raw, dict):
             raise GovernanceChecklistError("source checklist item must be a mapping")
+        allowed_source_keys = {"id", "status", "note"}
+        if set(raw.keys()) - allowed_source_keys:
+            raise GovernanceChecklistError("source checklist item has unknown keys")
         sid = raw.get("id")
         sstatus = raw.get("status")
         if not isinstance(sid, str) or not isinstance(sstatus, str):

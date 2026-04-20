@@ -49,6 +49,9 @@ def load_owner_manifest(path: Path | None = None) -> OwnerManifest:
     loaded = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
     if not isinstance(loaded, dict):
         raise OwnerManifestError("owner manifest must be a mapping")
+    expected_keys = {"owner", "date", "hash"}
+    if set(loaded.keys()) != expected_keys:
+        raise OwnerManifestError(f"owner manifest keys must be exactly {sorted(expected_keys)}")
     owner = loaded.get("owner")
     declared_date = loaded.get("date")
     declared_hash = loaded.get("hash")
@@ -58,4 +61,6 @@ def load_owner_manifest(path: Path | None = None) -> OwnerManifest:
         or not isinstance(declared_hash, str)
     ):
         raise OwnerManifestError("owner/date/hash must be strings")
+    if len(declared_hash) != 64 or any(ch not in "0123456789abcdef" for ch in declared_hash):
+        raise OwnerManifestError("hash must be a lowercase sha256 hex digest")
     return OwnerManifest(owner=owner, date=declared_date, hash=declared_hash)

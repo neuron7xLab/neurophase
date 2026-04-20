@@ -1,0 +1,32 @@
+version: 1
+schema: xai-eng-schema-gov-audit-001
+created: '2026-04-20T00:00:00Z'
+source_checklist_file: mechanical_governance_source_checklist_2026-04-20.yaml
+required_source_items: 211
+non_pass_items: 0
+governance_checklist_verdict: DONE
+closures:
+  - id: gov_2
+    status: pass
+    evidence: neurophase/governance/checklist.py::load_checklist
+  - id: gov_5
+    status: pass
+    evidence: neurophase/governance/owner_manifest.py::load_owner_manifest
+  - id: final_1
+    status: pass
+    evidence: ABLATION_POLICY.yaml::critical_elements
+  - id: final_2
+    status: pass
+    evidence: ABLATION_POLICY.yaml::test_registry
+hardening_evidence:
+  - id: optional_dependency_guard
+    status: pass
+    evidence: neurophase/reset/calibrator.py::LockinScoreCalibrator.calibrate
+    note: sklearn.linear_model import guarded with ImportError fallback
+  - id: ast_function_binding
+    status: pass
+    evidence: neurophase/governance/ablation.py::load_ablation_policy
+    note: mutation suite parsed with ast; FunctionDef bindings required
+  - id: formatting_conformance
+    status: pass
+    evidence: ruff format --check neurophase tests tools

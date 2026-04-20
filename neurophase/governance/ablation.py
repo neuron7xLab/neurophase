@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
@@ -12,6 +13,7 @@ import yaml
 DEFAULT_ABLATION_POLICY_PATH: Final[Path] = (
     Path(__file__).resolve().parent.parent.parent / "ABLATION_POLICY.yaml"
 )
+_CRITICAL_ID_RE: Final[re.Pattern[str]] = re.compile(r"^G[1-9]\d*$")
 
 
 class AblationPolicyError(ValueError):
@@ -47,6 +49,9 @@ def load_ablation_policy(path: Path | None = None) -> AblationPolicy:
     raw = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
         raise AblationPolicyError("ablation policy root must be a mapping")
+    expected_keys = {"version", "mutation_suite", "critical_elements", "test_registry"}
+    if set(raw.keys()) != expected_keys:
+        raise AblationPolicyError(f"ablation policy keys must be exactly {sorted(expected_keys)}")
 
     version = raw.get("version")
     mutation_suite = raw.get("mutation_suite")
@@ -60,6 +65,8 @@ def load_ablation_policy(path: Path | None = None) -> AblationPolicy:
         raise AblationPolicyError("critical_elements must be a list[str]")
     if len(critical) == 0:
         raise AblationPolicyError("critical_elements must be non-empty")
+    if any(_CRITICAL_ID_RE.match(elem) is None for elem in critical):
+        raise AblationPolicyError("critical_elements must use G<number> identifiers")
     if not isinstance(test_registry, dict):
         raise AblationPolicyError("test_registry must be a mapping")
     if not all(isinstance(k, str) and isinstance(v, str) for k, v in test_registry.items()):

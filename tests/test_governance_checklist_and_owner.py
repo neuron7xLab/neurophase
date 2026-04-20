@@ -36,7 +36,7 @@ def test_owner_manifest_rejects_wrong_hash(tmp_path: Path) -> None:
         yaml.safe_dump({"owner": "neuron7x", "date": "2026-04-19", "hash": "bad"}),
         encoding="utf-8",
     )
-    with pytest.raises(OwnerManifestError, match="hash mismatch"):
+    with pytest.raises(OwnerManifestError, match="sha256 hex digest|hash mismatch"):
         load_owner_manifest(path)
 
 
@@ -55,7 +55,7 @@ def test_checklist_loader_validates_required_statuses() -> None:
 
 
 def test_checklist_rejects_missing_required_pass(tmp_path: Path) -> None:
-    source = tmp_path / "openai_gpt_2026_checklist_2026-04-19.yaml"
+    source = tmp_path / "mechanical_governance_source_checklist_2026-04-20.yaml"
     source_items = [{"id": f"x_{i}", "status": "pass"} for i in range(211)]
     source.write_text(
         yaml.safe_dump({"version": 1, "items": source_items}),
@@ -89,7 +89,7 @@ def test_checklist_default_path_is_repo_root() -> None:
 
 
 def test_checklist_rejects_source_partial_status(tmp_path: Path) -> None:
-    source = tmp_path / "openai_gpt_2026_checklist_2026-04-19.yaml"
+    source = tmp_path / "mechanical_governance_source_checklist_2026-04-20.yaml"
     source_items = [{"id": f"x_{i}", "status": "pass"} for i in range(210)] + [
         {"id": "x_partial", "status": "partial"}
     ]
@@ -120,7 +120,7 @@ def test_checklist_rejects_source_partial_status(tmp_path: Path) -> None:
 
 
 def test_checklist_rejects_required_source_items_below_contract_floor(tmp_path: Path) -> None:
-    source = tmp_path / "openai_gpt_2026_checklist_2026-04-19.yaml"
+    source = tmp_path / "mechanical_governance_source_checklist_2026-04-20.yaml"
     source.write_text(
         yaml.safe_dump({"version": 1, "items": [{"id": "x", "status": "pass"}]}),
         encoding="utf-8",
