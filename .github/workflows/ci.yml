@@ -83,7 +83,7 @@ jobs:
         # locally). ``if-no-files-found: warn`` because not every
         # matrix job necessarily produces every file.
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ci-artifacts-py${{ matrix.python-version }}
           path: |
