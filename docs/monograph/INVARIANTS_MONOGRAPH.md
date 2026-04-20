@@ -5,9 +5,9 @@
 **Schema version:** 1  
 **Hard invariants:** 21  
 **Advisory invariants:** 5  
-**Honest-naming contracts:** 39  
+**Honest-naming contracts:** 40  
 **Gate states:** 5  
-**Gate transitions:** 8
+**Gate transitions:** 9
 
 ## Table of contents
 
@@ -79,6 +79,7 @@
   - [HN36](#hn36)
   - [HN37](#hn37)
   - [HN38](#hn38)
+  - [HN39](#hn39)
   - [HN_SEED](#hn_seed)
 
 ## Gate state machine
@@ -105,6 +106,7 @@
 | 5 | `*` | R ≥ threshold AND stillness_detector attached but δ missing or invalid | `READY` | — |
 | 6 | `*` | R ≥ threshold AND stillness_detector.update(R, δ) == ACTIVE | `READY` | — |
 | 7 | `*` | R ≥ threshold AND stillness_detector.update(R, δ) == STILL | `UNNECESSARY` | I4 |
+| 8 | `BLOCKED` | governance checklist validated and verdict is DONE | `READY` | HN39 |
 
 ## Hard invariants
 
@@ -1756,6 +1758,27 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 
 - `docs/EVOLUTION_BOARD.md`
 - `docs/TASK_MAP.md`
+
+### HN39
+
+**Statement.** Governance closure contract: verdict=DONE is admissible only when (1) source checklist coverage is complete (>=211 items, no fail/partial statuses), (2) owner_manifest hash verifies as sha256(owner|date), and (3) ablation policy registry maps every critical element to a real mutation test function in tests/test_fail_closed_mutation.py. Порядок приборкує хаос: governance must be machine-checked, never narrated. This is mechanical and fail-closed; narrative assertions do not satisfy the contract.
+
+**Enforcement sites:**
+
+- `neurophase/governance/checklist.py::load_checklist`
+- `neurophase/governance/owner_manifest.py::OwnerManifest.__post_init__`
+- `neurophase/governance/ablation.py::load_ablation_policy`
+
+**Bound tests** (4):
+
+- `tests/test_governance_checklist_and_owner.py::test_checklist_loader_validates_required_statuses`
+- `tests/test_governance_checklist_and_owner.py::test_checklist_rejects_source_partial_status`
+- `tests/test_governance_checklist_and_owner.py::test_owner_manifest_loads_and_hash_matches`
+- `tests/test_governance_checklist_and_owner.py::test_ablation_policy_loads_and_is_mechanically_bound`
+
+**Documentation:**
+
+- `openai_gpt_2026_audit_2026-04-19.md`
 
 ### HN_SEED
 

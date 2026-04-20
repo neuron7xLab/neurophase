@@ -200,3 +200,23 @@ claims:
       role requires (a) an independent peer-reviewed utility replication
       with a prespecified direction and (b) a mechanism explaining the
       direction heterogeneity observed in the existence benchmark.
+
+  - id: C6
+    statement: >-
+      Governance closure is valid only when claim_status_applied and
+      artifact_owner_declared are both mechanically verifiable from
+      committed artifacts (GOVERNANCE_CHECKLIST.yaml +
+      owner_manifest.yaml), not from narrative PR text.
+    status: hypothesis
+    evidence:
+      - source: "Internal governance protocol — 2026-04-19"
+        doi: ""
+        supports: true
+        summary: >-
+          The doctor and checklist loaders enforce owner hash validity,
+          checklist status closure, and ablation-policy linkage before
+          reporting DONE. Evidence pointer: HN39 statement
+          "Порядок приборкує хаос: governance must be machine-checked, never narrated."
+    related_invariants:
+      - HN36
+    introduced_in: "Governance closure PR"

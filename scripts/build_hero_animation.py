@@ -10,6 +10,7 @@ Theme: N phase oscillators drift, then lock. Order parameter R(t) crosses gate.
 from __future__ import annotations
 
 import math
+from itertools import pairwise
 from pathlib import Path
 
 # Canvas
@@ -192,9 +193,6 @@ for i in range(N):
 
 # --- mean-field vector R̄ (arrow from center) -----------------------------
 # length = R * DISC_R * 0.85; angle = psi
-for k, (Rk, psi_k) in enumerate(R_keyframes):
-    pass  # (values computed below)
-
 Rvec_x2 = [DISC_CX + Rk * DISC_R * 0.85 * math.cos(psi_k) for Rk, psi_k in R_keyframes]
 Rvec_y2 = [DISC_CY + Rk * DISC_R * 0.85 * math.sin(psi_k) for Rk, psi_k in R_keyframes]
 
@@ -303,7 +301,7 @@ parts.append(
 # animated sweep: reveal path by animating stroke-dashoffset
 # Compute approximate path length for dash animation
 path_len = 0.0
-for (x1, y1), (x2, y2) in zip(trace_pts, trace_pts[1:]):
+for (x1, y1), (x2, y2) in pairwise(trace_pts):
     path_len += math.hypot(x2 - x1, y2 - y1)
 
 parts.append(

@@ -50,6 +50,7 @@ same report byte-for-byte.
 from __future__ import annotations
 
 import ast
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -325,29 +326,28 @@ def _check_sensor_adapter_has_test() -> CompletenessCheckResult:
     and may not be present on every branch. When absent, this
     check is skipped cleanly with ``passed=True``.
     """
-    try:
-        import importlib
-
-        sensors_mod = importlib.import_module("neurophase.sensors")
-    except ImportError:
+    registry_py = _REPO_ROOT / "neurophase" / "sensors" / "registry.py"
+    if not registry_py.is_file():
         return CompletenessCheckResult(
             "SENSOR_ADAPTER_HAS_TEST",
             True,
             "sensors subpackage not present; check skipped",
         )
-    registry = getattr(sensors_mod, "DEFAULT_ADAPTER_REGISTRY", None)
-    if registry is None:
+    adapter_names = tuple(
+        m.group(1) for m in re.finditer(r'reg\.register\("([^"]+)"', registry_py.read_text("utf-8"))
+    )
+    if not adapter_names:
         return CompletenessCheckResult(
             "SENSOR_ADAPTER_HAS_TEST",
             True,
-            "sensors subpackage has no DEFAULT_ADAPTER_REGISTRY; check skipped",
+            "sensors registry has no registered adapters; check skipped",
         )
 
     test_files = sorted(_TESTS_DIR.glob("test_*.py"))
     haystack = "\n".join(path.read_text(encoding="utf-8") for path in test_files)
 
     gaps: list[str] = []
-    for name in registry.names():
+    for name in adapter_names:
         # Look for a literal '"name"' or "'name'" match in tests.
         if f'"{name}"' not in haystack and f"'{name}'" not in haystack:
             gaps.append(name)
@@ -362,7 +362,7 @@ def _check_sensor_adapter_has_test() -> CompletenessCheckResult:
     return CompletenessCheckResult(
         "SENSOR_ADAPTER_HAS_TEST",
         True,
-        f"all {len(registry)} registered adapters are tested",
+        f"all {len(adapter_names)} registered adapters are tested",
     )
 
 

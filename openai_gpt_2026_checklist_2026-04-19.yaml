@@ -1,0 +1,636 @@
+version: 1
+source: openai-gpt-2026-audit-2026-04-19
+items:
+- id: gpt_2026_001
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_002
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_003
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_004
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_005
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_006
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_007
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_008
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_009
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_010
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_011
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_012
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_013
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_014
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_015
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_016
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_017
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_018
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_019
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_020
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_021
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_022
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_023
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_024
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_025
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_026
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_027
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_028
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_029
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_030
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_031
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_032
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_033
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_034
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_035
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_036
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_037
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_038
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_039
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_040
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_041
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_042
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_043
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_044
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_045
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_046
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_047
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_048
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_049
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_050
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_051
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_052
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_053
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_054
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_055
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_056
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_057
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_058
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_059
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_060
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_061
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_062
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_063
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_064
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_065
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_066
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_067
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_068
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_069
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_070
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_071
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_072
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_073
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_074
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_075
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_076
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_077
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_078
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_079
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_080
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_081
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_082
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_083
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_084
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_085
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_086
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_087
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_088
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_089
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_090
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_091
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_092
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_093
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_094
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_095
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_096
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_097
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_098
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_099
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_100
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_101
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_102
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_103
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_104
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_105
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_106
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_107
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_108
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_109
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_110
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_111
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_112
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_113
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_114
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_115
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_116
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_117
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_118
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_119
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_120
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_121
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_122
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_123
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_124
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_125
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_126
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_127
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_128
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_129
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_130
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_131
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_132
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_133
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_134
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_135
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_136
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_137
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_138
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_139
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_140
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_141
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_142
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_143
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_144
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_145
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_146
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_147
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_148
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_149
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_150
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_151
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_152
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_153
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_154
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_155
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_156
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_157
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_158
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_159
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_160
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_161
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_162
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_163
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_164
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_165
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_166
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_167
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_168
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_169
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_170
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_171
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_172
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_173
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_174
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_175
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_176
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_177
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_178
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_179
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_180
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_181
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_182
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_183
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_184
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_185
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_186
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_187
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_188
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_189
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_190
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_191
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_192
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_193
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_194
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_195
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_196
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_197
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_198
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_199
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_200
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_201
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_202
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_203
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_204
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_205
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_206
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gpt_2026_207
+  status: pass
+  note: closed in 2026-04-19 remediation
+- id: gov_2
+  status: pass
+  note: claim_status_applied
+- id: gov_5
+  status: pass
+  note: artifact_owner_declared
+- id: final_1
+  status: pass
+  note: ablation policy proof
+- id: final_2
+  status: pass
+  note: mutation registry proof

@@ -1,0 +1,46 @@
+version: 2
+mutation_suite: tests/test_fail_closed_mutation.py
+critical_elements:
+  - G1
+  - G2
+  - G3
+  - G4
+  - G5
+  - G6
+  - G7
+  - G8
+  - G9
+  - G10
+  - G11
+  - G12
+  - G13
+  - G14
+  - G15
+  - G16
+  - G17
+  - G18
+  - G19
+  - G20
+  - G21
+test_registry:
+  G1: tests/test_fail_closed_mutation.py::test_G1_sentinel_guard_emits_at_most_once
+  G2: tests/test_fail_closed_mutation.py::test_G2_rr_sample_rejects_non_finite_timestamp
+  G3: tests/test_fail_closed_mutation.py::test_G3_rr_sample_rejects_non_finite_rr
+  G4: tests/test_fail_closed_mutation.py::test_G4_rr_sample_rejects_negative_timestamp
+  G5: tests/test_fail_closed_mutation.py::test_G5_rr_sample_rejects_outside_envelope
+  G6: tests/test_fail_closed_mutation.py::test_G6_replay_reader_rejects_duplicate_timestamps
+  G7: tests/test_fail_closed_mutation.py::test_G7_physio_decision_execution_allowed_biconditional_ready
+  G8: tests/test_fail_closed_mutation.py::test_G8_physio_decision_execution_allowed_biconditional_reduced
+  G9: tests/test_fail_closed_mutation.py::test_G9_physio_decision_non_execute_allowed_with_false_ok
+  G10: tests/test_fail_closed_mutation.py::test_G10_physio_gate_calibrated_requires_user_id
+  G11: tests/test_fail_closed_mutation.py::test_G11_physio_gate_default_forbids_user_id
+  G12: tests/test_fail_closed_mutation.py::test_G12_physio_gate_threshold_ordering
+  G13: tests/test_fail_closed_mutation.py::test_G13_hrv_window_below_min_returns_zero_confidence
+  G14: tests/test_fail_closed_mutation.py::test_G14_hrv_window_flatlined_rr_fails_plausibility
+  G15: tests/test_fail_closed_mutation.py::test_G15_physio_ledger_double_enter_rejected
+  G16: tests/test_fail_closed_mutation.py::test_G16_physio_ledger_file_mode_0o600
+  G17: tests/test_fail_closed_mutation.py::test_G17_live_config_stall_timeout_bounds
+  G18: tests/test_fail_closed_mutation.py::test_G18_live_config_read_timeout_must_be_smaller
+  G19: tests/test_fail_closed_mutation.py::test_G19_ledger_replay_rejects_missing_header
+  G20: tests/test_fail_closed_mutation.py::test_G20_profile_threshold_ordering
+  G21: tests/test_fail_closed_mutation.py::test_G21_profile_load_rejects_wrong_schema

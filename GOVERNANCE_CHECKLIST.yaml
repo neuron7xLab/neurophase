@@ -1,0 +1,18 @@
+version: 2
+verdict: DONE
+source_checklist_path: openai_gpt_2026_checklist_2026-04-19.yaml
+required_source_items: 211
+source_items_count: 211
+items:
+  - id: gov_2
+    status: pass
+    note: claim_status_applied validated by explicit checklist loader
+  - id: gov_5
+    status: pass
+    note: artifact owner declared in owner_manifest.yaml
+  - id: final_1
+    status: pass
+    note: ablation policy enforced by fail-closed mutation coverage
+  - id: final_2
+    status: pass
+    note: mutation proof for critical guards is required and tested

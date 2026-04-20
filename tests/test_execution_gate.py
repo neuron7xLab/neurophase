@@ -11,6 +11,7 @@ import pytest
 
 from neurophase.gate.execution_gate import ExecutionGate, GateDecision, GateState
 from neurophase.gate.stillness_detector import StillnessDetector, StillnessState
+from neurophase.governance.checklist import load_checklist
 
 # ---------------------------------------------------------------------------
 # Base 4-state behaviour (unchanged)
@@ -29,6 +30,47 @@ def test_permits_above_threshold() -> None:
     decision = gate.evaluate(R=0.80)
     assert decision.state is GateState.READY
     assert decision.execution_allowed
+
+
+def test_t8_governance_done_allows_blocked_to_ready_transition_path() -> None:
+    """T8 governance witness: with checklist verdict DONE, a normal gate
+    sequence can move from BLOCKED to READY when R crosses threshold."""
+    checklist = load_checklist()
+    assert checklist.verdict == "DONE"
+
+    gate = ExecutionGate(threshold=0.65)
+    blocked = gate.evaluate(R=0.50)
+    ready = gate.evaluate(R=0.80)
+    assert blocked.state is GateState.BLOCKED
+    assert ready.state is GateState.READY
+    assert ready.execution_allowed is True
+
+
+def test_t8_governance_done_requires_real_gate_threshold_crossing() -> None:
+    """T8 does not bypass I₁: checklist DONE still requires crossing threshold."""
+    checklist = load_checklist()
+    assert checklist.verdict == "DONE"
+
+    gate = ExecutionGate(threshold=0.65)
+    first = gate.evaluate(R=0.40)
+    second = gate.evaluate(R=0.60)
+    assert first.state is GateState.BLOCKED
+    assert second.state is GateState.BLOCKED
+    assert second.execution_allowed is False
+
+
+def test_t8_governance_done_transition_is_reproducible() -> None:
+    """T8 witness sequence is deterministic across two fresh gates."""
+    checklist = load_checklist()
+    assert checklist.verdict == "DONE"
+    seq = (0.30, 0.80, 0.50, 0.90)
+
+    g1 = ExecutionGate(threshold=0.65)
+    g2 = ExecutionGate(threshold=0.65)
+    out1 = [g1.evaluate(R=r).state for r in seq]
+    out2 = [g2.evaluate(R=r).state for r in seq]
+    assert out1 == out2
+    assert out1 == [GateState.BLOCKED, GateState.READY, GateState.BLOCKED, GateState.READY]
 
 
 def test_sensor_absent() -> None:

@@ -39,18 +39,18 @@ class MarketCouplingValidator:
     def curriculum_from_market_regime(self, market_phase: MarketPhase, n: int) -> Curriculum:
         if market_phase is MarketPhase.COHERENT:
             return Curriculum(
-                target_bias=np.full(n, 0.8),
-                corrective_signal=np.full(n, 0.2),
-                stress_pattern=np.full(n, 0.1),
+                target_bias=np.full(n, 0.8, dtype=np.float64),
+                corrective_signal=np.full(n, 0.2, dtype=np.float64),
+                stress_pattern=np.full(n, 0.1, dtype=np.float64),
             )
         if market_phase is MarketPhase.FRAGMENTED:
             return Curriculum(
-                target_bias=np.full(n, 0.5),
-                corrective_signal=np.linspace(-0.2, 0.2, n),
-                stress_pattern=np.full(n, 0.2),
+                target_bias=np.full(n, 0.5, dtype=np.float64),
+                corrective_signal=np.linspace(-0.2, 0.2, n, dtype=np.float64),
+                stress_pattern=np.full(n, 0.2, dtype=np.float64),
             )
         return Curriculum(
-            target_bias=np.zeros(n),
-            corrective_signal=np.zeros(n),
-            stress_pattern=np.full(n, 0.4),
+            target_bias=np.zeros(n, dtype=np.float64),
+            corrective_signal=np.zeros(n, dtype=np.float64),
+            stress_pattern=np.full(n, 0.4, dtype=np.float64),
         )
