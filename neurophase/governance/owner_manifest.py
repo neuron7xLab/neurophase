@@ -24,6 +24,7 @@ class OwnerManifest:
     owner: str
     date: str
     hash: str
+    artifacts: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.owner.strip():
@@ -49,12 +50,13 @@ def load_owner_manifest(path: Path | None = None) -> OwnerManifest:
     loaded = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
     if not isinstance(loaded, dict):
         raise OwnerManifestError("owner manifest must be a mapping")
-    expected_keys = {"owner", "date", "hash"}
+    expected_keys = {"owner", "date", "hash", "artifacts"}
     if set(loaded.keys()) != expected_keys:
         raise OwnerManifestError(f"owner manifest keys must be exactly {sorted(expected_keys)}")
     owner = loaded.get("owner")
     declared_date = loaded.get("date")
     declared_hash = loaded.get("hash")
+    artifacts = loaded.get("artifacts")
     if (
         not isinstance(owner, str)
         or not isinstance(declared_date, str)
@@ -63,4 +65,22 @@ def load_owner_manifest(path: Path | None = None) -> OwnerManifest:
         raise OwnerManifestError("owner/date/hash must be strings")
     if len(declared_hash) != 64 or any(ch not in "0123456789abcdef" for ch in declared_hash):
         raise OwnerManifestError("hash must be a lowercase sha256 hex digest")
-    return OwnerManifest(owner=owner, date=declared_date, hash=declared_hash)
+    if not isinstance(artifacts, list):
+        raise OwnerManifestError("artifacts must be a list")
+    parsed_artifacts: list[tuple[str, str]] = []
+    for item in artifacts:
+        if not isinstance(item, dict) or set(item.keys()) != {"path", "owner"}:
+            raise OwnerManifestError("artifact entries must define only path/owner")
+        path = item.get("path")
+        artifact_owner = item.get("owner")
+        if not isinstance(path, str) or not path.strip():
+            raise OwnerManifestError("artifact path must be a non-empty string")
+        if not isinstance(artifact_owner, str) or not artifact_owner.strip():
+            raise OwnerManifestError("artifact owner must be a non-empty string")
+        parsed_artifacts.append((path, artifact_owner))
+    return OwnerManifest(
+        owner=owner,
+        date=declared_date,
+        hash=declared_hash,
+        artifacts=tuple(parsed_artifacts),
+    )

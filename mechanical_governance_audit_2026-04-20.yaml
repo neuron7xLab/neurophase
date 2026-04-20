@@ -1,3 +1,5 @@
+# Maintainer: neuron7x
+# Review cadence: monthly or on governance protocol changes
 version: 1
 schema: xai-eng-schema-gov-audit-001
 created: '2026-04-20T00:00:00Z'

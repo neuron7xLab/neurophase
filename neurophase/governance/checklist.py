@@ -23,6 +23,18 @@ class GovernanceChecklistError(ValueError):
     """Raised when GOVERNANCE_CHECKLIST.yaml fails explicit schema validation."""
 
 
+class MissingArtifactError(GovernanceChecklistError):
+    """Raised when a governance artifact is missing."""
+
+
+class InvalidVerdictError(GovernanceChecklistError):
+    """Raised when the governance verdict is not DONE."""
+
+
+class UnboundAblationError(GovernanceChecklistError):
+    """Raised when ablation policy bindings are invalid."""
+
+
 @dataclass(frozen=True)
 class ChecklistItem:
     id: str
@@ -71,7 +83,7 @@ class GovernanceChecklist:
 def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     checklist_path = path or DEFAULT_CHECKLIST_PATH
     if not checklist_path.is_file():
-        raise GovernanceChecklistError(f"governance checklist not found: {checklist_path}")
+        raise MissingArtifactError(f"governance checklist not found: {checklist_path}")
 
     payload = yaml.safe_load(checklist_path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
@@ -136,11 +148,11 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     for required in ("gov_2", "final_1", "final_2"):
         if checklist.by_id(required).status != "pass":
             raise GovernanceChecklistError(f"{required} must be status=pass")
+    if checklist.verdict != "DONE":
+        raise InvalidVerdictError("verdict must be DONE")
     source_path = checklist_path.parent / checklist.source_checklist_path
     if not source_path.is_file():
-        raise GovernanceChecklistError(
-            f"source checklist not found: {checklist.source_checklist_path}"
-        )
+        raise MissingArtifactError(f"source checklist not found: {checklist.source_checklist_path}")
     source_payload = yaml.safe_load(source_path.read_text(encoding="utf-8"))
     if not isinstance(source_payload, dict):
         raise GovernanceChecklistError("source checklist root must be a mapping")
@@ -175,5 +187,23 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     try:
         load_ablation_policy()
     except AblationPolicyError as exc:
-        raise GovernanceChecklistError(f"ablation policy validation failed: {exc}") from exc
+        raise UnboundAblationError(f"ablation policy validation failed: {exc}") from exc
     return checklist
+
+
+def governance_closure_valid() -> bool:
+    """Return True only when checklist + owner + ablation artifacts are valid.
+
+    Fail-closed by design: any exception in governance loaders returns False.
+    """
+    from neurophase.governance.owner_manifest import OwnerManifestError, load_owner_manifest
+
+    try:
+        checklist = load_checklist()
+        if checklist.verdict != "DONE":
+            return False
+        load_owner_manifest()
+        load_ablation_policy()
+    except (GovernanceChecklistError, OwnerManifestError, AblationPolicyError):
+        return False
+    return True

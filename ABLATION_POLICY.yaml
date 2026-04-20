@@ -1,3 +1,5 @@
+# Maintainer: neuron7x
+# Review cadence: every mutation-suite update
 version: 2
 mutation_suite: tests/test_fail_closed_mutation.py
 critical_elements:

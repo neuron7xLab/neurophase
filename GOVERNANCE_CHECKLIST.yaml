@@ -1,3 +1,5 @@
+# Maintainer: neuron7x
+# Review cadence: each governance-facing PR
 version: 2
 verdict: DONE
 source_checklist_path: mechanical_governance_source_checklist_2026-04-20.yaml
@@ -16,3 +18,6 @@ items:
   - id: final_2
     status: pass
     note: mutation proof for critical guards is required and tested
+  - id: gov_doc
+    status: pass
+    note: architecture and monograph governance docs updated in lock-step

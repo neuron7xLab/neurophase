@@ -1329,18 +1329,25 @@ honest_naming:
       - docs/monograph/INVARIANTS_MONOGRAPH.md
 
   - id: HN39
-    statement: "Governance closure contract: verdict=DONE is admissible only when (1) source checklist coverage is complete (>=211 items, no fail/partial statuses), (2) owner_manifest hash verifies as sha256(owner|date), and (3) ablation policy registry maps every critical element to a real mutation test function in tests/test_fail_closed_mutation.py. Порядок приборкує хаос: governance must be machine-checked, never narrated. This is mechanical and fail-closed; narrative assertions do not satisfy the contract."
+    statement: "Governance closure is machine-enforced: a transition to READY is permitted only if GOVERNANCE_CHECKLIST.yaml has verdict=DONE, owner_manifest.yaml hash is valid, and ablation-policy bindings are satisfied. Any missing or invalid artifact forces BLOCKED (fail-closed)."
     enforced_in:
       - path: neurophase/governance/checklist.py
-        symbol: load_checklist
+        symbol: governance_closure_valid
       - path: neurophase/governance/owner_manifest.py
         symbol: OwnerManifest.__post_init__
       - path: neurophase/governance/ablation.py
         symbol: load_ablation_policy
     tests:
-      - tests/test_governance_checklist_and_owner.py::test_checklist_loader_validates_required_statuses
-      - tests/test_governance_checklist_and_owner.py::test_checklist_rejects_source_partial_status
-      - tests/test_governance_checklist_and_owner.py::test_owner_manifest_loads_and_hash_matches
-      - tests/test_governance_checklist_and_owner.py::test_ablation_policy_loads_and_is_mechanically_bound
+      - tests/test_governance_verification_gate.py::test_hn39_blocks_on_any_failure
     docs:
       - mechanical_governance_audit_2026-04-20.yaml
+
+  - id: HN40
+    statement: "No path to READY may bypass governance_closure_valid(); when governance closure is false, high-R evaluations remain BLOCKED."
+    enforced_in:
+      - path: neurophase/gate/execution_gate.py
+        symbol: ExecutionGate._classify_ready
+    tests:
+      - tests/test_governance_verification_gate.py::test_no_path_to_ready_bypasses_governance
+    docs:
+      - STATE_MACHINE.yaml

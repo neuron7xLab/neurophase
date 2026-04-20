@@ -28,12 +28,20 @@ def test_owner_manifest_loads_and_hash_matches() -> None:
     assert manifest.owner == "neuron7x"
     assert manifest.date == "2026-04-19"
     assert manifest.hash == manifest_hash(manifest.owner, manifest.date)
+    assert ("GOVERNANCE_CHECKLIST.yaml", "neuron7x") in manifest.artifacts
 
 
 def test_owner_manifest_rejects_wrong_hash(tmp_path: Path) -> None:
     path = tmp_path / "owner_manifest.yaml"
     path.write_text(
-        yaml.safe_dump({"owner": "neuron7x", "date": "2026-04-19", "hash": "bad"}),
+        yaml.safe_dump(
+            {
+                "owner": "neuron7x",
+                "date": "2026-04-19",
+                "hash": "bad",
+                "artifacts": [{"path": "owner_manifest.yaml", "owner": "neuron7x"}],
+            }
+        ),
         encoding="utf-8",
     )
     with pytest.raises(OwnerManifestError, match=r"sha256 hex digest|hash mismatch"):

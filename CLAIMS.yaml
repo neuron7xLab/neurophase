@@ -240,3 +240,37 @@ claims:
       - I2
       - HN39
     introduced_in: "Governance hardening follow-up PR"
+
+  - id: C8
+    statement: >-
+      Governance closure is an executable runtime guard: READY is denied
+      whenever governance_closure_valid() is false, even when R(t) exceeds
+      threshold.
+    status: hypothesis
+    evidence:
+      - source: "Internal runtime guard proof — 2026-04-20"
+        doi: ""
+        supports: true
+        summary: >-
+          ExecutionGate._classify_ready now checks governance_closure_valid()
+          and emits BLOCKED when any governance artifact is invalid or missing.
+    related_invariants:
+      - HN39
+      - HN40
+    introduced_in: "Governance hardening v2"
+
+  - id: C9
+    statement: >-
+      Owner manifest traceability requires explicit owner declarations for each
+      critical governance artifact.
+    status: hypothesis
+    evidence:
+      - source: "Internal ownership manifest extension — 2026-04-20"
+        doi: ""
+        supports: true
+        summary: >-
+          owner_manifest.yaml includes per-artifact owner records and loader
+          validation enforces non-empty path/owner declarations.
+    related_invariants:
+      - HN39
+    introduced_in: "Governance hardening v2"

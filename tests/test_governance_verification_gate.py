@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from neurophase.gate.execution_gate import ExecutionGate
+from neurophase.gate.execution_gate import ExecutionGate, GateState
 from neurophase.governance.ablation import load_ablation_policy
-from neurophase.governance.checklist import load_checklist
+from neurophase.governance.checklist import governance_closure_valid, load_checklist
 
 hypothesis = pytest.importorskip("hypothesis")
 given = hypothesis.given
@@ -37,6 +37,40 @@ def test_t8_transition_blocks_gate_on_failed_governance(monkeypatch: pytest.Monk
     monkeypatch.setattr("neurophase.governance.checklist.load_checklist", _boom)
     with pytest.raises(ValueError, match="T8 governance guard failed"):
         ExecutionGate()
+
+
+@pytest.mark.parametrize(
+    "failure_mode,patch_target,exc",
+    [
+        ("missing_checklist", "neurophase.governance.checklist.load_checklist", FileNotFoundError),
+        ("verdict_not_DONE", "neurophase.governance.checklist.load_checklist", RuntimeError),
+        (
+            "invalid_owner_hash",
+            "neurophase.governance.owner_manifest.load_owner_manifest",
+            ValueError,
+        ),
+        ("unbound_ablation", "neurophase.governance.ablation.load_ablation_policy", ValueError),
+    ],
+)
+def test_hn39_blocks_on_any_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    failure_mode: str,
+    patch_target: str,
+    exc: type[Exception],
+) -> None:
+    def _boom() -> object:
+        raise exc(failure_mode)
+
+    monkeypatch.setattr(patch_target, _boom)
+    assert governance_closure_valid() is False
+
+
+def test_no_path_to_ready_bypasses_governance(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("neurophase.governance.checklist.governance_closure_valid", lambda: False)
+    gate = ExecutionGate(enforce_governance=False)
+    decision = gate.evaluate(R=0.99)
+    assert decision.state is GateState.BLOCKED
+    assert decision.execution_allowed is False
 
 
 def test_mutation_binding_coverage_is_total() -> None:

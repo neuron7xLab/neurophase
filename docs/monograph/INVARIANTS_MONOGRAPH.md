@@ -5,7 +5,7 @@
 **Schema version:** 1  
 **Hard invariants:** 21  
 **Advisory invariants:** 5  
-**Honest-naming contracts:** 40  
+**Honest-naming contracts:** 41  
 **Gate states:** 5  
 **Gate transitions:** 9
 
@@ -80,6 +80,7 @@
   - [HN37](#hn37)
   - [HN38](#hn38)
   - [HN39](#hn39)
+  - [HN40](#hn40)
   - [HN_SEED](#hn_seed)
 
 ## Gate state machine
@@ -99,6 +100,7 @@
 | Priority | From | Trigger | → To | Invariant |
 |---|---|---|---|---|
 | 0 | `*` | time_quality is supplied and quality != VALID | `DEGRADED` | B1 |
+| 0 | `BLOCKED` | governance checklist validated and verdict is DONE | `READY` | HN39 |
 | 1 | `*` | sensor_present == False | `SENSOR_ABSENT` | I2 |
 | 2 | `*` | R is None / NaN / out-of-range | `DEGRADED` | I3 |
 | 3 | `*` | R < threshold | `BLOCKED` | I1 |
@@ -106,7 +108,6 @@
 | 5 | `*` | R ≥ threshold AND stillness_detector attached but δ missing or invalid | `READY` | — |
 | 6 | `*` | R ≥ threshold AND stillness_detector.update(R, δ) == ACTIVE | `READY` | — |
 | 7 | `*` | R ≥ threshold AND stillness_detector.update(R, δ) == STILL | `UNNECESSARY` | I4 |
-| 8 | `BLOCKED` | governance checklist validated and verdict is DONE | `READY` | HN39 |
 
 ## Hard invariants
 
@@ -1761,24 +1762,37 @@ Non-permission contracts that constrain naming, behaviour, or documentation. Eve
 
 ### HN39
 
-**Statement.** Governance closure contract: verdict=DONE is admissible only when (1) source checklist coverage is complete (>=211 items, no fail/partial statuses), (2) owner_manifest hash verifies as sha256(owner|date), and (3) ablation policy registry maps every critical element to a real mutation test function in tests/test_fail_closed_mutation.py. Порядок приборкує хаос: governance must be machine-checked, never narrated. This is mechanical and fail-closed; narrative assertions do not satisfy the contract.
+**Statement.** Governance closure is machine-enforced: a transition to READY is permitted only if GOVERNANCE_CHECKLIST.yaml has verdict=DONE, owner_manifest.yaml hash is valid, and ablation-policy bindings are satisfied. Any missing or invalid artifact forces BLOCKED (fail-closed).
 
 **Enforcement sites:**
 
-- `neurophase/governance/checklist.py::load_checklist`
+- `neurophase/governance/checklist.py::governance_closure_valid`
 - `neurophase/governance/owner_manifest.py::OwnerManifest.__post_init__`
 - `neurophase/governance/ablation.py::load_ablation_policy`
 
-**Bound tests** (4):
+**Bound tests** (1):
 
-- `tests/test_governance_checklist_and_owner.py::test_checklist_loader_validates_required_statuses`
-- `tests/test_governance_checklist_and_owner.py::test_checklist_rejects_source_partial_status`
-- `tests/test_governance_checklist_and_owner.py::test_owner_manifest_loads_and_hash_matches`
-- `tests/test_governance_checklist_and_owner.py::test_ablation_policy_loads_and_is_mechanically_bound`
+- `tests/test_governance_verification_gate.py::test_hn39_blocks_on_any_failure`
 
 **Documentation:**
 
 - `mechanical_governance_audit_2026-04-20.yaml`
+
+### HN40
+
+**Statement.** No path to READY may bypass governance_closure_valid(); when governance closure is false, high-R evaluations remain BLOCKED.
+
+**Enforcement sites:**
+
+- `neurophase/gate/execution_gate.py::ExecutionGate._classify_ready`
+
+**Bound tests** (1):
+
+- `tests/test_governance_verification_gate.py::test_no_path_to_ready_bypasses_governance`
+
+**Documentation:**
+
+- `STATE_MACHINE.yaml`
 
 ### HN_SEED
 

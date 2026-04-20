@@ -146,15 +146,16 @@ transitions:
       - tests/test_execution_gate.py::test_still_is_not_blocked
 
   - id: T8_governance_checklist_pass
-    priority: 8
+    priority: 0
     from_state: BLOCKED
     trigger: "governance checklist validated and verdict is DONE"
-    guard: "GOVERNANCE_CHECKLIST.yaml loads with verdict DONE and no fail/partial source items"
+    guard: "governance_closure_valid()"
     target: READY
     execution_allowed: true
     invariant: HN39
     tests:
       - tests/test_governance_checklist_and_owner.py::test_checklist_loader_validates_required_statuses
+      - tests/test_governance_verification_gate.py::test_no_path_to_ready_bypasses_governance
 
 # Global invariant: every transition with execution_allowed=true MUST
 # target the READY state, and the READY state MUST be reachable only
