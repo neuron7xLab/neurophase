@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import yaml
 
 from neurophase.gate.execution_gate import ExecutionGate, GateState
 from neurophase.governance.ablation import load_ablation_policy
@@ -28,6 +29,19 @@ def test_governance_checklist_schema_strict() -> None:
 @given(st.sampled_from([p.name for p in _repo_root().glob("*.yaml")]))
 def test_hn39_no_gpt_labeled_yaml_artifacts(artifact_name: str) -> None:
     assert "gpt" not in artifact_name.lower()
+
+
+def test_hn39_no_gpt_reference_in_source_checklist_payload() -> None:
+    payload = yaml.safe_load(
+        (_repo_root() / "mechanical_governance_source_checklist_2026-04-20.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert isinstance(payload, dict)
+    source = payload.get("source")
+    assert isinstance(source, str)
+    assert "gpt" not in source.lower()
+    assert "openai" not in source.lower()
 
 
 def test_t8_transition_blocks_gate_on_failed_governance(monkeypatch: pytest.MonkeyPatch) -> None:

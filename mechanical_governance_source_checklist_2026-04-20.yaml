@@ -1,7 +1,7 @@
 # Maintainer: neuron7x
 # Review cadence: monthly or on governance protocol changes
 version: 1
-source: openai-gpt-2026-audit-2026-04-19
+source: mechanical-governance-internal-2026-04-20
 items:
 - id: gpt_2026_001
   status: pass
