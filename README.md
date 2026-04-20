@@ -13,7 +13,7 @@
 [![CI](https://github.com/neuron7xLab/neurophase/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/neuron7xLab/neurophase/actions/workflows/ci.yml)
 [![status](https://img.shields.io/badge/status-experimental-blueviolet?style=flat-square)](#status)
 [![invariants](https://img.shields.io/badge/invariants-4_hard_%2B_B%E2%82%81-critical?style=flat-square)](#invariants)
-[![tests](https://img.shields.io/badge/tests-1602-brightgreen?style=flat-square)](tests/)
+[![tests](https://img.shields.io/badge/tests-1788-brightgreen?style=flat-square)](tests/)
 [![mypy](https://img.shields.io/badge/mypy-strict-1F5082?style=flat-square)](pyproject.toml)
 [![doctor](https://img.shields.io/badge/doctor-11%2F11-00C853?style=flat-square)](#governance)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
@@ -552,8 +552,8 @@ pip install -e ".[dev]"
 pip install -e ".[dev,witness]"
 
 ruff check neurophase tests
-mypy neurophase        # --strict, 122 source files, 0 errors
-pytest -q              # 1354 passed, 6 skipped
+mypy neurophase        # --strict, 158 source files, 0 errors
+pytest -q              # 1788 passed, 6 deselected
 python -m neurophase doctor  # 11/11 axes, exit 0
 ```
 
@@ -794,7 +794,7 @@ When installed with `pip install -e ".[witness]"`, the neosynaptex γ-witness pr
 ### Engineering summary
 
 ```
-102 source modules · 1354 tests · 26 invariant contracts
+158 source modules · 1788 tests · 26 invariant contracts
 4 hard invariants + B₁ · 11-axis doctor certification
 bit-deterministic replay · Phipson–Smyth p-value estimator
 ```
