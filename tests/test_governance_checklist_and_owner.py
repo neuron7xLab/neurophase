@@ -90,9 +90,7 @@ def test_checklist_default_path_is_repo_root() -> None:
 def test_checklist_rejects_source_partial_status(tmp_path: Path) -> None:
     source = tmp_path / "openai_gpt_2026_checklist_2026-04-19.yaml"
     source.write_text(
-        yaml.safe_dump(
-            {"version": 1, "items": [{"id": "x", "status": "partial"}]}
-        ),
+        yaml.safe_dump({"version": 1, "items": [{"id": "x", "status": "partial"}]}),
         encoding="utf-8",
     )
     checklist = tmp_path / "GOVERNANCE_CHECKLIST.yaml"
@@ -149,9 +147,13 @@ def test_ablation_policy_rejects_missing_critical_test(tmp_path: Path) -> None:
         load_ablation_policy(policy_path)
 
 
-def test_ablation_policy_comment_marker_satisfies_simple_string_check(tmp_path: Path) -> None:
+def test_ablation_policy_comment_marker_is_rejected_without_real_function(
+    tmp_path: Path,
+) -> None:
     suite = tmp_path / "suite.py"
-    suite.write_text("# def test_G2_fake():\n\ndef test_G1_real():\n    assert True\n", encoding="utf-8")
+    suite.write_text(
+        "# def test_G2_fake():\n\ndef test_G1_real():\n    assert True\n", encoding="utf-8"
+    )
     policy_path = tmp_path / "ABLATION_POLICY.yaml"
     policy_path.write_text(
         yaml.safe_dump(
@@ -167,11 +169,11 @@ def test_ablation_policy_comment_marker_satisfies_simple_string_check(tmp_path: 
         ),
         encoding="utf-8",
     )
-    policy = load_ablation_policy(policy_path)
-    assert "G2" in policy.critical_elements
+    with pytest.raises(AblationPolicyError, match="critical elements without mutation tests"):
+        load_ablation_policy(policy_path)
 
 
-def test_ablation_policy_tolerates_unparseable_suite_under_string_mode(tmp_path: Path) -> None:
+def test_ablation_policy_rejects_unparseable_suite(tmp_path: Path) -> None:
     suite = tmp_path / "suite.py"
     suite.write_text("def test_G1_broken(:\n", encoding="utf-8")
     policy_path = tmp_path / "ABLATION_POLICY.yaml"
@@ -188,8 +190,8 @@ def test_ablation_policy_tolerates_unparseable_suite_under_string_mode(tmp_path:
         ),
         encoding="utf-8",
     )
-    policy = load_ablation_policy(policy_path)
-    assert policy.test_registry["G1"] == "suite.py::test_G1_broken"
+    with pytest.raises(AblationPolicyError, match="not valid Python"):
+        load_ablation_policy(policy_path)
 
 
 def test_ablation_policy_default_path_is_repo_root() -> None:

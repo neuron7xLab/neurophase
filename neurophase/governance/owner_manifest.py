@@ -34,9 +34,7 @@ class OwnerManifest:
             raise OwnerManifestError(f"date must be ISO YYYY-MM-DD, got {self.date!r}") from exc
         expected = manifest_hash(self.owner, self.date)
         if self.hash != expected:
-            raise OwnerManifestError(
-                "hash mismatch: expected sha256(owner|date)"
-            )
+            raise OwnerManifestError("hash mismatch: expected sha256(owner|date)")
 
 
 def manifest_hash(owner: str, manifest_date: str) -> str:
@@ -54,6 +52,10 @@ def load_owner_manifest(path: Path | None = None) -> OwnerManifest:
     owner = loaded.get("owner")
     declared_date = loaded.get("date")
     declared_hash = loaded.get("hash")
-    if not isinstance(owner, str) or not isinstance(declared_date, str) or not isinstance(declared_hash, str):
+    if (
+        not isinstance(owner, str)
+        or not isinstance(declared_date, str)
+        or not isinstance(declared_hash, str)
+    ):
         raise OwnerManifestError("owner/date/hash must be strings")
     return OwnerManifest(owner=owner, date=declared_date, hash=declared_hash)

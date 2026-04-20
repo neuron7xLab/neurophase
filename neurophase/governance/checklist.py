@@ -125,9 +125,7 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     if not isinstance(source_items, list):
         raise GovernanceChecklistError("source checklist items must be a list")
     if checklist.source_items_count != checklist.required_source_items:
-        raise GovernanceChecklistError(
-            "source_items_count must equal required_source_items"
-        )
+        raise GovernanceChecklistError("source_items_count must equal required_source_items")
     if len(source_items) != checklist.source_items_count:
         raise GovernanceChecklistError(
             f"source checklist must contain exactly {checklist.source_items_count} items, got {len(source_items)}"

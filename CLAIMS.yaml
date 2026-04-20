@@ -220,3 +220,23 @@ claims:
     related_invariants:
       - HN36
     introduced_in: "Governance closure PR"
+
+  - id: C7
+    statement: >-
+      Optional third-party dependencies must fail closed during import
+      discovery: absence of an optional parent package must not raise at
+      runtime and must deterministically fall back to default-safe behavior.
+    status: hypothesis
+    evidence:
+      - source: "Internal optional-dependency hardening patch — 2026-04-20"
+        doi: ""
+        supports: true
+        summary: >-
+          LockinScoreCalibrator now probes sklearn.linear_model with guarded
+          import and returns default weights when ImportError occurs; this
+          prevents ModuleNotFoundError from importlib.util.find_spec on
+          environments where sklearn is not installed.
+    related_invariants:
+      - I2
+      - HN39
+    introduced_in: "Governance hardening follow-up PR"

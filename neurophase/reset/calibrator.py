@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from importlib import import_module
-from importlib.util import find_spec
 from typing import Any
 
 import numpy as np
@@ -39,7 +38,9 @@ class LockinScoreCalibrator:
         labeled = [e for e in ledger if e.decision in {"SUCCESS", "ROLLBACK"}]
         if len(labeled) < self.min_samples:
             return CalibrationResult(self.default_weights, (0.0, 0.0), len(labeled))
-        if find_spec("sklearn.linear_model") is None:
+        try:
+            linear_model_mod: Any = import_module("sklearn.linear_model")
+        except ImportError:
             return CalibrationResult(self.default_weights, (0.0, 0.0), len(labeled))
 
         x = np.array(
@@ -56,7 +57,6 @@ class LockinScoreCalibrator:
         )
         y = np.array([1 if e.decision == "ROLLBACK" else 0 for e in labeled], dtype=np.int64)
 
-        linear_model_mod: Any = import_module("sklearn.linear_model")
         logistic_cls: Any = getattr(linear_model_mod, "LogisticRegression", None)
         if logistic_cls is None:
             return CalibrationResult(self.default_weights, (0.0, 0.0), len(labeled))

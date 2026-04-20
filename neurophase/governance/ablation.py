@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
@@ -65,6 +66,13 @@ def load_ablation_policy(path: Path | None = None) -> AblationPolicy:
     if not suite_path.is_file():
         raise AblationPolicyError(f"mutation suite missing: {policy.mutation_suite}")
     suite_text = suite_path.read_text(encoding="utf-8")
+    try:
+        suite_tree = ast.parse(suite_text)
+    except SyntaxError as exc:
+        raise AblationPolicyError(
+            f"mutation suite is not valid Python: {policy.mutation_suite}"
+        ) from exc
+    test_names = {node.name for node in ast.walk(suite_tree) if isinstance(node, ast.FunctionDef)}
     missing = []
     for elem in policy.critical_elements:
         node_id = policy.test_registry[elem]
@@ -74,7 +82,7 @@ def load_ablation_policy(path: Path | None = None) -> AblationPolicy:
                 f"registry entry for {elem} must point into {policy.mutation_suite}"
             )
         func_name = node_id.split("::", 1)[1]
-        if f"def {func_name}(" not in suite_text:
+        if func_name not in test_names:
             missing.append(elem)
             continue
         if not func_name.startswith(f"test_{elem}_"):
@@ -82,7 +90,5 @@ def load_ablation_policy(path: Path | None = None) -> AblationPolicy:
                 f"registry entry for {elem} must map to test_{elem}_..., got {func_name}"
             )
     if missing:
-        raise AblationPolicyError(
-            f"critical elements without mutation tests: {missing[:5]}"
-        )
+        raise AblationPolicyError(f"critical elements without mutation tests: {missing[:5]}")
     return policy

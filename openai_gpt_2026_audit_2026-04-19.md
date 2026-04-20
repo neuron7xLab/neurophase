@@ -22,3 +22,14 @@
 | gov_5 | pass | `neurophase/governance/owner_manifest.py::load_owner_manifest` |
 | final_1 | pass | `ABLATION_POLICY.yaml::critical_elements` |
 | final_2 | pass | `ABLATION_POLICY.yaml::test_registry` |
+
+## Follow-up hardening evidence — 2026-04-20
+
+- `neurophase/reset/calibrator.py` no longer calls
+  `importlib.util.find_spec("sklearn.linear_model")`; guarded import now
+  degrades to default weights when sklearn is absent.
+- `neurophase/governance/ablation.py` now parses mutation suites with `ast.parse`
+  and validates `test_registry` bindings against concrete `ast.FunctionDef`
+  nodes, rejecting comment-string false positives.
+- Formatting conformance restored for governance loaders/tests under
+  `ruff format --check`.
