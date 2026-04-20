@@ -47,6 +47,20 @@ class GovernanceChecklist:
     source_items_count: int
     items: tuple[ChecklistItem, ...]
 
+    def __post_init__(self) -> None:
+        if self.version <= 0:
+            raise GovernanceChecklistError("version must be positive")
+        if self.verdict != "DONE":
+            raise GovernanceChecklistError("verdict must be DONE")
+        if not self.source_checklist_path.strip():
+            raise GovernanceChecklistError("source_checklist_path must be non-empty")
+        if self.required_source_items < 211:
+            raise GovernanceChecklistError("required_source_items must be >= 211")
+        if self.source_items_count != self.required_source_items:
+            raise GovernanceChecklistError("source_items_count must equal required_source_items")
+        if len(self.items) == 0:
+            raise GovernanceChecklistError("items must be non-empty")
+
     def by_id(self, item_id: str) -> ChecklistItem:
         for item in self.items:
             if item.id == item_id:
@@ -110,9 +124,6 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     for required in ("gov_2", "final_1", "final_2"):
         if checklist.by_id(required).status != "pass":
             raise GovernanceChecklistError(f"{required} must be status=pass")
-    if checklist.verdict != "DONE":
-        raise GovernanceChecklistError("verdict must be DONE")
-
     source_path = checklist_path.parent / checklist.source_checklist_path
     if not source_path.is_file():
         raise GovernanceChecklistError(
@@ -124,8 +135,6 @@ def load_checklist(path: Path | None = None) -> GovernanceChecklist:
     source_items = source_payload.get("items")
     if not isinstance(source_items, list):
         raise GovernanceChecklistError("source checklist items must be a list")
-    if checklist.source_items_count != checklist.required_source_items:
-        raise GovernanceChecklistError("source_items_count must equal required_source_items")
     if len(source_items) != checklist.source_items_count:
         raise GovernanceChecklistError(
             f"source checklist must contain exactly {checklist.source_items_count} items, got {len(source_items)}"

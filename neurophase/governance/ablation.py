@@ -25,6 +25,19 @@ class AblationPolicy:
     critical_elements: tuple[str, ...]
     test_registry: dict[str, str]
 
+    def __post_init__(self) -> None:
+        if self.version <= 0:
+            raise AblationPolicyError("version must be positive")
+        if not self.mutation_suite.strip():
+            raise AblationPolicyError("mutation_suite must be non-empty")
+        if not self.critical_elements:
+            raise AblationPolicyError("critical_elements must be non-empty")
+        for elem in self.critical_elements:
+            if not elem.strip():
+                raise AblationPolicyError("critical_elements entries must be non-empty")
+        if set(self.test_registry.keys()) != set(self.critical_elements):
+            raise AblationPolicyError("test_registry keys must match critical_elements exactly")
+
 
 def load_ablation_policy(path: Path | None = None) -> AblationPolicy:
     policy_path = path or DEFAULT_ABLATION_POLICY_PATH

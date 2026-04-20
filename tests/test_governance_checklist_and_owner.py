@@ -56,8 +56,9 @@ def test_checklist_loader_validates_required_statuses() -> None:
 
 def test_checklist_rejects_missing_required_pass(tmp_path: Path) -> None:
     source = tmp_path / "openai_gpt_2026_checklist_2026-04-19.yaml"
+    source_items = [{"id": f"x_{i}", "status": "pass"} for i in range(211)]
     source.write_text(
-        yaml.safe_dump({"version": 1, "items": [{"id": "x", "status": "pass"}]}),
+        yaml.safe_dump({"version": 1, "items": source_items}),
         encoding="utf-8",
     )
     path = tmp_path / "GOVERNANCE_CHECKLIST.yaml"
@@ -67,8 +68,8 @@ def test_checklist_rejects_missing_required_pass(tmp_path: Path) -> None:
                 "version": 2,
                 "verdict": "DONE",
                 "source_checklist_path": source.name,
-                "required_source_items": 1,
-                "source_items_count": 1,
+                "required_source_items": 211,
+                "source_items_count": 211,
                 "items": [
                     {"id": "gov_2", "status": "fail", "note": "x"},
                     {"id": "final_1", "status": "pass", "note": "x"},
@@ -89,8 +90,39 @@ def test_checklist_default_path_is_repo_root() -> None:
 
 def test_checklist_rejects_source_partial_status(tmp_path: Path) -> None:
     source = tmp_path / "openai_gpt_2026_checklist_2026-04-19.yaml"
+    source_items = [{"id": f"x_{i}", "status": "pass"} for i in range(210)] + [
+        {"id": "x_partial", "status": "partial"}
+    ]
     source.write_text(
-        yaml.safe_dump({"version": 1, "items": [{"id": "x", "status": "partial"}]}),
+        yaml.safe_dump({"version": 1, "items": source_items}),
+        encoding="utf-8",
+    )
+    checklist = tmp_path / "GOVERNANCE_CHECKLIST.yaml"
+    checklist.write_text(
+        yaml.safe_dump(
+            {
+                "version": 2,
+                "verdict": "DONE",
+                "source_checklist_path": source.name,
+                "required_source_items": 211,
+                "source_items_count": 211,
+                "items": [
+                    {"id": "gov_2", "status": "pass", "note": "x"},
+                    {"id": "final_1", "status": "pass", "note": "x"},
+                    {"id": "final_2", "status": "pass", "note": "x"},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(GovernanceChecklistError, match="non-pass"):
+        load_checklist(checklist)
+
+
+def test_checklist_rejects_required_source_items_below_contract_floor(tmp_path: Path) -> None:
+    source = tmp_path / "openai_gpt_2026_checklist_2026-04-19.yaml"
+    source.write_text(
+        yaml.safe_dump({"version": 1, "items": [{"id": "x", "status": "pass"}]}),
         encoding="utf-8",
     )
     checklist = tmp_path / "GOVERNANCE_CHECKLIST.yaml"
@@ -111,7 +143,7 @@ def test_checklist_rejects_source_partial_status(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
-    with pytest.raises(GovernanceChecklistError, match="non-pass"):
+    with pytest.raises(GovernanceChecklistError, match=">= 211"):
         load_checklist(checklist)
 
 
