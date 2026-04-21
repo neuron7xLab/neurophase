@@ -8,6 +8,41 @@ adheres to semantic versioning.
 
 First falsifiable PLV pipeline and first real-data confrontation.
 
+### 2026-04-21 — Live-physio LSL precision fix (float32 → double64)
+
+The live RR transport was silently broken on every workstation with uptime
+≳ 3 h. Root cause was a precision collision in the LSL sample format, not
+a transport or logic bug.
+
+#### Fixed
+
+- **LSL channel format upgraded `float32` → `double64`** across all four
+  stack endpoints (`neurophase/physio/live.py`, `tools/polar_producer.py`,
+  `tools/fault_producer.py`, test contract).
+
+  *Symptom.* `pytest tests/test_physio_live.py` failed with
+  `expected 24 frames, got 8`; the consumer rejected two thirds of
+  producer samples as non-monotonic and reported negative latencies on
+  local loopback.
+
+  *Mechanism.* Producers push `time.monotonic()` absolute timestamps. On a
+  host with uptime > 10⁴ s, float32 ULP exceeds 10⁻³ s; at 7-day uptime
+  (6 × 10⁵ s) the ULP is ~0.0625 s — larger than the 20 ms producer
+  cadence. Consecutive samples collide to the same float32 representation,
+  and the consumer's `ts_s <= last_ts_s` monotonicity guard discards every
+  collision. Float64 ULP at the same magnitude is ~10⁻¹⁰ s, below the
+  physiological noise floor.
+
+  *Why CI never caught it.* GitHub Actions runners boot fresh and expire
+  within minutes; `time.monotonic()` never climbs above a few thousand
+  seconds, where float32 ULP (~4 × 10⁻⁴ s) stays below the 20 ms cadence.
+  The gap only opened on long-running developer/operator hosts.
+
+  *Contract update.* `tests/test_physio_contract.py::TestLSLSchema::test_channel_format_is_double64`
+  enforces the new value across all four endpoints; the prior
+  `test_channel_format_is_float32` is renamed and tightened. This is a
+  contract correction, not a drift — the prior contract was unshippable.
+
 ### 2026-04-15 — Directional coupling + criticality coordinate (singularity pass)
 
 First **directional** coupling metric and first **dynamical-regime** coordinate

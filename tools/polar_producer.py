@@ -7,7 +7,7 @@ This script is **OUT OF REPO KERNEL**. It does not import anything from
 
 * LSL stream name   ``neurophase-rr`` (CLI override)
 * channel_count     2
-* channel_format    float32
+* channel_format    double64
 * type              "RR"
 * sample            ``[timestamp_s, rr_ms]`` per RR interval
 * EOF sentinel      ``[NaN, NaN]`` pushed exactly once on shutdown
@@ -64,7 +64,7 @@ HRS_MEASUREMENT_CHAR_UUID: str = "00002a37-0000-1000-8000-00805f9b34fb"
 # --- LSL contract (mirrors neurophase/physio/live.py exactly) ----------
 LSL_STREAM_TYPE: str = "RR"
 LSL_CHANNEL_COUNT: int = 2
-LSL_CHANNEL_FORMAT: str = "float32"
+LSL_CHANNEL_FORMAT: str = "double64"
 
 # --- RR plausibility envelope (mirrors neurophase/physio/replay.py) ----
 RR_MIN_MS: float = 300.0

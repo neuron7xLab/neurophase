@@ -22,7 +22,7 @@ One standalone Python script that:
   clean shutdown, guarded by a single-shot boolean (`SentinelGuard`).
 
 The LSL outlet is shaped **identically** to what
-`neurophase.physio.live` expects: `channel_count = 2`, `float32`,
+`neurophase.physio.live` expects: `channel_count = 2`, `double64`,
 `type = "RR"`. The contract is insured by the kernel-side test
 `tests/test_physio_live.py::test_polar_producer_constants_match_kernel_contract`.
 
