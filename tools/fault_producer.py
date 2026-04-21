@@ -8,7 +8,7 @@ malformed, degraded, and disconnect-style inputs. Every test in
 ``tests/test_physio_faults.py`` spawns this tool as a real subprocess.
 
 Sample schema is the same as the happy-path producer:
-    [timestamp_s, rr_ms]  (LSL float32, channel_count = 2)
+    [timestamp_s, rr_ms]  (LSL double64, channel_count = 2)
     (NaN, NaN)            = EOF sentinel
     ch1 = nan elsewhere   = consumer fail-closed EOF
 

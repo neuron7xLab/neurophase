@@ -19,7 +19,7 @@ Explicitly asserted:
   * stream name default                 "neurophase-rr"
   * stream type                         "RR"
   * LSL channel_count                   2
-  * LSL channel_format                  "float32"
+  * LSL channel_format                  "double64"
   * sample layout                       ``[timestamp_s, rr_ms]``
   * EOF sentinel semantics              NaN on either channel -> clean shutdown
   * RR physiological envelope           ``[RR_MIN_MS, RR_MAX_MS] = [300, 2000]``
@@ -85,12 +85,20 @@ class TestLSLSchema:
         assert fault_producer.LSL_CHANNEL_COUNT == 2
         assert physio_live.LiveConfig().window_size > 0  # sanity: live config loads
 
-    def test_channel_format_is_float32(
+    def test_channel_format_is_double64(
         self, polar_producer: ModuleType, fault_producer: ModuleType
     ) -> None:
-        assert physio_live.LSL_CHANNEL_FORMAT == "float32"
-        assert polar_producer.LSL_CHANNEL_FORMAT == "float32"
-        assert fault_producer.LSL_CHANNEL_FORMAT == "float32"
+        """All four endpoints share the upgraded double64 contract.
+
+        Float32 ULP at ``time.monotonic()`` values > 10⁴ s exceeds the
+        producer cadence (20 ms), causing consecutive timestamps to
+        collide and the consumer's monotonicity guard to reject 2/3 of
+        samples on any host with uptime ≳ 3 h. double64 ULP stays below
+        10⁻⁹ s across the realistic monotonic range.
+        """
+        assert physio_live.LSL_CHANNEL_FORMAT == "double64"
+        assert polar_producer.LSL_CHANNEL_FORMAT == "double64"
+        assert fault_producer.LSL_CHANNEL_FORMAT == "double64"
 
     def test_stream_type_is_rr(
         self, polar_producer: ModuleType, fault_producer: ModuleType
@@ -266,3 +274,85 @@ class TestCanonicalFrameSchemaVersion:
         from neurophase.physio.profile import PROFILE_SCHEMA_VERSION
 
         assert PROFILE_SCHEMA_VERSION == "physio-profile-v1"
+
+
+# =======================================================================
+#   LSL timestamp-precision floor (regression guard for 2026-04-21 fix)
+# =======================================================================
+
+
+class TestLSLTimestampPrecisionFloor:
+    """Guard: the chosen LSL channel_format must preserve the producer
+    cadence at realistic ``time.monotonic()`` magnitudes.
+
+    Producers push ``time.monotonic()`` absolute values. On long-running
+    hosts this value grows into the 10⁴–10⁶ s range. The sample format
+    must have ULP strictly smaller than the producer's minimum inter-
+    sample interval, or consecutive samples collide to the same float
+    representation and the consumer's monotonicity guard rejects every
+    collision.
+
+    Prior contract (`float32`) fails this at uptime ≳ 3 h on default
+    producer cadence (20 ms). Current contract (`double64`) passes at
+    every physically reasonable uptime.
+    """
+
+    # Cadence floor (seconds) — tightest interval any producer emits.
+    # live_producer default is 0.02; Polar hardware sends RR at ~30 Hz so
+    # ~0.03 s; tightest plausible real-world cadence is 2 ms for a
+    # high-rate fault injection test. Floor must hold for the tightest.
+    _MIN_INTER_SAMPLE_S: float = 2e-3
+
+    # Realistic monotonic magnitude to cover (30 days of uptime, seconds).
+    _REALISTIC_MONO_MAX_S: float = 30 * 24 * 3600
+
+    def test_channel_format_resolves_cadence_at_realistic_uptime(self) -> None:
+        """INV-LIVE-TSPREC: chosen format ULP at 30-day uptime must be
+        strictly less than the tightest producer cadence.
+
+        Why: float32 ULP at 10⁶ s is ~0.125 s — 60× the 2 ms cadence
+        floor — which collides consecutive samples and blocks the live
+        consumer. double64 ULP at 10⁶ s is ~10⁻¹⁰ s — well below.
+        """
+        import numpy as np
+
+        fmt = physio_live.LSL_CHANNEL_FORMAT
+        if fmt == "float32":
+            dtype = np.float32
+        elif fmt == "double64":
+            dtype = np.float64
+        else:  # pragma: no cover - future formats
+            raise AssertionError(
+                f"INV-LIVE-TSPREC: unexpected channel_format={fmt!r}; "
+                f"add ULP mapping for this format before shipping"
+            )
+        val = dtype(self._REALISTIC_MONO_MAX_S)
+        ulp = float(np.spacing(val))
+        assert ulp < self._MIN_INTER_SAMPLE_S, (
+            f"INV-LIVE-TSPREC VIOLATED: channel_format={fmt!r} has "
+            f"ULP={ulp!r} at mono={self._REALISTIC_MONO_MAX_S}s; "
+            f"expected ULP < cadence floor {self._MIN_INTER_SAMPLE_S}s. "
+            f"Consecutive producer samples at this cadence would collide "
+            f"to the same float representation and the consumer would "
+            f"reject every collision as non-monotonic. "
+            f"Fix: upgrade channel_format to double64 (or tighter)."
+        )
+
+    def test_float32_fails_the_guard_at_realistic_uptime(self) -> None:
+        """Negative control: confirms the guard above would have caught
+        the 2026-04-21 incident had it existed. Proves the guard has
+        real resolving power, not just happens-to-pass.
+
+        This is a *proof-of-catchability* test; it does NOT drive any
+        runtime behaviour.
+        """
+        import numpy as np
+
+        ulp_f32 = float(np.spacing(np.float32(self._REALISTIC_MONO_MAX_S)))
+        assert ulp_f32 > self._MIN_INTER_SAMPLE_S, (
+            f"float32 ULP at mono={self._REALISTIC_MONO_MAX_S}s = {ulp_f32!r} "
+            f"should exceed cadence floor {self._MIN_INTER_SAMPLE_S}s — "
+            f"if this assertion ever passes, float32 has mysteriously "
+            f"become acceptable again and the above guard may be removed. "
+            f"Expected: float32 ULP stays unshippable at realistic uptime."
+        )

@@ -18,10 +18,18 @@ Scope and honest limits
 Sample schema
 -------------
 
-The LSL stream is float32 with two channels::
+The LSL stream is double64 with two channels::
 
     channel 0  timestamp_s  (seconds, monotonic-clock source)
     channel 1  rr_ms        (R-R interval in milliseconds)
+
+``double64`` is required because producers push absolute
+``time.monotonic()`` values. On a host with uptime ≳ 3 h the monotonic
+value exceeds 10⁴ s, at which magnitude float32 ULP is ≥ 10⁻³ s — larger
+than the 20 ms producer cadence — so consecutive samples would collide to
+the same float32 timestamp and every second sample would be rejected by
+the consumer's monotonicity guard. See CHANGELOG for the 2026-04-21
+incident write-up.
 
 A special EOF sentinel is ``(NaN, NaN)``: on receipt, the consumer
 emits a final summary and exits ``0``.
@@ -70,7 +78,7 @@ if TYPE_CHECKING:
     from pylsl import StreamInlet
 
 LSL_CHANNEL_COUNT: int = 2
-LSL_CHANNEL_FORMAT: str = "float32"
+LSL_CHANNEL_FORMAT: str = "double64"
 LSL_STREAM_TYPE: str = "RR"
 STALL_TIMEOUT_SAFE_MIN_S: float = 2.0
 STALL_TIMEOUT_SAFE_MAX_S: float = 30.0
